@@ -18,21 +18,25 @@ MainWindow::MainWindow(QWidget *parent)
     wireframeAction = new QAction("None (&Wireframe)", shadingMenu);
     wireframeAction->setShortcut(tr("Ctrl+1"));
     wireframeAction->setCheckable(true);
+    wireframeAction->setIcon(QIcon(":/img/wireframe.png"));
     shadingMenu->addAction(wireframeAction);
     
     flatAction = new QAction("&Flat", shadingMenu);
     flatAction->setShortcut(tr("Ctrl+2"));
     flatAction->setCheckable(true);
+    flatAction->setIcon(QIcon(":/img/flat.png"));
     shadingMenu->addAction(flatAction);
     
     gouraudAction = new QAction("&Gouraud", shadingMenu);
     gouraudAction->setShortcut(tr("Ctrl+3"));
     gouraudAction->setCheckable(true);
+    gouraudAction->setIcon(QIcon(":/img/gouraud.png"));
     shadingMenu->addAction(gouraudAction);
     
     phongAction = new QAction("&Phong", shadingMenu);
     phongAction->setShortcut(tr("Ctrl+4"));
     phongAction->setCheckable(true);
+    phongAction->setIcon(QIcon(":/img/phong.png"));
     shadingMenu->addAction(phongAction);
 
     shadingGroup = new QActionGroup(this);
@@ -40,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     shadingGroup->addAction(flatAction);
     shadingGroup->addAction(gouraudAction);
     shadingGroup->addAction(phongAction);
-    wireframeAction->setCheckable(true);
+    wireframeAction->setChecked(true);
     menuBar->addMenu(shadingMenu);
     
 
