@@ -69,6 +69,10 @@ MainWindow::MainWindow(QWidget *parent)
     toolbar->addAction(gouraudAction);
     toolbar->addAction(phongAction);
 
+    //Status bar
+    statusbar = new QStatusBar(this);
+    setStatusBar(statusbar);
+
     setMenuBar(menuBar);
 }
 

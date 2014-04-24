@@ -17,6 +17,7 @@ private:
     QMenuBar *menuBar;
 
     QToolBar *toolbar;
+    QStatusBar *statusbar;
     
     QMenu *fileMenu;
     QAction *exitAction;
