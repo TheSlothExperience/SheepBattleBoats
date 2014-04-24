@@ -7,6 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Hello Cube!!");
     setMinimumSize(500,500);
 
+
+    //Set central OpenGL widget
+    glwidget = new GLWidget(this);
+    setCentralWidget(glwidget);
     
     menuBar = new QMenuBar();
 

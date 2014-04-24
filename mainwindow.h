@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtGui>
 #include <QtWidgets>
+#include "glwidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +32,7 @@ private:
 
     QAction *aboutAction;
 
+    GLWidget *glwidget;
 public slots:
     void showAboutBox();
 };
