@@ -63,11 +63,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Toolbar
     toolbar = new QToolBar(this);
-    toolbar->setGeometry(0, 0, 500, 40);
     toolbar->addAction(wireframeAction);
     toolbar->addAction(flatAction);
     toolbar->addAction(gouraudAction);
     toolbar->addAction(phongAction);
+    addToolBar(toolbar);
 
     //Status bar
     statusbar = new QStatusBar(this);
