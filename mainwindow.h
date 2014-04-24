@@ -16,6 +16,8 @@ public:
 private:
     QMenuBar *menuBar;
 
+    QToolBar *toolbar;
+    
     QMenu *fileMenu;
     QAction *exitAction;
 

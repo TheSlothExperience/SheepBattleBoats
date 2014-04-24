@@ -3,6 +3,11 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    
+    setWindowTitle("Hello Cube!!");
+    setMinimumSize(500,500);
+
+    
     menuBar = new QMenuBar();
 
     //Actions for the file menu
@@ -47,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     shadingGroup->addAction(flatAction);
     shadingGroup->addAction(gouraudAction);
     shadingGroup->addAction(phongAction);
-    wireframeAction->setChecked(true);
+    flatAction->setChecked(true);
 
     menuBar->addMenu(shadingMenu);
     
@@ -55,6 +60,14 @@ MainWindow::MainWindow(QWidget *parent)
     aboutAction = new QAction("&About", menuBar);
     fileMenu->addAction(aboutAction);
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
+
+    //Toolbar
+    toolbar = new QToolBar(this);
+    toolbar->setGeometry(0, 0, 500, 40);
+    toolbar->addAction(wireframeAction);
+    toolbar->addAction(flatAction);
+    toolbar->addAction(gouraudAction);
+    toolbar->addAction(phongAction);
 
     setMenuBar(menuBar);
 }
