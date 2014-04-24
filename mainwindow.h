@@ -25,6 +25,11 @@ private:
     QAction *gouraudAction;
     QAction *phongAction;
     QActionGroup *shadingGroup;
+
+    QAction *aboutAction;
+
+public slots:
+    void showAboutBox();
 };
 
 #endif // MAINWINDOW_H

@@ -7,8 +7,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Actions for the file menu
     fileMenu = new QMenu("&File");
+    
     exitAction = new QAction("E&xit", fileMenu);
     exitAction->setShortcut(QKeySequence::Quit);
+    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+
     fileMenu->addAction(exitAction);
     menuBar->addMenu(fileMenu);
 
@@ -45,11 +48,13 @@ MainWindow::MainWindow(QWidget *parent)
     shadingGroup->addAction(gouraudAction);
     shadingGroup->addAction(phongAction);
     wireframeAction->setChecked(true);
+
     menuBar->addMenu(shadingMenu);
     
-
-
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+    //About section
+    aboutAction = new QAction("&About", menuBar);
+    fileMenu->addAction(aboutAction);
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
     setMenuBar(menuBar);
 }
@@ -57,4 +62,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 
+}
+
+
+void MainWindow::showAboutBox() {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("About Hello Cube!");
+    msgBox.setText("Written by Sebas!");
+    msgBox.exec();
 }
