@@ -14,6 +14,9 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
+private:
+    int tesselationLevel = 0;
+    void drawCube();
     
 protected:
     void initializeGL();
@@ -25,7 +28,8 @@ protected:
 public slots:
     void setWireframeShading();
     void setFlatShading();
-    void setGouraudShading();	
+    void setGouraudShading();
+    void setTesselation(int tesselationLevel);
 };
 
 #endif

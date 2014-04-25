@@ -21,6 +21,13 @@ MainWindow::MainWindow(QWidget *parent)
     toolbar->addAction(flatAction);
     toolbar->addAction(gouraudAction);
     toolbar->addAction(phongAction);
+
+    tesselationSlider = new QSlider(Qt::Horizontal);
+    tesselationSlider->setRange(0,5);
+    tesselationSlider->setTickPosition(QSlider::TicksBothSides);
+    tesselationSlider->setTickInterval(1);
+    connect(tesselationSlider, SIGNAL(valueChanged(int)), glwidget, SLOT(setTesselation(int)));
+    toolbar->addWidget(tesselationSlider);
     addToolBar(toolbar);
 
     //Status bar

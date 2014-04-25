@@ -40,8 +40,8 @@ void GLWidget::initializeGL()
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 }
 
-void drawCube(int tesselation = 0) {
-    int squares = pow(2, tesselation);
+void GLWidget::drawCube() {
+    int squares = pow(2, tesselationLevel);
     double step = 1.0/squares;
 
     //front
@@ -118,7 +118,7 @@ void GLWidget::paintGL()
     glTranslatef(0.0f, 0.0f, -3.0f);
     glRotatef(45, 0.0, 1.0, 0.0);
     glRotatef(-20, 1.0, 0.0, 0.0);
-    drawCube(3);
+    drawCube();
     glPopMatrix();
 }
 
@@ -156,5 +156,10 @@ void GLWidget::setFlatShading() {
 void GLWidget::setGouraudShading() {
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
+    updateGL();
+}
+
+void GLWidget::setTesselation(int tesselationLevel) {
+    this->tesselationLevel = tesselationLevel;
     updateGL();
 }

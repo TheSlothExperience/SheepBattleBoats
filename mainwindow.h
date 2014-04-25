@@ -30,6 +30,8 @@ private:
     QAction *phongAction;
     QActionGroup *shadingGroup;
 
+    QSlider *tesselationSlider;
+
     QAction *aboutAction;
 
     GLWidget *glwidget;
