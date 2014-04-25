@@ -4,13 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl	
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = hellocube
 TEMPLATE = app
 
+LIBS += -lglut -lGLU
 
 SOURCES += main.cpp\
         mainwindow.cpp\
