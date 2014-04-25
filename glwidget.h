@@ -17,6 +17,7 @@ public:
 private:
     int tesselationLevel = 0;
     void drawCube();
+    float zoom = -3.0;
     
 protected:
     void initializeGL();
@@ -24,6 +25,7 @@ protected:
     void resizeGL(int width, int height);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent (QWheelEvent *event);
 
 public slots:
     void setWireframeShading();

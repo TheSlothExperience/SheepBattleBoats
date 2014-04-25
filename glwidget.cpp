@@ -115,9 +115,7 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
-    glTranslatef(0.0f, 0.0f, -3.0f);
-    glRotatef(45, 0.0, 1.0, 0.0);
-    glRotatef(-20, 1.0, 0.0, 0.0);
+    glTranslatef(0.0f, 0.0f, zoom);
     drawCube();
     glPopMatrix();
 }
@@ -139,6 +137,13 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
+}
+
+void GLWidget::wheelEvent(QWheelEvent *event)
+{
+    this->zoom += event->delta()/300.0;
+    printf("zoom: %f\n", zoom);
+    updateGL();
 }
 
 void GLWidget::setWireframeShading() {
