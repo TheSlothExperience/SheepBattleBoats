@@ -115,7 +115,7 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
-    glTranslatef(0.0f, 0.0f, zoom);
+    glTranslatef(xtrans, ytrans, zoom);
     drawCube();
     glPopMatrix();
 }
@@ -133,16 +133,32 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    if (event->button() == Qt::RightButton) {
+	lastPoint = event->pos();
+	dragging = true;
+    }
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    if ((event->buttons() & Qt::RightButton) && dragging) {
+	this->xtrans += (event->pos().x() - lastPoint.x()) / 100.0;
+	this->ytrans -= (event->pos().y() - lastPoint.y()) / 100.0; //Qt y-coord is inverted
+	this->lastPoint = event->pos();
+	updateGL();
+    }
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+	dragging = false;
+    }
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
     this->zoom += event->delta()/300.0;
-    printf("zoom: %f\n", zoom);
     updateGL();
 }
 

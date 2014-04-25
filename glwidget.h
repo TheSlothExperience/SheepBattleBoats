@@ -17,7 +17,13 @@ public:
 private:
     int tesselationLevel = 0;
     void drawCube();
+    
     float zoom = -3.0;
+    float xtrans = 0.0;
+    float ytrans = 0.0;
+    bool dragging = false;
+
+    QPoint lastPoint;
     
 protected:
     void initializeGL();
@@ -25,6 +31,7 @@ protected:
     void resizeGL(int width, int height);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void wheelEvent (QWheelEvent *event);
 
 public slots:
