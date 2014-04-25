@@ -33,6 +33,9 @@ private:
     QAction *aboutAction;
 
     GLWidget *glwidget;
+
+    void createActions();
+    void createMenus();
 public slots:
     void showAboutBox();
 };
