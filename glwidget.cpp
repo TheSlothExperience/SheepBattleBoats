@@ -29,11 +29,10 @@ void GLWidget::initializeGL()
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glShadeModel(GL_SMOOTH);
+    //glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_MULTISAMPLE);
-    //glPolygonMode(GL_FRONT, GL_LINE);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);    
@@ -140,4 +139,22 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
+}
+
+void GLWidget::setWireframeShading() {
+    glPolygonMode(GL_FRONT, GL_LINE);
+    glShadeModel(GL_FLAT);
+    updateGL();
+}
+
+void GLWidget::setFlatShading() {
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glShadeModel(GL_FLAT);
+    updateGL();
+}
+
+void GLWidget::setGouraudShading() {
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glShadeModel(GL_SMOOTH);
+    updateGL();
 }

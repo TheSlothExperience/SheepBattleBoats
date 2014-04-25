@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "glwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,18 +33,21 @@ MainWindow::MainWindow(QWidget *parent)
     wireframeAction->setCheckable(true);
     wireframeAction->setIcon(QIcon(":/img/wireframe.png"));
     shadingMenu->addAction(wireframeAction);
+    connect(wireframeAction, SIGNAL(triggered()), glwidget, SLOT(setWireframeShading()));
     
     flatAction = new QAction("&Flat", shadingMenu);
     flatAction->setShortcut(tr("Ctrl+2"));
     flatAction->setCheckable(true);
     flatAction->setIcon(QIcon(":/img/flat.png"));
     shadingMenu->addAction(flatAction);
+    connect(flatAction, SIGNAL(triggered()), glwidget, SLOT(setFlatShading()));
     
     gouraudAction = new QAction("&Gouraud", shadingMenu);
     gouraudAction->setShortcut(tr("Ctrl+3"));
     gouraudAction->setCheckable(true);
     gouraudAction->setIcon(QIcon(":/img/gouraud.png"));
     shadingMenu->addAction(gouraudAction);
+    connect(gouraudAction, SIGNAL(triggered()), glwidget, SLOT(setGouraudShading()));
     
     phongAction = new QAction("&Phong", shadingMenu);
     phongAction->setShortcut(tr("Ctrl+4"));

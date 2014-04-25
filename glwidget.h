@@ -22,6 +22,10 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
 
+public slots:
+    void setWireframeShading();
+    void setFlatShading();
+    void setGouraudShading();	
 };
 
 #endif
