@@ -3,6 +3,7 @@
 
 #include <QGLWidget>
 #include <QMatrix4x4>
+#include <QOpenGLShader>
 
 class GLWidget : public QGLWidget
 {
@@ -27,6 +28,11 @@ private:
     bool dragging = false;
 
     QPoint lastPoint;
+
+    QOpenGLShaderProgram *shaderProgram;
+    QOpenGLShader *vshader;
+    QOpenGLShader *fshader;
+    void loadShaders(QString vshader, QString fshader);
     
 protected:
     void initializeGL();
@@ -41,6 +47,7 @@ public slots:
     void setWireframeShading();
     void setFlatShading();
     void setGouraudShading();
+    void setPhongShading();
     void setTesselation(int tesselationLevel);
 };
 

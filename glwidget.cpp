@@ -8,7 +8,6 @@
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-
 }
 
 GLWidget::~GLWidget()
@@ -38,6 +37,8 @@ void GLWidget::initializeGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    
+    loadShaders(":/phong.vert", ":/phong.frag");
 }
 
 
@@ -46,7 +47,6 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
-    glLoadIdentity();
     glTranslatef(xtrans, ytrans, zoom);
     glMultMatrixf(this->cubeRotationMatrix.constData());
     //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
@@ -131,26 +131,64 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 }
 
 void GLWidget::setWireframeShading() {
+    shaderProgram->release();
     glPolygonMode(GL_FRONT, GL_LINE);
     glShadeModel(GL_FLAT);
     updateGL();
 }
 
 void GLWidget::setFlatShading() {
+    shaderProgram->release();
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_FLAT);
     updateGL();
 }
 
 void GLWidget::setGouraudShading() {
+    shaderProgram->release();
     glPolygonMode(GL_FRONT, GL_FILL);
     glShadeModel(GL_SMOOTH);
+    updateGL();
+}
+
+void GLWidget::setPhongShading() {
+    shaderProgram->bind();
     updateGL();
 }
 
 void GLWidget::setTesselation(int tesselationLevel) {
     this->tesselationLevel = tesselationLevel;
     updateGL();
+}
+
+void GLWidget::loadShaders(QString vshader, QString fshader) {
+    shaderProgram = new QOpenGLShaderProgram;
+    
+    QFileInfo vsh(vshader);
+    if (vsh.exists()) {
+	this->vshader = new QOpenGLShader(QOpenGLShader::Vertex);
+	if (this->vshader->compileSourceFile(vshader)) {
+	    shaderProgram->addShader(this->vshader);
+	} else {
+	    qWarning() << "Vertex shader error" << this->vshader->log();
+	}
+    } else {
+	qWarning() << "Vertex shader source file " << vshader << " not found.";
+    }
+    
+    QFileInfo fsh(fshader);
+    if (fsh.exists()) {
+	this->fshader = new QOpenGLShader(QOpenGLShader::Fragment);
+	if (this->fshader->compileSourceFile(fshader)) {
+	    shaderProgram->addShader(this->fshader);
+	} else {
+	    qWarning() << "Vertex shader error" << this->fshader->log();
+	}
+    } else {
+	qWarning() << "Vertex shader source file " << fshader << " not found.";
+    }
+
+    shaderProgram->link();
 }
 
 void GLWidget::drawCube() {

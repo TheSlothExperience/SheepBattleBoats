@@ -70,6 +70,7 @@ void MainWindow::createActions() {
     phongAction->setShortcut(tr("Ctrl+4"));
     phongAction->setCheckable(true);
     phongAction->setIcon(QIcon(":/img/phong.png"));
+    connect(phongAction, SIGNAL(triggered()), glwidget, SLOT(setPhongShading()));
     
 
     shadingGroup = new QActionGroup(this);
