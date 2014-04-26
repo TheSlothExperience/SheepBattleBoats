@@ -6,7 +6,9 @@
 #include <math.h>
 
 GLWidget::GLWidget(QWidget *parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
+      tesselationLevel(0),
+      zoom(0.0), xtrans(0.0), ytrans(0.0), dragging(false)
 {
 }
 
@@ -43,6 +45,7 @@ void GLWidget::initializeGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
+    GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
     loadShaders(":/phong.vert", ":/phong.frag");

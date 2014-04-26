@@ -17,15 +17,14 @@ public:
     QSize sizeHint() const;
 
 private:
-    const GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
-    int tesselationLevel = 0;
+    int tesselationLevel;
     void drawCube();
 
     QQuaternion cubeRotationQuat;
-    float zoom = 0.0;
-    float xtrans = 0.0;
-    float ytrans = 0.0;
-    bool dragging = false;
+    float zoom;
+    float xtrans;
+    float ytrans;
+    bool dragging;
 
     QPoint lastPoint;
 
