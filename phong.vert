@@ -1,12 +1,8 @@
 #version 120
- 
-//layout (std140) uniform Matrices {
-//	mat4 pvm;
-//};
-	  
-//in vec4 position;
-	   
-//out vec4 color;
+/*
+ * Use compatibility mode so we can use
+ * fixed-function convenience stuff too.
+ */
 varying vec3 N;
 varying vec3 V;
 varying vec3 L;

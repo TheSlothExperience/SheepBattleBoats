@@ -26,10 +26,12 @@ QSize GLWidget::sizeHint() const
 
 void GLWidget::initializeGL()
 {
+    //Set up OpenGL incantations, start with flat shading.
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glShadeModel(GL_FLAT);
-    
+
+    //Set up a spot light
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_MULTISAMPLE);
@@ -37,6 +39,7 @@ void GLWidget::initializeGL()
     glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    //Move the camera a bit towards us to see the cube
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
@@ -53,6 +56,8 @@ void GLWidget::paintGL()
     glPushMatrix();
     
     glTranslatef(xtrans, ytrans, zoom);
+    
+    //Convert the quat to a matrix, may be a performance leak.
     QMatrix4x4 tempRot;
     tempRot.rotate(this->cubeRotationQuat.normalized());
     glMultMatrixf(tempRot.constData());
@@ -63,7 +68,8 @@ void GLWidget::paintGL()
 }
 
 void GLWidget::resizeGL(int width, int height)
-{   
+{
+    //Set up the viewport and perspective projection with a FOV of 45
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -79,6 +85,10 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     }
 }
 
+/*
+ * Project coordinates to the surface of the sphere or to
+ * the hyperbolic surface, if it doesn's lie on the sphere.
+ */
 double z(double x, double  y) {
     double length = sqrt(x*x + y*y);
     //Let the radius of the sphere be 1
@@ -102,8 +112,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	this->lastPoint = event->pos();
 	updateGL();
     }
+    
     if ((event->buttons() & Qt::LeftButton) && dragging) {
-	//normalize to interval [-1,1]
+	//Here we implement the trackball. Sample two points on the sphere and
+	//calculate their angle to use as the rotation.
+	
+	//normalize to intervals [-1,1]
 	double lastx = clampUnit(lastPoint.x() / (this->size().width() / 2.0) - 1.0);
 	double lasty = clampUnit(-(lastPoint.y() / (this->size().height() / 2.0) - 1.0));
 	
@@ -174,6 +188,11 @@ void GLWidget::setTesselation(int tesselationLevel) {
     updateGL();
 }
 
+/*
+ * Load the vertex shader `vshader` and the fragment shader
+ * `fshader`, compiles them and links them to the shader program.
+ * Outputs warnings and compilation errors should an error occur.
+ */
 void GLWidget::loadShaders(QString vshader, QString fshader) {
     shaderProgram = new QOpenGLShaderProgram;
     
@@ -212,12 +231,19 @@ void GLWidget::resetCamera() {
     updateGL();
 }
 
+/*
+ * Draw an unit cube centered on (0,0).
+ */
 void GLWidget::drawCube() {
+    //Only use powers of two to assure a nice cube
     int squares = pow(2, tesselationLevel);
     double step = 1.0/squares;
+
+    //Set the specular properties of the vertices.
     GLfloat material_Ks[] = {1.0f, 1.0f, 1.0f, 1.0f};
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_Ks);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 80.0);
+    
     //front
     glColor3f(0.0,0.0,1.0);
     glNormal3f(0.0, 0.0, 1.0);
