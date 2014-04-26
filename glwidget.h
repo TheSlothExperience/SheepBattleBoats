@@ -22,7 +22,7 @@ private:
     void drawCube();
 
     QMatrix4x4 cubeRotationMatrix;
-    float zoom = -3.0;
+    float zoom = 0.0;
     float xtrans = 0.0;
     float ytrans = 0.0;
     bool dragging = false;

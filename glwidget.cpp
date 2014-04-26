@@ -36,8 +36,8 @@ void GLWidget::initializeGL()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-    
     loadShaders(":/phong.vert", ":/phong.frag");
 }
 
@@ -49,14 +49,13 @@ void GLWidget::paintGL()
     glPushMatrix();
     glTranslatef(xtrans, ytrans, zoom);
     glMultMatrixf(this->cubeRotationMatrix.constData());
-    //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     drawCube();
     glPopMatrix();
+    
 }
 
 void GLWidget::resizeGL(int width, int height)
 {   
-    int side = qMin(width, height);
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -103,13 +102,20 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	double newx = clampUnit(event->pos().x() / (this->size().width() / 2.0) - 1.0);
 	double newy = clampUnit(-(event->pos().y() / (this->size().height() / 2.0) - 1.0));
 
+	//Project the two points into the sphere (or the hyperbolic plane)
 	QVector3D v1(lastx, lasty, z(lastx, lasty));
 	v1.normalize();
 	QVector3D v2(newx, newy, z(newx, newy));
 	v2.normalize();
+	
+	//Determine the normal of the generated plane through the center of the sphere
 	QVector3D normal = QVector3D::crossProduct(v1, v2);
 	double theta = acos(QVector3D::dotProduct(v1, v2)) / 3.0;
+	
+	//angle/2.0, because the quats double cover SO(3)
 	QQuaternion newRot(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
+	
+	//Pre-multiply to get the rot in local coords
 	QMatrix4x4 temp;
 	temp.rotate(newRot.normalized());
 	this->cubeRotationMatrix = temp * this->cubeRotationMatrix;
@@ -194,9 +200,12 @@ void GLWidget::loadShaders(QString vshader, QString fshader) {
 void GLWidget::drawCube() {
     int squares = pow(2, tesselationLevel);
     double step = 1.0/squares;
-
+    GLfloat material_Ks[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_Ks);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 80.0);
     //front
     glColor3f(0.0,0.0,1.0);
+    glNormal3f(0.0, 0.0, 1.0);
     for (int y = 0; y < squares; y++) {
 	glBegin(GL_TRIANGLE_STRIP);
 	for (int x = 0; x <= squares; x++) {
@@ -208,6 +217,7 @@ void GLWidget::drawCube() {
 
     //right
     glColor3f(1.0, 0.0, 0.0);
+    glNormal3f(1.0, 0.0, 0.0);
     for (int y = 0; y < squares; y++) {
 	glBegin(GL_TRIANGLE_STRIP);
 	for (int x = 0; x <= squares; x++) {
@@ -219,6 +229,7 @@ void GLWidget::drawCube() {
 
     //top
     glColor3f(0.0, 1.0, 0.0);
+    glNormal3f(0.0, 1.0, 0.0);
     for (int y = 0; y < squares; y++) {
 	glBegin(GL_TRIANGLE_STRIP);
 	for (int x = 0; x <= squares; x++) {
@@ -230,6 +241,7 @@ void GLWidget::drawCube() {
 
     //back
     glColor3f(1.0, 1.0, 0.0);
+    glNormal3f(0.0, 0.0, -1.0);
     for (int y = 0; y < squares; y++) {
 	glBegin(GL_TRIANGLE_STRIP);
 	for (int x = 0; x <= squares; x++) {
@@ -241,6 +253,7 @@ void GLWidget::drawCube() {
 
     //left
     glColor3f(0.0, 1.0, 1.0);
+    glNormal3f(-1.0, 0.0, 0.0);
     for (int y = 0; y < squares; y++) {
 	glBegin(GL_TRIANGLE_STRIP);
 	for (int x = 0; x <= squares; x++) {
@@ -252,6 +265,7 @@ void GLWidget::drawCube() {
 
     //bottom
     glColor3f(1.0, 0.0, 1.0);
+    glNormal3f(0.0, -1.0, 0.0);
     for (int y = 0; y < squares; y++) {
 	glBegin(GL_TRIANGLE_STRIP);
 	for (int x = 0; x <= squares; x++) {
