@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     tesselationSlider->setTickInterval(1);
     connect(tesselationSlider, SIGNAL(valueChanged(int)), glwidget, SLOT(setTesselation(int)));
     toolbar->addWidget(tesselationSlider);
+
+    toolbar->addAction(resetCameraAction);
     addToolBar(toolbar);
 
     //Status bar
@@ -83,6 +85,10 @@ void MainWindow::createActions() {
     
     aboutAction = new QAction("&About", this);
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
+
+    resetCameraAction = new QAction("&Reset", this);
+    resetCameraAction->setIcon(QIcon(":/img/cam_home.png"));
+    connect(resetCameraAction, SIGNAL(triggered()), glwidget, SLOT(resetCamera()));
 }
 
 void MainWindow::createMenus() {
@@ -91,7 +97,6 @@ void MainWindow::createMenus() {
     //Actions for the file menu
     fileMenu = new QMenu("&File");
     fileMenu->addAction(exitAction);
-    fileMenu->addAction(aboutAction);
     menuBar->addMenu(fileMenu);
 
     //Actions in the shading menu
@@ -101,6 +106,11 @@ void MainWindow::createMenus() {
     shadingMenu->addAction(gouraudAction);
     shadingMenu->addAction(phongAction);
     menuBar->addMenu(shadingMenu);
+
+    //Help menu
+    helpMenu = new QMenu("&Help");
+    helpMenu->addAction(aboutAction);
+    menuBar->addMenu(helpMenu);
 }
 
 

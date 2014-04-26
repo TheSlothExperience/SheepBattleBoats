@@ -49,6 +49,7 @@ public slots:
     void setGouraudShading();
     void setPhongShading();
     void setTesselation(int tesselationLevel);
+    void resetCamera();
 };
 
 #endif

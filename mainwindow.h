@@ -32,6 +32,9 @@ private:
 
     QSlider *tesselationSlider;
 
+    QAction *resetCameraAction;
+
+    QMenu *helpMenu;
     QAction *aboutAction;
 
     GLWidget *glwidget;

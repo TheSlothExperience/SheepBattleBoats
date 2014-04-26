@@ -28,16 +28,20 @@ void GLWidget::initializeGL()
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glShadeModel(GL_FLAT);
+    
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_MULTISAMPLE);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+
     loadShaders(":/phong.vert", ":/phong.frag");
 }
 
@@ -195,6 +199,14 @@ void GLWidget::loadShaders(QString vshader, QString fshader) {
     }
 
     shaderProgram->link();
+}
+
+void GLWidget::resetCamera() {
+    this->zoom = 0.0;
+    this->xtrans = 0.0;
+    this->ytrans = 0.0;
+    this->cubeRotationMatrix.setToIdentity();
+    updateGL();
 }
 
 void GLWidget::drawCube() {
