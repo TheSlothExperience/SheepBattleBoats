@@ -2,6 +2,7 @@
 #define GLWIDGET_H
 
 #include <QGLWidget>
+#include <QMatrix4x4>
 
 class GLWidget : public QGLWidget
 {
@@ -15,9 +16,11 @@ public:
     QSize sizeHint() const;
 
 private:
+    const GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
     int tesselationLevel = 0;
     void drawCube();
-    
+
+    QMatrix4x4 cubeRotationMatrix;
     float zoom = -3.0;
     float xtrans = 0.0;
     float ytrans = 0.0;
