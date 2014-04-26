@@ -162,6 +162,7 @@ void GLWidget::setGouraudShading() {
 }
 
 void GLWidget::setPhongShading() {
+    glPolygonMode(GL_FRONT, GL_FILL);
     shaderProgram->bind();
     updateGL();
 }
