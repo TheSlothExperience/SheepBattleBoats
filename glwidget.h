@@ -21,7 +21,7 @@ private:
     int tesselationLevel = 0;
     void drawCube();
 
-    QMatrix4x4 cubeRotationMatrix;
+    QQuaternion cubeRotationQuat;
     float zoom = 0.0;
     float xtrans = 0.0;
     float ytrans = 0.0;

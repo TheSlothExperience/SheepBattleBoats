@@ -51,8 +51,12 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
+    
     glTranslatef(xtrans, ytrans, zoom);
-    glMultMatrixf(this->cubeRotationMatrix.constData());
+    QMatrix4x4 tempRot;
+    tempRot.rotate(this->cubeRotationQuat.normalized());
+    glMultMatrixf(tempRot.constData());
+    
     drawCube();
     glPopMatrix();
     
@@ -120,9 +124,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	QQuaternion newRot(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
 	
 	//Pre-multiply to get the rot in local coords
-	QMatrix4x4 temp;
-	temp.rotate(newRot.normalized());
-	this->cubeRotationMatrix = temp * this->cubeRotationMatrix;
+	this->cubeRotationQuat = newRot.normalized() * this->cubeRotationQuat;
 	updateGL();
     }
 }
@@ -206,7 +208,7 @@ void GLWidget::resetCamera() {
     this->zoom = 0.0;
     this->xtrans = 0.0;
     this->ytrans = 0.0;
-    this->cubeRotationMatrix.setToIdentity();
+    this->cubeRotationQuat = QQuaternion();
     updateGL();
 }
 
