@@ -43,10 +43,6 @@ protected:
     void wheelEvent (QWheelEvent *event);
 
 public slots:
-    void setWireframeShading();
-    void setFlatShading();
-    void setGouraudShading();
-    void setPhongShading();
     void setTesselation(int tesselationLevel);
     void resetCamera();
 };

@@ -41,14 +41,15 @@ void GLWidget::initializeGL()
     glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+    loadShaders(":/phong.vert", ":/phong.frag");
+    shaderProgram->bind();
+
     //Move the camera a bit towards us to see the cube
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
     GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-
-    loadShaders(":/phong.vert", ":/phong.frag");
 }
 
 
@@ -159,32 +160,6 @@ void GLWidget::wheelEvent(QWheelEvent *event)
     updateGL();
 }
 
-void GLWidget::setWireframeShading() {
-    shaderProgram->release();
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glShadeModel(GL_FLAT);
-    updateGL();
-}
-
-void GLWidget::setFlatShading() {
-    shaderProgram->release();
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glShadeModel(GL_FLAT);
-    updateGL();
-}
-
-void GLWidget::setGouraudShading() {
-    shaderProgram->release();
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glShadeModel(GL_SMOOTH);
-    updateGL();
-}
-
-void GLWidget::setPhongShading() {
-    glPolygonMode(GL_FRONT, GL_FILL);
-    shaderProgram->bind();
-    updateGL();
-}
 
 void GLWidget::setTesselation(int tesselationLevel) {
     this->tesselationLevel = tesselationLevel;
@@ -251,7 +226,7 @@ void GLWidget::drawCube() {
     glColor3f(0.0,0.0,1.0);
     glNormal3f(0.0, 0.0, 1.0);
     for (int y = 0; y < squares; y++) {
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	for (int x = 0; x <= squares; x++) {
 	    glVertex3f(-0.5 + x*step, 0.5 - y*step, 0.5);
 	    glVertex3f(-0.5 + x*step, 0.5 - (y+1)*step, 0.5);
@@ -263,7 +238,7 @@ void GLWidget::drawCube() {
     glColor3f(1.0, 0.0, 0.0);
     glNormal3f(1.0, 0.0, 0.0);
     for (int y = 0; y < squares; y++) {
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	for (int x = 0; x <= squares; x++) {
 	    glVertex3f(0.5, 0.5 - y*step, 0.5 - x*step);
 	    glVertex3f(0.5, 0.5 - (y+1)*step, 0.5 - x*step);
@@ -275,7 +250,7 @@ void GLWidget::drawCube() {
     glColor3f(0.0, 1.0, 0.0);
     glNormal3f(0.0, 1.0, 0.0);
     for (int y = 0; y < squares; y++) {
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	for (int x = 0; x <= squares; x++) {
 	    glVertex3f(-0.5 + x*step, 0.5, -0.5 + y*step);
 	    glVertex3f(-0.5 + x*step, 0.5, -0.5 + (y+1)*step);
@@ -287,7 +262,7 @@ void GLWidget::drawCube() {
     glColor3f(1.0, 1.0, 0.0);
     glNormal3f(0.0, 0.0, -1.0);
     for (int y = 0; y < squares; y++) {
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	for (int x = 0; x <= squares; x++) {
 	    glVertex3f(0.5 - x*step, 0.5 - y*step, -0.5);
 	    glVertex3f(0.5 - x*step, 0.5 - (y+1)*step, -0.5);
@@ -299,7 +274,7 @@ void GLWidget::drawCube() {
     glColor3f(0.0, 1.0, 1.0);
     glNormal3f(-1.0, 0.0, 0.0);
     for (int y = 0; y < squares; y++) {
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	for (int x = 0; x <= squares; x++) {
 	    glVertex3f(-0.5, 0.5 - y*step, -0.5 + x*step);
 	    glVertex3f(-0.5, 0.5 - (y+1)*step, -0.5 + x*step);
@@ -311,7 +286,7 @@ void GLWidget::drawCube() {
     glColor3f(1.0, 0.0, 1.0);
     glNormal3f(0.0, -1.0, 0.0);
     for (int y = 0; y < squares; y++) {
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	for (int x = 0; x <= squares; x++) {
 	    glVertex3f(0.5 - x*step, -0.5, -0.5 + y*step);
 	    glVertex3f(0.5 - x*step, -0.5, -0.5 + (y+1)*step);

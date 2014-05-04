@@ -23,13 +23,6 @@ private:
     QMenu *fileMenu;
     QAction *exitAction;
 
-    QMenu *shadingMenu;
-    QAction *wireframeAction;
-    QAction *flatAction;
-    QAction *gouraudAction;
-    QAction *phongAction;
-    QActionGroup *shadingGroup;
-
     QSlider *tesselationSlider;
 
     QAction *resetCameraAction;
