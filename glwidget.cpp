@@ -141,19 +141,22 @@ void GLWidget::initializeGL()
     perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
     QMatrix4x4 perspectiveMatrix;
     perspectiveMatrix.perspective(45, (float)this->width() / (float)this->height(), 0.1, 100);
-
-    
     glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix.constData());
 
+    cameraMatrix.lookAt(QVector3D(0.0, 0.0, 3.0), QVector3D(), QVector3D(0.0, 1.0, 0.0));
+    modelViewMatrixStack.top() *= cameraMatrix;   
     modelMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
+    normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
+
+    lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
+    QVector4D lightDir = cameraMatrix * lightPosition;
+    GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
+    lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
+    glUniform3fv(lightPositionLocation, 1, lightDirArray);
     //Move the camera a bit towards us to see the cube
-    //gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
     //GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
     //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     shaderProgram->release();
-
-    cameraMatrix.lookAt(QVector3D(0.0, 0.0, 3.0), QVector3D(), QVector3D(0.0, 1.0, 0.0));
-    modelViewMatrixStack.top() *= cameraMatrix;
 }
 
 
@@ -171,6 +174,8 @@ void GLWidget::paintGL()
     tempRot.rotate(this->cubeRotationQuat.normalized());
     modelViewMatrixStack.top() *= tempRot;
     glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, modelViewMatrixStack.top().constData());
+
+    glUniformMatrix4fv(normalMatLocation, 1, GL_FALSE, modelViewMatrixStack.top().inverted().transposed().constData());
     
     //drawCube();
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);

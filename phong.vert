@@ -1,11 +1,8 @@
 #version 330
-/*
- * Use compatibility mode so we can use
- * fixed-function convenience stuff too.
- */
-//varying vec3 N;
-//varying vec3 V;
-//varying vec3 L;
+
+out vec3 N;
+out vec3 V;
+out vec3 L;
 
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 normal;
@@ -13,21 +10,23 @@ layout(location = 1) in vec4 normal;
 
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
+uniform mat4 normalMatrix;
+
+uniform vec3 lightPosition;
 
 void main()
 {
     //gl_Position = pvm * position;
     //gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-    vec4 offset = vec4(-1.0, -1.5, -3.0, 0.0);
     gl_Position = (perspectiveMatrix * modelViewMatrix) * position;
-    //normalC = (normal);
+    
     // Transforming The Normal To ModelView-Space
-    //N = normalize(gl_NormalMatrix * gl_Normal);
+    N = vec3(normalize(normalMatrix * normal));
     
     // Transforming The Vertex Position To ModelView-Space
-    //V = vec3(gl_ModelViewMatrix * gl_Vertex);
+    V = vec3(modelViewMatrix * position);
     
     // Calculating The Vector From The Vertex Position To The Light Position
-    //L = normalize(gl_LightSource[0].position.xyz - V);
+    L = normalize(lightPosition - V);
     //gl_FrontColor = gl_Color;
 } 

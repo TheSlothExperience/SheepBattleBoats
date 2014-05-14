@@ -28,6 +28,8 @@ private:
     float ytrans;
     bool dragging;
 
+    QVector4D lightPosition;
+    
     QPoint lastPoint;
 
     QOpenGLShaderProgram *shaderProgram;
@@ -42,6 +44,8 @@ private:
     int positionLocation;
     GLuint perspectiveMatLocation;
     GLuint modelMatLocation;
+    GLuint normalMatLocation;
+    GLuint lightPositionLocation;
 
     QMatrix4x4 cameraMatrix;
     std::stack<QMatrix4x4> modelViewMatrixStack;
