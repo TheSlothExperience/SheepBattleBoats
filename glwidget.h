@@ -5,6 +5,8 @@
 #include <QMatrix4x4>
 #include <QOpenGLShader>
 
+#include <stack>
+
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
@@ -39,6 +41,9 @@ private:
 
     int positionLocation;
     GLuint perspectiveMatLocation;
+    GLuint modelMatLocation;
+
+    std::stack<QMatrix4x4> modelMatrixStack;
     
 protected:
     void initializeGL();

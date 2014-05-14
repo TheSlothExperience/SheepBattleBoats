@@ -11,6 +11,7 @@ GLWidget::GLWidget(QWidget *parent)
       tesselationLevel(0),
       zoom(0.0), xtrans(0.0), ytrans(0.0), dragging(false)
 {
+    modelMatrixStack.push(QMatrix4x4());
 }
 
 GLWidget::~GLWidget()
@@ -148,6 +149,8 @@ void GLWidget::initializeGL()
     perspectiveMatrix[14] = (2 * fzFar * fzNear) / (fzNear - fzFar);
     perspectiveMatrix[11] = -1.0f;
     glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix);
+
+    modelMatLocation = shaderProgram->uniformLocation("modelMatrix");
     //Move the camera a bit towards us to see the cube
     //gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
     //GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
@@ -161,14 +164,15 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shaderProgram->bind();
-    glPushMatrix();
+    modelMatrixStack.push(modelMatrixStack.top());
     
-    //glTranslatef(xtrans, ytrans, zoom);
+    modelMatrixStack.top().translate(xtrans, ytrans, zoom);
     
     //Convert the quat to a matrix, may be a performance leak.
-    //QMatrix4x4 tempRot;
-    //tempRot.rotate(this->cubeRotationQuat.normalized());
-    //glMultMatrixf(tempRot.constData());
+    QMatrix4x4 tempRot;
+    tempRot.rotate(this->cubeRotationQuat.normalized());
+    modelMatrixStack.top() *= tempRot;
+    glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, modelMatrixStack.top().constData());
     
     //drawCube();
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
@@ -181,7 +185,8 @@ void GLWidget::paintGL()
 
     glDrawArrays(GL_TRIANGLES, 0, 3*12);
     
-    glPopMatrix();
+    //glPopMatrix();
+    modelMatrixStack.pop();
     
 }
 
