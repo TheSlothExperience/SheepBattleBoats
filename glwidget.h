@@ -32,6 +32,13 @@ private:
     QOpenGLShader *vshader;
     QOpenGLShader *fshader;
     void loadShaders(QString vshader, QString fshader);
+
+    GLuint vao;
+    GLuint vertexBufferObject;
+    GLuint normalBufferObject;
+
+    int positionLocation;
+    GLuint perspectiveMatLocation;
     
 protected:
     void initializeGL();

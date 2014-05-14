@@ -1,7 +1,8 @@
-#include "glwidget.h"
+#define GL_GLEXT_PROTOTYPES
 
+#include "glwidget.h"
 #include <QtGui>
-#include <QtOpenGL>
+#include <GL/gl.h>
 #include "GL/glu.h"
 #include <math.h>
 
@@ -28,28 +29,130 @@ QSize GLWidget::sizeHint() const
 
 void GLWidget::initializeGL()
 {
-    //Set up OpenGL incantations, start with flat shading.
+    //Set up OpenGL incantations
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glShadeModel(GL_FLAT);
 
     //Set up a spot light
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_MULTISAMPLE);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
+    //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    //glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     loadShaders(":/phong.vert", ":/phong.frag");
-    shaderProgram->bind();
 
+    
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    
+    static const GLfloat g_vertex_buffer_data[] = {
+     	-0.5f,-0.5f,-0.5f, // triangle 1 : begin
+     	-0.5f,-0.5f, 0.5f,
+     	-0.5f, 0.5f, 0.5f, // triangle 1 : end
+     	0.5f, 0.5f,-0.5f, // triangle 2 : begin
+     	-0.5f,-0.5f,-0.5f,
+     	-0.5f, 0.5f,-0.5f, // triangle 2 : end
+     	0.5f,-0.5f, 0.5f,
+     	-0.5f,-0.5f,-0.5f,
+     	0.5f,-0.5f,-0.5f,
+     	0.5f, 0.5f,-0.5f,
+     	0.5f,-0.5f,-0.5f,
+     	-0.5f,-0.5f,-0.5f,
+     	-0.5f,-0.5f,-0.5f,
+     	-0.5f, 0.5f, 0.5f,
+     	-0.5f, 0.5f,-0.5f,
+     	0.5f,-0.5f, 0.5f,
+     	-0.5f,-0.5f, 0.5f,
+     	-0.5f,-0.5f,-0.5f,
+     	-0.5f, 0.5f, 0.5f,
+     	-0.5f,-0.5f, 0.5f,
+     	0.5f,-0.5f, 0.5f,
+     	0.5f, 0.5f, 0.5f,
+     	0.5f,-0.5f,-0.5f,
+     	0.5f, 0.5f,-0.5f,
+     	0.5f,-0.5f,-0.5f,
+     	0.5f, 0.5f, 0.5f,
+     	0.5f,-0.5f, 0.5f,
+     	0.5f, 0.5f, 0.5f,
+     	0.5f, 0.5f,-0.5f,
+     	-0.5f, 0.5f,-0.5f,
+     	0.5f, 0.5f, 0.5f,
+     	-0.5f, 0.5f,-0.5f,
+     	-0.5f, 0.5f, 0.5f,
+     	0.5f, 0.5f, 0.5f,
+     	-0.5f, 0.5f, 0.5f,
+     	0.5f,-0.5f, 0.5f
+    };
+    
+    static const GLfloat g_normal_buffer_data[] = {
+     	-1.0f,-0.0f,-0.0f, // left
+     	-1.0f,-0.0f, 0.0f,
+     	-1.0f, 0.0f, 0.0f, 
+     	0.0f, 0.0f,-1.0f, // back
+     	-0.0f,-0.0f,-1.0f,
+     	-0.0f, 0.0f,-1.0f,
+     	0.0f,-1.0f, 0.0f, // bottom
+     	-0.0f,-1.0f,-0.0f,
+     	0.0f,-1.0f,-0.0f,
+     	0.0f, 0.0f,-1.0f, // back
+     	0.0f,-0.0f,-1.0f,
+     	-0.0f,-0.0f,-1.0f,
+     	-1.0f,-0.0f,-0.0f,// left
+     	-1.0f, 0.0f, 0.0f,
+     	-1.0f, 0.0f,-0.0f,
+     	0.0f,-1.0f, 0.0f, // bottom
+     	-0.0f,-1.0f, 0.0f,
+     	-0.0f,-1.0f,-0.0f,
+     	-0.0f, 0.0f, 1.0f, // front 
+     	-0.0f,-0.0f, 1.0f,
+     	0.0f,-0.0f, 1.0f,
+     	1.0f, 0.0f, 0.0f,  //right
+     	1.0f,-0.0f,-0.0f,
+     	1.0f, 0.0f,-0.0f,
+     	1.0f,-0.0f,-0.0f, // right
+     	1.0f, 0.0f, 0.0f,
+     	1.0f,-0.0f, 0.0f,
+     	0.0f, 1.0f, 0.0f, // top
+     	0.0f, 1.0f,-0.0f,
+     	-0.0f, 1.0f,-0.0f,
+     	0.0f, 1.0f, 0.0f, // top
+     	-0.0f, 1.0f,-0.0f,
+     	-0.0f, 1.0f, 0.0f,
+     	0.0f, 0.0f, 1.0f, // front
+     	-0.0f, 0.0f, 1.0f,
+     	0.0f, 0.0f, 1.0f
+    };	
+    shaderProgram->bind();
+    
+    glGenBuffers(1, &vertexBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glGenBuffers(1, &normalBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_normal_buffer_data), g_normal_buffer_data, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    //set perspective matrix
+    perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
+    float perspectiveMatrix[16];
+    memset(perspectiveMatrix, 0, sizeof(float) * 16);
+    float aspect = (float)this->width() / (float)this->height();
+    float fFrustumScale = 1.0f; float fzNear = 0.1f; float fzFar = 100.0f;
+    perspectiveMatrix[0] = fFrustumScale;
+    perspectiveMatrix[5] = fFrustumScale;
+    perspectiveMatrix[10] = (fzFar + fzNear) / (fzNear - fzFar);
+    perspectiveMatrix[14] = (2 * fzFar * fzNear) / (fzNear - fzFar);
+    perspectiveMatrix[11] = -1.0f;
+    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix);
     //Move the camera a bit towards us to see the cube
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
-    GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    //gluLookAt(0.0, 0.0, 3.0, 0, 0, 0, 0, 1.0, 0.0);
+    //GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
+    //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    shaderProgram->release();
 }
 
 
@@ -57,16 +160,27 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    shaderProgram->bind();
     glPushMatrix();
     
-    glTranslatef(xtrans, ytrans, zoom);
+    //glTranslatef(xtrans, ytrans, zoom);
     
     //Convert the quat to a matrix, may be a performance leak.
-    QMatrix4x4 tempRot;
-    tempRot.rotate(this->cubeRotationQuat.normalized());
-    glMultMatrixf(tempRot.constData());
+    //QMatrix4x4 tempRot;
+    //tempRot.rotate(this->cubeRotationQuat.normalized());
+    //glMultMatrixf(tempRot.constData());
     
-    drawCube();
+    //drawCube();
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*12);
+    
     glPopMatrix();
     
 }
