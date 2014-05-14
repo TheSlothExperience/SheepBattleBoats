@@ -10,18 +10,17 @@
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 normal;
 
-out vec4 normalC;
 
 uniform mat4 perspectiveMatrix;
-uniform mat4 modelMatrix;
+uniform mat4 modelViewMatrix;
 
 void main()
 {
     //gl_Position = pvm * position;
     //gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
     vec4 offset = vec4(-1.0, -1.5, -3.0, 0.0);
-    gl_Position = (perspectiveMatrix * modelMatrix) * position;
-    normalC = (normal);
+    gl_Position = (perspectiveMatrix * modelViewMatrix) * position;
+    //normalC = (normal);
     // Transforming The Normal To ModelView-Space
     //N = normalize(gl_NormalMatrix * gl_Normal);
     

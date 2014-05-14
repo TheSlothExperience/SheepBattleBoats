@@ -43,7 +43,8 @@ private:
     GLuint perspectiveMatLocation;
     GLuint modelMatLocation;
 
-    std::stack<QMatrix4x4> modelMatrixStack;
+    QMatrix4x4 cameraMatrix;
+    std::stack<QMatrix4x4> modelViewMatrixStack;
     
 protected:
     void initializeGL();

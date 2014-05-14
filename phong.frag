@@ -21,5 +21,5 @@ void main()
 
     /* gl_FragColor =  k_amb + k_diff + k_spec; */
     //outputColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    outputColor = normalC;
+    outputColor = vec4(0.8, 0.4, 0.0, 1.0);
 }
