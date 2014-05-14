@@ -38,8 +38,6 @@ void GLWidget::initializeGL()
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_MULTISAMPLE);
-    //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    //glEnable(GL_COLOR_MATERIAL);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     loadShaders(":/phong.vert", ":/phong.frag");
@@ -148,14 +146,12 @@ void GLWidget::initializeGL()
     modelMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
     normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
 
+    //Create point light source and transform into Eye Coords
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
     QVector4D lightDir = cameraMatrix * lightPosition;
     GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
     lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
     glUniform3fv(lightPositionLocation, 1, lightDirArray);
-    //Move the camera a bit towards us to see the cube
-    //GLfloat lightPosition[4] = {0.5, 0.0, 2.0, 1.0};
-    //glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     shaderProgram->release();
 }
 
