@@ -11,7 +11,7 @@ GLWidget::GLWidget(QWidget *parent)
       tesselationLevel(0),
       zoom(0.0), xtrans(0.0), ytrans(0.0), dragging(false)
 {
-    modelViewMatrixStack.push(QMatrix4x4());
+    cameraMatrix.lookAt(QVector3D(0.0, 0.0, 3.0), QVector3D(), QVector3D(0.0, 1.0, 0.0));
 }
 
 GLWidget::~GLWidget()
@@ -43,107 +43,15 @@ void GLWidget::initializeGL()
     loadShaders(":/phong.vert", ":/phong.frag");
 
     
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    
-    static const GLfloat g_vertex_buffer_data[] = {
-     	-0.5f,-0.5f,-0.5f, // triangle 1 : begin
-     	-0.5f,-0.5f, 0.5f,
-     	-0.5f, 0.5f, 0.5f, // triangle 1 : end
-     	0.5f, 0.5f,-0.5f, // triangle 2 : begin
-     	-0.5f,-0.5f,-0.5f,
-     	-0.5f, 0.5f,-0.5f, // triangle 2 : end
-     	0.5f,-0.5f, 0.5f,
-     	-0.5f,-0.5f,-0.5f,
-     	0.5f,-0.5f,-0.5f,
-     	0.5f, 0.5f,-0.5f,
-     	0.5f,-0.5f,-0.5f,
-     	-0.5f,-0.5f,-0.5f,
-     	-0.5f,-0.5f,-0.5f,
-     	-0.5f, 0.5f, 0.5f,
-     	-0.5f, 0.5f,-0.5f,
-     	0.5f,-0.5f, 0.5f,
-     	-0.5f,-0.5f, 0.5f,
-     	-0.5f,-0.5f,-0.5f,
-     	-0.5f, 0.5f, 0.5f,
-     	-0.5f,-0.5f, 0.5f,
-     	0.5f,-0.5f, 0.5f,
-     	0.5f, 0.5f, 0.5f,
-     	0.5f,-0.5f,-0.5f,
-     	0.5f, 0.5f,-0.5f,
-     	0.5f,-0.5f,-0.5f,
-     	0.5f, 0.5f, 0.5f,
-     	0.5f,-0.5f, 0.5f,
-     	0.5f, 0.5f, 0.5f,
-     	0.5f, 0.5f,-0.5f,
-     	-0.5f, 0.5f,-0.5f,
-     	0.5f, 0.5f, 0.5f,
-     	-0.5f, 0.5f,-0.5f,
-     	-0.5f, 0.5f, 0.5f,
-     	0.5f, 0.5f, 0.5f,
-     	-0.5f, 0.5f, 0.5f,
-     	0.5f,-0.5f, 0.5f
-    };
-    
-    static const GLfloat g_normal_buffer_data[] = {
-     	-1.0f,-0.0f,-0.0f, // left
-     	-1.0f,-0.0f, 0.0f,
-     	-1.0f, 0.0f, 0.0f, 
-     	0.0f, 0.0f,-1.0f, // back
-     	-0.0f,-0.0f,-1.0f,
-     	-0.0f, 0.0f,-1.0f,
-     	0.0f,-1.0f, 0.0f, // bottom
-     	-0.0f,-1.0f,-0.0f,
-     	0.0f,-1.0f,-0.0f,
-     	0.0f, 0.0f,-1.0f, // back
-     	0.0f,-0.0f,-1.0f,
-     	-0.0f,-0.0f,-1.0f,
-     	-1.0f,-0.0f,-0.0f,// left
-     	-1.0f, 0.0f, 0.0f,
-     	-1.0f, 0.0f,-0.0f,
-     	0.0f,-1.0f, 0.0f, // bottom
-     	-0.0f,-1.0f, 0.0f,
-     	-0.0f,-1.0f,-0.0f,
-     	-0.0f, 0.0f, 1.0f, // front 
-     	-0.0f,-0.0f, 1.0f,
-     	0.0f,-0.0f, 1.0f,
-     	1.0f, 0.0f, 0.0f,  //right
-     	1.0f,-0.0f,-0.0f,
-     	1.0f, 0.0f,-0.0f,
-     	1.0f,-0.0f,-0.0f, // right
-     	1.0f, 0.0f, 0.0f,
-     	1.0f,-0.0f, 0.0f,
-     	0.0f, 1.0f, 0.0f, // top
-     	0.0f, 1.0f,-0.0f,
-     	-0.0f, 1.0f,-0.0f,
-     	0.0f, 1.0f, 0.0f, // top
-     	-0.0f, 1.0f,-0.0f,
-     	-0.0f, 1.0f, 0.0f,
-     	0.0f, 0.0f, 1.0f, // front
-     	-0.0f, 0.0f, 1.0f,
-     	0.0f, 0.0f, 1.0f
-    };	
     shaderProgram->bind();
-    
-    glGenBuffers(1, &vertexBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    glGenBuffers(1, &normalBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_normal_buffer_data), g_normal_buffer_data, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //set perspective matrix
     perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
     QMatrix4x4 perspectiveMatrix;
     perspectiveMatrix.perspective(45, (float)this->width() / (float)this->height(), 0.1, 100);
     glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix.constData());
-
-    cameraMatrix.lookAt(QVector3D(0.0, 0.0, 3.0), QVector3D(), QVector3D(0.0, 1.0, 0.0));
-    modelViewMatrixStack.top() *= cameraMatrix;   
-    modelMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
+    
+    modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
     normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
 
     //Create point light source and transform into Eye Coords
@@ -152,6 +60,10 @@ void GLWidget::initializeGL()
     GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
     lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
     glUniform3fv(lightPositionLocation, 1, lightDirArray);
+
+    scene = new Scene(modelViewMatLocation, normalMatLocation);
+
+    
     shaderProgram->release();
 }
 
@@ -161,31 +73,10 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shaderProgram->bind();
-    modelViewMatrixStack.push(modelViewMatrixStack.top());
-    
-    modelViewMatrixStack.top().translate(xtrans, ytrans, zoom);
-    
-    //Convert the quat to a matrix, may be a performance leak.
-    QMatrix4x4 tempRot;
-    tempRot.rotate(this->cubeRotationQuat.normalized());
-    modelViewMatrixStack.top() *= tempRot;
-    glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, modelViewMatrixStack.top().constData());
 
-    glUniformMatrix4fv(normalMatLocation, 1, GL_FALSE, modelViewMatrixStack.top().inverted().transposed().constData());
+    scene->draw(cameraMatrix);
     
-    //drawCube();
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glDrawArrays(GL_TRIANGLES, 0, 3*12);
-    
-    //glPopMatrix();
-    modelViewMatrixStack.pop();
+    shaderProgram->release();
     
 }
 

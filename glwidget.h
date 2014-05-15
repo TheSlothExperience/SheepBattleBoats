@@ -7,6 +7,10 @@
 
 #include <stack>
 
+#include "scene.h"
+#include "cube.h"
+#include "primitive.h"
+
 class GLWidget : public QGLWidget
 {
     Q_OBJECT
@@ -37,18 +41,14 @@ private:
     QOpenGLShader *fshader;
     void loadShaders(QString vshader, QString fshader);
 
-    GLuint vao;
-    GLuint vertexBufferObject;
-    GLuint normalBufferObject;
-
-    int positionLocation;
     GLuint perspectiveMatLocation;
-    GLuint modelMatLocation;
+    GLuint modelViewMatLocation;
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
 
     QMatrix4x4 cameraMatrix;
-    std::stack<QMatrix4x4> modelViewMatrixStack;
+
+    Scene *scene;
     
 protected:
     void initializeGL();
