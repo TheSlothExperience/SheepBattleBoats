@@ -10,25 +10,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Set central OpenGL widget
-    glwidget = new GLWidget(this);
-    setCentralWidget(glwidget);
+    perspectiveGLWidget = new GLWidget(this);
+    topGLWidget = new GLWidget(this);
+    
+    topSplitter = new QSplitter(this);
+    topSplitter->addWidget(perspectiveGLWidget);
+    topSplitter->addWidget(topGLWidget);
+    
+    setCentralWidget(topSplitter);
 
     createActions();
     createMenus();
+    createToolbar();
     
-    //Toolbar
-    toolbar = new QToolBar(this);
-
-    tesselationSlider = new QSlider(Qt::Horizontal);
-    tesselationSlider->setRange(0,5);
-    tesselationSlider->setTickPosition(QSlider::TicksBothSides);
-    tesselationSlider->setTickInterval(1);
-    connect(tesselationSlider, SIGNAL(valueChanged(int)), glwidget, SLOT(setTesselation(int)));
-    toolbar->addWidget(tesselationSlider);
-
-    toolbar->addAction(resetCameraAction);
-    addToolBar(toolbar);
-
     //Status bar
     statusbar = new QStatusBar(this);
     setStatusBar(statusbar);
@@ -40,6 +34,28 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::createToolbar() {
+    //Toolbar
+    toolbar = new QToolBar(this);
+
+    tesselationSlider = new QSlider(Qt::Horizontal);
+    tesselationSlider->setRange(0,5);
+    tesselationSlider->setTickPosition(QSlider::TicksBothSides);
+    tesselationSlider->setTickInterval(1);
+    //connect(tesselationSlider, SIGNAL(valueChanged(int)), glwidget, SLOT(setTesselation(int)));
+    toolbar->addWidget(tesselationSlider);
+
+    toolbar->addAction(resetCameraAction);
+    toolbar->addSeparator();
+
+    viewDropButton = new QToolButton(this);
+    viewDropButton->setMenu(viewMenu);
+    viewDropButton->setPopupMode(QToolButton::InstantPopup);
+    viewDropButton->setIcon(QIcon(":/img/viewports.png"));
+    toolbar->addWidget(viewDropButton);
+    
+    addToolBar(toolbar);
+}
 
 void MainWindow::createActions() {
     exitAction = new QAction("E&xit", this);
@@ -52,7 +68,28 @@ void MainWindow::createActions() {
 
     resetCameraAction = new QAction("&Reset", this);
     resetCameraAction->setIcon(QIcon(":/img/cam_home.png"));
-    connect(resetCameraAction, SIGNAL(triggered()), glwidget, SLOT(resetCamera()));
+    //connect(resetCameraAction, SIGNAL(triggered()), glwidget, SLOT(resetCamera()));
+
+    singleViewAction = new QAction("&Single Viewport", this);
+    singleViewAction->setShortcut(tr("Ctrl+1"));
+    singleViewAction->setIcon(QIcon(":/img/view-single.png"));
+    singleViewAction->setCheckable(true);
+
+    dualViewAction = new QAction("&Dual Viewport", this);
+    dualViewAction->setShortcut(tr("Ctrl+2"));
+    dualViewAction->setIcon(QIcon(":/img/view-dual.png"));
+    dualViewAction->setCheckable(true);
+
+    quadViewAction = new QAction("&Quad Viewports", this);
+    quadViewAction->setShortcut(tr("Ctrl+4"));
+    quadViewAction->setIcon(QIcon(":/img/viewports.png"));
+    quadViewAction->setCheckable(true);
+
+    viewportGroup = new QActionGroup(this);
+    viewportGroup->addAction(singleViewAction);
+    viewportGroup->addAction(dualViewAction);
+    viewportGroup->addAction(quadViewAction);
+    singleViewAction->setChecked(true);
 }
 
 void MainWindow::createMenus() {
@@ -63,10 +100,18 @@ void MainWindow::createMenus() {
     fileMenu->addAction(exitAction);
     menuBar->addMenu(fileMenu);
 
+    //Viewports menu
+    viewMenu = new QMenu("&View");
+    viewMenu->addAction(singleViewAction);
+    viewMenu->addAction(dualViewAction);
+    viewMenu->addAction(quadViewAction);
+    menuBar->addMenu(viewMenu);
+    
     //Help menu
     helpMenu = new QMenu("&Help");
     helpMenu->addAction(aboutAction);
     menuBar->addMenu(helpMenu);
+
 }
 
 

@@ -25,15 +25,24 @@ private:
 
     QSlider *tesselationSlider;
 
+    QMenu *viewMenu;
+    QToolButton *viewDropButton;
+    QAction *singleViewAction;
+    QAction *dualViewAction;
+    QAction *quadViewAction;
+    QActionGroup *viewportGroup;
     QAction *resetCameraAction;
 
     QMenu *helpMenu;
     QAction *aboutAction;
 
-    GLWidget *glwidget;
+    GLWidget *perspectiveGLWidget;
+    GLWidget *topGLWidget;
 
+    QSplitter *topSplitter;
     void createActions();
     void createMenus();
+    void createToolbar();
 public slots:
     void showAboutBox();
 };
