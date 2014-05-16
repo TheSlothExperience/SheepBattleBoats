@@ -32,8 +32,6 @@ QSize GLWidget::sizeHint() const
 
 void GLWidget::initializeGL()
 {
-    
-    std::cout << "INITING CONTEXT PERSP" << std::endl;
     //Set up OpenGL incantations
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -50,9 +48,8 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    std::cout << "bound program: " << shaderProgram->bind() << std::endl;
+    shaderProgram->bind();
 
-    //renderText(50, 50, "BOB");
     if(scene != NULL) {
 	scene->draw(cameraMatrix);	
     } else {

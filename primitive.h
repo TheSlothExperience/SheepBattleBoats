@@ -6,7 +6,6 @@
 class Primitive
 {
 protected:
-    GLuint vao;
     GLuint vertexBufferObject;
     GLuint normalBufferObject;
 

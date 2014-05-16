@@ -16,18 +16,15 @@ MainWindow::MainWindow(QWidget *parent)
     glWidgetContext->makeCurrent();
     glWidgetContext->initializeGL();
 
-    //std::cout << "MV " << glWidgetContext->getModelViewMatLocation() << " " << "N " << glWidgetContext->getNormalMatLocation() << " L " << glWidgetContext->getLightPositionLocation() << std::endl;
+    
+    Scene *scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
+    scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
     perspectiveGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-    perspectiveGLWidget->initializeGL();
-    perspectiveGLWidget->makeCurrent();
     
 
-    Scene *scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
-    scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     perspectiveGLWidget->setScene(scene);
-    //std::cout << "SET GL WIDGETS" << std::endl;
     // topGLWidget = new GLWidget(this, glWidgetContext);
     // topGLWidget->setScene(scene);
     // topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());

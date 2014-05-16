@@ -85,9 +85,6 @@ Cube::Cube() {
      	0.0f, 0.0f, 1.0f
     };
     
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    
     glGenBuffers(1, &vertexBufferObject);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -99,6 +96,9 @@ Cube::Cube() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     
+}
+
+void Cube::draw() {
     //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glEnableVertexAttribArray(0);
@@ -108,12 +108,5 @@ Cube::Cube() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     
-    glBindVertexArray(0);
-}
-
-void Cube::draw() {
-    std::cout << "DRAWING CUBE" << std::endl;
-    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3*12);
-    glBindVertexArray(0);
 }

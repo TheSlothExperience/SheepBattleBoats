@@ -21,9 +21,7 @@ GLWidgetContext::~GLWidgetContext()
 
 
 void GLWidgetContext::initializeGL()
-{
-    std::cout << "INITING CONTEXT" << std::endl;
-    
+{   
     loadShaders(":/phong.vert", ":/phong.frag");
 
     
@@ -39,8 +37,6 @@ void GLWidgetContext::initializeGL()
     modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
     lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
 
-    
-    std::cout << "~~MV " << modelViewMatLocation << " " << "N " << normalMatLocation << " L " << lightPositionLocation << " P " << perspectiveMatLocation << std::endl;
     
     shaderProgram->release();
 }
