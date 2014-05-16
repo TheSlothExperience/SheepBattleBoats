@@ -23,6 +23,7 @@ public:
     QSize sizeHint() const;
     void setScene(Scene *scene);
     void setShaderProgram(QOpenGLShaderProgram *sp);
+    void initializeGL();
 
 private:
     int tesselationLevel;
@@ -53,7 +54,6 @@ private:
     Scene *scene;
     
 protected:
-    void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
     void mousePressEvent(QMouseEvent *event);

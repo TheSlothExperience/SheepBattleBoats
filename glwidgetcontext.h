@@ -16,7 +16,7 @@ class GLWidgetContext : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidgetContext(QWidget *parent = 0, const QGLWidget *shareWidget = 0);
+    GLWidgetContext(QWidget *parent = 0);
     ~GLWidgetContext();
     GLuint getPerspectiveMatLocation() {return this->perspectiveMatLocation;};
     GLuint getModelViewMatLocation() {return this->modelViewMatLocation;};

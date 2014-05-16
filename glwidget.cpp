@@ -13,6 +13,7 @@ GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
       zoom(0.0), xtrans(0.0), ytrans(0.0), dragging(false)
 {
     cameraMatrix.lookAt(QVector3D(0.0, 0.0, 3.0), QVector3D(), QVector3D(0.0, 1.0, 0.0));
+    scene = NULL;
 }
 
 GLWidget::~GLWidget()
@@ -31,6 +32,17 @@ QSize GLWidget::sizeHint() const
 
 void GLWidget::initializeGL()
 {
+    
+    std::cout << "INITING CONTEXT PERSP" << std::endl;
+    //Set up OpenGL incantations
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    //Set up a spot light
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_MULTISAMPLE);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 
@@ -38,9 +50,14 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    shaderProgram->bind();
-    
-    scene->draw(cameraMatrix);
+    std::cout << "bound program: " << shaderProgram->bind() << std::endl;
+
+    //renderText(50, 50, "BOB");
+    if(scene != NULL) {
+	scene->draw(cameraMatrix);	
+    } else {
+	std::cout << "no scene yet" << std::endl;
+    }
     
     shaderProgram->release();
     

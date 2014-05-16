@@ -10,8 +10,8 @@
 #include <math.h>
 #include <iostream>
 
-GLWidgetContext::GLWidgetContext(QWidget *parent, const QGLWidget *shareWidget)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget)
+GLWidgetContext::GLWidgetContext(QWidget *parent)
+    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
 }
 
@@ -22,16 +22,8 @@ GLWidgetContext::~GLWidgetContext()
 
 void GLWidgetContext::initializeGL()
 {
-    //Set up OpenGL incantations
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
-    //Set up a spot light
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_MULTISAMPLE);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
+    std::cout << "INITING CONTEXT" << std::endl;
+    
     loadShaders(":/phong.vert", ":/phong.frag");
 
     
@@ -43,17 +35,19 @@ void GLWidgetContext::initializeGL()
     perspectiveMatrix.perspective(45, (float)this->width() / (float)this->height(), 0.1, 100);
     glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix.constData());
     
-    modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
     normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
+    modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
     lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
 
+    
+    std::cout << "~~MV " << modelViewMatLocation << " " << "N " << normalMatLocation << " L " << lightPositionLocation << " P " << perspectiveMatLocation << std::endl;
     
     shaderProgram->release();
 }
 
 
 void GLWidgetContext::paintGL()
-{   
+{
 }
 
 void GLWidgetContext::resizeGL(int width, int height)
