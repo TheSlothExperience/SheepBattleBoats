@@ -27,22 +27,16 @@ public:
 
 private:
     int tesselationLevel;
-    void drawCube();
 
     QQuaternion cubeRotationQuat;
     float zoom;
     float xtrans;
     float ytrans;
     bool dragging;
-
-    QVector4D lightPosition;
     
     QPoint lastPoint;
 
     QOpenGLShaderProgram *shaderProgram;
-    QOpenGLShader *vshader;
-    QOpenGLShader *fshader;
-    void loadShaders(QString vshader, QString fshader);
 
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;
