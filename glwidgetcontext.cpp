@@ -27,12 +27,7 @@ void GLWidgetContext::initializeGL()
     
     shaderProgram->bind();
 
-    //set perspective matrix
     perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
-    QMatrix4x4 perspectiveMatrix;
-    perspectiveMatrix.perspective(45, (float)this->width() / (float)this->height(), 0.1, 100);
-    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix.constData());
-    
     normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
     modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
     lightPositionLocation = shaderProgram->uniformLocation("lightPosition");

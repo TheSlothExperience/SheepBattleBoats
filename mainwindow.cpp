@@ -2,6 +2,10 @@
 #include "glwidget.h"
 #include <qapplication.h>
 #include "scene.h"
+#include "camera.h"
+#include "perspectivecamera.h"
+#include "orthocamera.h"
+
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -21,21 +25,44 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
+    perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
     perspectiveGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-    
-
+    perspectiveGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     perspectiveGLWidget->setScene(scene);
-    // topGLWidget = new GLWidget(this, glWidgetContext);
-    // topGLWidget->setScene(scene);
-    // topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-
-    // topSplitter = new QSplitter(this);
-    // topSplitter->addWidget(perspectiveGLWidget);
-    // topSplitter->addWidget(topGLWidget);
     
-    // setCentralWidget(topSplitter);
-    setCentralWidget(perspectiveGLWidget);
-    //setCentralWidget(glWidgetContext);
+    frontGLWidget = new GLWidget(this, glWidgetContext);
+    frontGLWidget->setOrthoCamera(0, 0, 3);
+    frontGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    frontGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
+    frontGLWidget->setScene(scene);
+    
+    topGLWidget = new GLWidget(this, glWidgetContext);
+    topGLWidget->setOrthoCamera(0, 3, 0.1);
+    topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    topGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
+    topGLWidget->setScene(scene);
+    
+    rightGLWidget = new GLWidget(this, glWidgetContext);
+    rightGLWidget->setOrthoCamera(3, 0, 0);
+    rightGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    rightGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
+    rightGLWidget->setScene(scene);
+
+
+    topSplitter = new QSplitter(this);
+    topSplitter->addWidget(perspectiveGLWidget);
+    topSplitter->addWidget(frontGLWidget);
+    
+    bottomSplitter = new QSplitter(this);
+    bottomSplitter->addWidget(topGLWidget);
+    bottomSplitter->addWidget(rightGLWidget);
+    
+    sideSplitter = new QSplitter(this);
+    sideSplitter->setOrientation(Qt::Vertical);
+    sideSplitter->addWidget(topSplitter);
+    sideSplitter->addWidget(bottomSplitter);
+    
+    setCentralWidget(sideSplitter);
 
     createActions();
     createMenus();

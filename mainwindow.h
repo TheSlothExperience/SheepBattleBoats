@@ -39,9 +39,14 @@ private:
 
     GLWidgetContext *glWidgetContext;
     GLWidget *perspectiveGLWidget;
+    GLWidget *frontGLWidget;
     GLWidget *topGLWidget;
+    GLWidget *rightGLWidget;
 
     QSplitter *topSplitter;
+    QSplitter *bottomSplitter;
+    QSplitter *sideSplitter;
+    
     void createActions();
     void createMenus();
     void createToolbar();

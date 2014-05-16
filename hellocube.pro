@@ -21,6 +21,8 @@ SOURCES += main.cpp\
         glwidgetcontext.cpp\
         scene.cpp\
         scenegraph.cpp\
+        perspectivecamera.cpp\
+        orthocamera.cpp\
         cube.cpp
 
 HEADERS  += mainwindow.h\
@@ -28,6 +30,9 @@ HEADERS  += mainwindow.h\
         glwidgetcontext.h\
         scene.h\
         scenegraph.h\
+        camera.h\
+        perspectivecamera.h\
+        orthocamera.h\
         cube.h
 
 RESOURCES += \

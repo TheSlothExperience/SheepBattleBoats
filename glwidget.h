@@ -10,6 +10,7 @@
 #include "scene.h"
 #include "cube.h"
 #include "primitive.h"
+#include "camera.h"
 
 class GLWidget : public QGLWidget
 {
@@ -23,6 +24,10 @@ public:
     QSize sizeHint() const;
     void setScene(Scene *scene);
     void setShaderProgram(QOpenGLShaderProgram *sp);
+    void setCamera(Camera camera);
+    void setPerspectiveCamera(double x, double y, double z);
+    void setOrthoCamera(double x, double y, double z);
+    void setProjectionLocation(GLuint pL);
     void initializeGL();
 
 private:
@@ -43,7 +48,7 @@ private:
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
 
-    QMatrix4x4 cameraMatrix;
+    Camera camera;
 
     Scene *scene;
     
