@@ -18,12 +18,14 @@ LIBS += -lglut -lGLU
 SOURCES += main.cpp\
         mainwindow.cpp\
         glwidget.cpp\
+        glwidgetcontext.cpp\
         scene.cpp\
         scenegraph.cpp\
         cube.cpp
 
 HEADERS  += mainwindow.h\
         glwidget.h\
+        glwidgetcontext.h\
         scene.h\
         scenegraph.h\
         cube.h

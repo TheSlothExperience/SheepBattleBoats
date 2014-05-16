@@ -20,5 +20,6 @@ void main()
     vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);
     k_spec = clamp(k_spec, 0.0, 1.0);
 
-    outputColor = k_amb + k_diff + k_spec;
+    //outputColor = k_amb + k_diff + k_spec;
+    outputColor = color;
 }

@@ -5,9 +5,10 @@
 #include <GL/gl.h>
 #include "GL/glu.h"
 #include <math.h>
+#include <iostream>
 
-GLWidget::GLWidget(QWidget *parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent),
+GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
+    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget),
       tesselationLevel(0),
       zoom(0.0), xtrans(0.0), ytrans(0.0), dragging(false)
 {
@@ -30,41 +31,6 @@ QSize GLWidget::sizeHint() const
 
 void GLWidget::initializeGL()
 {
-    //Set up OpenGL incantations
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
-    //Set up a spot light
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_MULTISAMPLE);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-    loadShaders(":/phong.vert", ":/phong.frag");
-
-    
-    shaderProgram->bind();
-
-    //set perspective matrix
-    perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
-    QMatrix4x4 perspectiveMatrix;
-    perspectiveMatrix.perspective(45, (float)this->width() / (float)this->height(), 0.1, 100);
-    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, perspectiveMatrix.constData());
-    
-    modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
-    normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
-
-    //Create point light source and transform into Eye Coords
-    lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
-    QVector4D lightDir = cameraMatrix * lightPosition;
-    GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
-    lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
-    glUniform3fv(lightPositionLocation, 1, lightDirArray);
-
-    scene = new Scene(modelViewMatLocation, normalMatLocation);
-
-    
-    shaderProgram->release();
 }
 
 
@@ -73,7 +39,7 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shaderProgram->bind();
-
+    
     scene->draw(cameraMatrix);
     
     shaderProgram->release();
@@ -82,12 +48,15 @@ void GLWidget::paintGL()
 
 void GLWidget::resizeGL(int width, int height)
 {
-    //Set up the viewport and perspective projection with a FOV of 45
     glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1, 100);
-    glMatrixMode(GL_MODELVIEW);
+}
+
+void GLWidget::setScene(Scene *scene) {
+    this->scene = scene;
+}
+
+void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
+    this->shaderProgram = sp;
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

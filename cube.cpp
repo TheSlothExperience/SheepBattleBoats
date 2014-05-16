@@ -112,6 +112,7 @@ Cube::Cube() {
 }
 
 void Cube::draw() {
+    std::cout << "DRAWING CUBE" << std::endl;
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3*12);
     glBindVertexArray(0);

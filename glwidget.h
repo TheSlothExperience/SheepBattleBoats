@@ -16,11 +16,13 @@ class GLWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent = 0);
+    GLWidget(QWidget *parent = 0, const QGLWidget * shareWidget = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
+    void setScene(Scene *scene);
+    void setShaderProgram(QOpenGLShaderProgram *sp);
 
 private:
     int tesselationLevel;

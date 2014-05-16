@@ -5,6 +5,7 @@
 #include <QtGui>
 #include <QtWidgets>
 #include "glwidget.h"
+#include "glwidgetcontext.h"
 
 class MainWindow : public QMainWindow
 {
@@ -36,6 +37,7 @@ private:
     QMenu *helpMenu;
     QAction *aboutAction;
 
+    GLWidgetContext *glWidgetContext;
     GLWidget *perspectiveGLWidget;
     GLWidget *topGLWidget;
 

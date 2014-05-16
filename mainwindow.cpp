@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "glwidget.h"
 #include <qapplication.h>
+#include "scene.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,14 +12,28 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Set central OpenGL widget
-    perspectiveGLWidget = new GLWidget(this);
-    topGLWidget = new GLWidget(this);
+    glWidgetContext = new GLWidgetContext();
+    glWidgetContext->makeCurrent();
+    glWidgetContext->initializeGL();
+
+    std::cout << "MV " << glWidgetContext->getModelViewMatLocation() << " " << "N " << glWidgetContext->getNormalMatLocation() << " L " << glWidgetContext->getLightPositionLocation() << std::endl;
+    Scene *scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
+    scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     
-    topSplitter = new QSplitter(this);
-    topSplitter->addWidget(perspectiveGLWidget);
-    topSplitter->addWidget(topGLWidget);
+    perspectiveGLWidget = new GLWidget(this, glWidgetContext);
+    perspectiveGLWidget->setScene(scene);
+    perspectiveGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+
+    // topGLWidget = new GLWidget(this, glWidgetContext);
+    // topGLWidget->setScene(scene);
+    // topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+
+    // topSplitter = new QSplitter(this);
+    // topSplitter->addWidget(perspectiveGLWidget);
+    // topSplitter->addWidget(topGLWidget);
     
-    setCentralWidget(topSplitter);
+    // setCentralWidget(topSplitter);
+    setCentralWidget(perspectiveGLWidget);
 
     createActions();
     createMenus();
