@@ -24,7 +24,7 @@ public:
     QSize sizeHint() const;
     void setScene(Scene *scene);
     void setShaderProgram(QOpenGLShaderProgram *sp);
-    void setCamera(Camera camera);
+    void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
     void setOrthoCamera(double x, double y, double z);
     void setProjectionLocation(GLuint pL);
@@ -48,7 +48,7 @@ private:
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
 
-    Camera camera;
+    Camera *camera;
 
     Scene *scene;
     

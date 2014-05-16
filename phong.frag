@@ -12,7 +12,7 @@ void main()
     vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
     vec3 R = normalize(-reflect(L,N));
     
-    vec4 k_amb = vec4(0.3, 0.3, 0.3, 1.0);
+    vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
     
     vec4 k_diff = color * max(0.0, dot(L, N));
     k_diff = clamp(k_diff, 0.0, 1.0);

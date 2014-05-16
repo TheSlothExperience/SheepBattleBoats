@@ -52,10 +52,10 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shaderProgram->bind();
     
-    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera.getProjectionMatrix().constData());
+    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
     
     if(scene != NULL) {
-	scene->draw(camera.getCameraMatrix());	
+	scene->draw(camera->getCameraMatrix());	
     } else {
 	std::cout << "no scene yet" << std::endl;
     }
@@ -66,22 +66,23 @@ void GLWidget::paintGL()
 
 void GLWidget::resizeGL(int width, int height)
 {
+    this->camera->resize(width, height);
     glViewport(0, 0, width, height);
 }
 
 void GLWidget::setProjectionLocation(GLuint pL) {
     this->perspectiveMatLocation = pL;
 }
-void GLWidget::setCamera(Camera camera) {
-    this->camera = Camera(camera);
+void GLWidget::setCamera(Camera *camera) {
+    this->camera = camera;
 }
 
 void GLWidget::setPerspectiveCamera(double x, double y, double z) {
-    this->camera = PerspectiveCamera(x, y, z, this->width(), this->height());
+    this->camera = new PerspectiveCamera(x, y, z, this->width(), this->height());
 }
 
 void GLWidget::setOrthoCamera(double x, double y, double z) {
-    this->camera = OrthoCamera(x, y, z, this->width(), this->height());
+    this->camera = new OrthoCamera(x, y, z, this->width(), this->height());
 }
 
 void GLWidget::setScene(Scene *scene) {

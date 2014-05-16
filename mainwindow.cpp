@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle("Hello Cube!!");
-    setMinimumSize(500,500);
+    setMinimumSize(700,700);
 
 
     //Set central OpenGL widget
@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
     frontGLWidget->setScene(scene);
     
     topGLWidget = new GLWidget(this, glWidgetContext);
-    topGLWidget->setOrthoCamera(0, 3, 0.1);
+    topGLWidget->setOrthoCamera(0, 3, 0);
     topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
     topGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     topGLWidget->setScene(scene);

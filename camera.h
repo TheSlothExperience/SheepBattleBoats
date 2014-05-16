@@ -14,6 +14,8 @@ protected:
 public:
     QMatrix4x4 getCameraMatrix() {return this->cameraMatrix;};
     QMatrix4x4 getProjectionMatrix() {return this->projectionMatrix;};
+
+    virtual void resize(double width, double height) = 0;
 };
 
 #endif
