@@ -64,6 +64,14 @@ MainWindow::MainWindow(QWidget *parent)
     
     setCentralWidget(sideSplitter);
 
+    sceneOutliner = new QTreeView();
+    sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
+    sceneOutliner->setModel(scene);
+    outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
+    outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    outlinerDock->setWidget(sceneOutliner);
+    addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
+
     createActions();
     createMenus();
     createToolbar();

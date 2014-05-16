@@ -43,6 +43,9 @@ private:
     GLWidget *topGLWidget;
     GLWidget *rightGLWidget;
 
+    QTreeView *sceneOutliner;
+    QDockWidget *outlinerDock;
+    
     QSplitter *topSplitter;
     QSplitter *bottomSplitter;
     QSplitter *sideSplitter;
