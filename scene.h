@@ -9,7 +9,7 @@
 class Scene
 {
 private:
-    SceneGraph sceneGraph;
+    SceneGraph *sceneGraph;
 
     
     GLuint modelViewMatLocation;

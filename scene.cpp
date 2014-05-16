@@ -18,7 +18,8 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc) {
     this->modelViewMatrixStack.push(QMatrix4x4());
 
     Cube *cube = new Cube();
-    this->sceneGraph.add(cube);
+    this->sceneGraph = new SceneGraph();
+    this->sceneGraph->add(cube);
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 }
 
@@ -34,6 +35,6 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
     glUniform3fv(lightPositionLocation, 1, lightDirArray);
     
-    this->sceneGraph.draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation);
+    this->sceneGraph->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation);
     modelViewMatrixStack.pop();
 }
