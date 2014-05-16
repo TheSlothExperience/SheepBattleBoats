@@ -14,14 +14,39 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Hello Cube!!");
     setMinimumSize(700,700);
 
+    createActions();
+    createMenus();
+    createToolbar();
+    
+    setupGL();
 
+    sceneOutliner = new QTreeView();
+    sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
+    sceneOutliner->setModel(scene);
+    outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
+    outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    outlinerDock->setWidget(sceneOutliner);
+    addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
+    
+    //Status bar
+    statusbar = new QStatusBar(this);
+    setStatusBar(statusbar);
+    setMenuBar(menuBar);
+}
+
+MainWindow::~MainWindow()
+{
+
+}
+
+void MainWindow::setupGL() {
     //Set central OpenGL widget
     glWidgetContext = new GLWidgetContext();
     glWidgetContext->makeCurrent();
     glWidgetContext->initializeGL();
 
     
-    Scene *scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
+    scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
@@ -63,28 +88,6 @@ MainWindow::MainWindow(QWidget *parent)
     sideSplitter->addWidget(bottomSplitter);
     
     setCentralWidget(sideSplitter);
-
-    sceneOutliner = new QTreeView();
-    sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
-    sceneOutliner->setModel(scene);
-    outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
-    outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    outlinerDock->setWidget(sceneOutliner);
-    addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
-
-    createActions();
-    createMenus();
-    createToolbar();
-    
-    //Status bar
-    statusbar = new QStatusBar(this);
-    setStatusBar(statusbar);
-    setMenuBar(menuBar);
-}
-
-MainWindow::~MainWindow()
-{
-
 }
 
 void MainWindow::createToolbar() {

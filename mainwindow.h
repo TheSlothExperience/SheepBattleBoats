@@ -37,6 +37,7 @@ private:
     QMenu *helpMenu;
     QAction *aboutAction;
 
+    Scene *scene;
     GLWidgetContext *glWidgetContext;
     GLWidget *perspectiveGLWidget;
     GLWidget *frontGLWidget;
@@ -53,6 +54,7 @@ private:
     void createActions();
     void createMenus();
     void createToolbar();
+    void setupGL();
 public slots:
     void showAboutBox();
 };
