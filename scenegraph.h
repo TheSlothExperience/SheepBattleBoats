@@ -35,6 +35,8 @@ public:
     int columnCount();
     QVariant data(int column);
     int row();
+
+    void setParent(SceneGraph *s);
     
     bool isLeaf();
     void add(Primitive *p);

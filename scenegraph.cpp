@@ -71,8 +71,13 @@ void SceneGraph::add(SceneGraph *s) {
     if(leaf) {
 	D(std::cout << "Trying to add a subtree into a leaf!!" << std::cout;)
     } else {
+	s->setParent(this);
 	this->children.push_back(s);    
     }
+}
+
+void SceneGraph::setParent(SceneGraph *s) {
+    this->parentNode = s;
 }
 
 void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc) {

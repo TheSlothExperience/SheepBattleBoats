@@ -22,11 +22,14 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, QObject *parent)
     this->modelViewMatrixStack.push(QMatrix4x4());
 
     Cube *cube = new Cube();
+    this->rootDummy = new SceneGraph();
     this->rootNode = new SceneGraph();
-    this->rootNode->add(cube);
+    this->rootNode->add(cube);    
+    this->rootDummy->add(rootNode);
+    
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 }
-
+ 
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
     if(!hasIndex(row, column, parent)) {
@@ -36,7 +39,7 @@ QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
     SceneGraph *parentNode;
 
     if(!parent.isValid()) {
-	parentNode = rootNode;
+	parentNode = rootDummy;
     } else {
 	parentNode = static_cast<SceneGraph*>(parent.internalPointer());
     }
@@ -57,7 +60,7 @@ QModelIndex Scene::parent(const QModelIndex &index) const {
     SceneGraph *childNode = static_cast<SceneGraph*>(index.internalPointer());
     SceneGraph *parentNode = childNode->parent();
 
-    if(parentNode == rootNode) {
+    if(parentNode == rootDummy) {
 	return QModelIndex();
     } else {
 	return createIndex(parentNode->row(), 0, parentNode);
@@ -71,7 +74,7 @@ int Scene::rowCount(const QModelIndex &parent) const {
     }
 
     if(!parent.isValid()) {
-	parentNode = rootNode;
+	parentNode = rootDummy;
     } else {
 	parentNode = static_cast<SceneGraph*>(parent.internalPointer());
     }
@@ -82,7 +85,7 @@ int  Scene::columnCount(const QModelIndex &parent) const {
     if(parent.isValid()) {
 	return static_cast<SceneGraph*>(parent.internalPointer())->columnCount();
     } else {
-	return rootNode->columnCount();
+	return rootDummy->columnCount();
     }
 }
 

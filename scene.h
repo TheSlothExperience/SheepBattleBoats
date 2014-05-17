@@ -15,6 +15,7 @@ class Scene : public QAbstractItemModel
     
 private:
     SceneGraph *rootNode;
+    SceneGraph *rootDummy;
 
     
     GLuint modelViewMatLocation;
