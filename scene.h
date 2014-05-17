@@ -25,6 +25,9 @@ private:
     QVector4D lightPosition;
     std::stack<QMatrix4x4> modelViewMatrixStack;
 
+    int currentId = 0;
+    int nextId() {return currentId++;};
+    
 public:
     Scene(QObject *parent = 0);
     Scene(GLuint mvLoc, GLuint normalLoc, QObject *parent = 0);
@@ -38,6 +41,8 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+    SceneGraph* addCube(SceneGraph *node, int tesselationLevel); 
     
     SceneGraph *root() {return rootNode;};
     void setLightLocation(GLuint lightPositionLocation);

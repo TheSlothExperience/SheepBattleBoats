@@ -131,6 +131,14 @@ void MainWindow::createToolbar() {
     viewDropButton->setPopupMode(QToolButton::InstantPopup);
     viewDropButton->setIcon(QIcon(":/img/viewports.png"));
     toolbar->addWidget(viewDropButton);
+
+    toolbar->addSeparator();
+
+    toolbar->addAction(addCubeAction);
+    toolbar->addAction(addConeAction);
+    toolbar->addAction(addCylinderAction);
+    toolbar->addAction(addSphereAction);
+    toolbar->addAction(addTorusAction);
     
     addToolBar(toolbar);
 }
@@ -171,6 +179,23 @@ void MainWindow::createActions() {
     viewportGroup->addAction(dualViewAction);
     viewportGroup->addAction(quadViewAction);
     singleViewAction->setChecked(true);
+
+
+    addCubeAction = new QAction(this);
+    addCubeAction->setIcon(QIcon(":/img/box.png"));
+    connect(addCubeAction, SIGNAL(triggered()), this, SLOT(addCube()));
+
+    addCylinderAction = new QAction(this);
+    addCylinderAction->setIcon(QIcon(":/img/cylinder.png"));
+    
+    addSphereAction = new QAction(this);
+    addSphereAction->setIcon(QIcon(":/img/sphere.png"));
+    
+    addTorusAction = new QAction(this);
+    addTorusAction->setIcon(QIcon(":/img/torus.png"));
+    
+    addConeAction = new QAction(this);
+    addConeAction->setIcon(QIcon(":/img/cone.png"));
 }
 
 void MainWindow::createMenus() {
@@ -194,6 +219,18 @@ void MainWindow::createMenus() {
     menuBar->addMenu(helpMenu);
 
 }
+
+
+void MainWindow::addCube() {
+    int tesselationLevel = 0;
+    scene->addCube(currentNode, tesselationLevel);
+    emit updateGL();
+}
+
+void MainWindow::addCone(int tesselationLevel){}
+void MainWindow::addCylinder(int tesselationLevel){}
+void MainWindow::addSphere(int tesselationLevel){}
+void MainWindow::addTorus(int tesselationLevel){}
 
 
 void MainWindow::showAboutBox() {

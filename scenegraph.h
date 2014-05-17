@@ -9,6 +9,7 @@
 #include <QVector3D>
 
 #include "primitive.h"
+#include "cube.h"
 
 class SceneGraph
 {
@@ -27,6 +28,7 @@ private:
 public:
     SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
     SceneGraph(Primitive *p, SceneGraph *parent = 0);
+    SceneGraph(Primitive *p, std::string name);
     
     SceneGraph* parent();
 
@@ -42,9 +44,10 @@ public:
     void rotate(QQuaternion q);
 
     std::string getName() {return name;};
-    bool isLeaf();
-    void add(Primitive *p);
-    void add(SceneGraph *s);
+    void setName(std::string name);
+    bool isLeaf() {return leaf;};
+    SceneGraph* add(Primitive *p);
+    SceneGraph* add(SceneGraph *s);
     void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc);
 };
 

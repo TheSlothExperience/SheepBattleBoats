@@ -6,6 +6,7 @@
 #include <functional>
 #include <QMatrix4x4>
 #include <GL/gl.h>
+#include <GL/glext.h>
 
 #ifdef DEBUG 
 #define D(x) x
@@ -25,6 +26,12 @@ SceneGraph::SceneGraph(Primitive *p, SceneGraph *parent) {
     this->leaf = true;
     name = "SceneGraph w. Primitive";
     this->parentNode = parent;
+}
+
+SceneGraph::SceneGraph(Primitive *p, std::string name) {
+    this->primitive = p;
+    this->leaf = true;
+    this->name = name;
 }
 
 
@@ -59,20 +66,28 @@ int SceneGraph::row() {
     }
 }
 
-void SceneGraph::add(Primitive *p) {
+SceneGraph* SceneGraph::add(Primitive *p) {
     if(leaf) {
 	D(std::cout << "Trying to add a subtree into a leaf!!" << std::cout;)
+	    return 0;
     } else {
-	this->children.push_back(new SceneGraph(p, this));    
+	SceneGraph *s = new SceneGraph(p, this);
+	this->children.push_back(s);
+	return s;
     }
 }
 
-void SceneGraph::add(SceneGraph *s) {
+SceneGraph* SceneGraph::add(SceneGraph *s) {
     if(leaf) {
-	D(std::cout << "Trying to add a subtree into a leaf!!" << std::cout;)
+	if(parentNode) {
+	    return parentNode->add(s);
+	} else {
+	    return 0;
+	}
     } else {
 	s->setParent(this);
-	this->children.push_back(s);    
+	this->children.push_back(s);
+	return s;
     }
 }
 
@@ -102,6 +117,9 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
     MVStack.pop();
 }
 
+void SceneGraph::setName(std::string name) {
+    this->name = name;
+}
 
 void SceneGraph::translate(double x, double y, double z) {
     translation += QVector3D(x, y, z);

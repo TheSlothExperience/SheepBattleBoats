@@ -34,6 +34,12 @@ private:
     QActionGroup *viewportGroup;
     QAction *resetCameraAction;
 
+    QAction *addCubeAction;
+    QAction *addTorusAction;
+    QAction *addCylinderAction;
+    QAction *addConeAction;
+    QAction *addSphereAction;
+
     QMenu *helpMenu;
     QAction *aboutAction;
 
@@ -57,8 +63,15 @@ private:
     void createToolbar();
     void setupGL();
 public slots:
+    void addCube();
+    void addCone(int tesselationLevel);
+    void addCylinder(int tesselationLevel);
+    void addSphere(int tesselationLevel);
+    void addTorus(int tesselationLevel);
+    
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);
+    
     void showAboutBox();
     void setSingleView();
     void setDualView();

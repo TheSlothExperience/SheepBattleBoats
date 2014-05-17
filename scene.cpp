@@ -123,6 +123,16 @@ void Scene::setLightLocation(GLuint lightPositionLocation) {
     this->lightPositionLocation = lightPositionLocation;
 }
 
+SceneGraph* Scene::addCube(SceneGraph *node, int tesselationLevel) {
+    Primitive *cube = new Cube();
+    std::string name("Cube ");
+    name += std::to_string(nextId());
+    SceneGraph *s = new SceneGraph(cube, name);
+
+    node->add(s);
+}
+
+
 void Scene::draw(QMatrix4x4 cameraMatrix) {
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= cameraMatrix;
