@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     sceneOutliner = new QTreeView();
     sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
     sceneOutliner->setModel(scene);
+    connect(sceneOutliner->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(changeCurrentNode(const QModelIndex&, const QModelIndex&)));
+    
     outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
     outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     outlinerDock->setWidget(sceneOutliner);
@@ -48,6 +50,7 @@ void MainWindow::setupGL() {
     
     scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
+    currentNode = scene->root();
     
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
     perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
@@ -55,11 +58,19 @@ void MainWindow::setupGL() {
     perspectiveGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     perspectiveGLWidget->setScene(scene);
     
+    connect(perspectiveGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
+    connect(perspectiveGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
+    connect(this, SIGNAL(updateGL()), perspectiveGLWidget, SLOT(forceGLupdate()));
+    
     frontGLWidget = new GLWidget(this, glWidgetContext);
     frontGLWidget->setOrthoCamera(0, 0, 3);
     frontGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
     frontGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     frontGLWidget->setScene(scene);
+    
+    connect(frontGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
+    connect(frontGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
+    connect(this, SIGNAL(updateGL()), frontGLWidget, SLOT(forceGLupdate()));
     
     topGLWidget = new GLWidget(this, glWidgetContext);
     topGLWidget->setOrthoCamera(0, 3, 0);
@@ -67,11 +78,19 @@ void MainWindow::setupGL() {
     topGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     topGLWidget->setScene(scene);
     
+    connect(topGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
+    connect(topGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
+    connect(this, SIGNAL(updateGL()), topGLWidget, SLOT(forceGLupdate()));
+    
     rightGLWidget = new GLWidget(this, glWidgetContext);
     rightGLWidget->setOrthoCamera(3, 0, 0);
     rightGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
     rightGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     rightGLWidget->setScene(scene);
+    
+    connect(rightGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
+    connect(rightGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
+    connect(this, SIGNAL(updateGL()), rightGLWidget, SLOT(forceGLupdate()));
 
 
     topSplitter = new QSplitter(this);
@@ -185,16 +204,34 @@ void MainWindow::showAboutBox() {
 }
 
 void MainWindow::setSingleView() {
+    statusbar->showMessage("Setting single view", 2000);
     bottomSplitter->hide();
     frontGLWidget->hide();
 }
 
 void MainWindow::setDualView() {
+    statusbar->showMessage("Setting dual view", 2000);
     bottomSplitter->hide();
     frontGLWidget->show();
 }
 
 void MainWindow::setQuadView() {
+    statusbar->showMessage("Setting quad view", 2000);
     bottomSplitter->show();
     frontGLWidget->show();
+}
+
+void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {
+    this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
+    statusbar->showMessage(currentNode->getName().c_str(), 2000);
+}
+
+void MainWindow::translateNode(double x, double y, double z) {
+    this->currentNode->translate(x, y, z);
+    emit updateGL();
+}
+
+void MainWindow::rotateNode(QQuaternion *q) {
+    this->currentNode->rotate(*q);
+    emit updateGL();
 }

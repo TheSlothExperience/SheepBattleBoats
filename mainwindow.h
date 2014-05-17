@@ -38,6 +38,7 @@ private:
     QAction *aboutAction;
 
     Scene *scene;
+    SceneGraph *currentNode;
     GLWidgetContext *glWidgetContext;
     GLWidget *perspectiveGLWidget;
     GLWidget *frontGLWidget;
@@ -56,10 +57,16 @@ private:
     void createToolbar();
     void setupGL();
 public slots:
+    void translateNode(double x, double y, double z);
+    void rotateNode(QQuaternion *q);
     void showAboutBox();
     void setSingleView();
     void setDualView();
     void setQuadView();
+    void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
+
+signals:
+    void updateGL();
 };
 
 #endif // MAINWINDOW_H

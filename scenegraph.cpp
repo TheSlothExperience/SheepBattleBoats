@@ -101,3 +101,12 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
 
     MVStack.pop();
 }
+
+
+void SceneGraph::translate(double x, double y, double z) {
+    translation += QVector3D(x, y, z);
+}
+
+void SceneGraph::rotate(QQuaternion q) {
+    rotation = q * rotation;
+}

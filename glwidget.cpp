@@ -13,7 +13,7 @@
 GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget),
       tesselationLevel(0),
-      zoom(0.0), xtrans(0.0), ytrans(0.0), dragging(false)
+      zoom(0.0), dragging(false)
 {
     scene = NULL;
 }
@@ -119,10 +119,9 @@ double clampUnit(double x) {
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::RightButton) && dragging) {
-	this->xtrans += (event->pos().x() - lastPoint.x()) / 100.0;
-	this->ytrans -= (event->pos().y() - lastPoint.y()) / 100.0; //Qt y-coord is inverted
-	this->lastPoint = event->pos();
-	updateGL();
+	double xtrans = (event->pos().x() - lastPoint.x()) / 1000.0;
+	double ytrans = -(event->pos().y() - lastPoint.y()) / 1000.0; //Qt y-coord is inverted
+	emit translate(xtrans, ytrans, 0);
     }
     
     if ((event->buttons() & Qt::LeftButton) && dragging) {
@@ -147,11 +146,9 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	double theta = acos(QVector3D::dotProduct(v1, v2)) / 3.0;
 	
 	//angle/2.0, because the quats double cover SO(3)
-	QQuaternion newRot(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
-	
-	//Pre-multiply to get the rot in local coords
-	this->cubeRotationQuat = newRot.normalized() * this->cubeRotationQuat;
-	updateGL();
+	QQuaternion *newRot = new QQuaternion(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
+
+	emit rotate(newRot);
     }
 }
 
@@ -168,16 +165,16 @@ void GLWidget::wheelEvent(QWheelEvent *event)
     updateGL();
 }
 
-
 void GLWidget::setTesselation(int tesselationLevel) {
     this->tesselationLevel = tesselationLevel;
     updateGL();
 }
 
+void GLWidget::forceGLupdate() {
+    updateGL();
+}
+
 void GLWidget::resetCamera() {
     this->zoom = 0.0;
-    this->xtrans = 0.0;
-    this->ytrans = 0.0;
-    this->cubeRotationQuat = QQuaternion();
     updateGL();
 }

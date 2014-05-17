@@ -33,10 +33,7 @@ public:
 private:
     int tesselationLevel;
 
-    QQuaternion cubeRotationQuat;
     float zoom;
-    float xtrans;
-    float ytrans;
     bool dragging;
     
     QPoint lastPoint;
@@ -63,6 +60,11 @@ protected:
 public slots:
     void setTesselation(int tesselationLevel);
     void resetCamera();
+    void forceGLupdate();
+
+signals:
+    void translate(double x, double y, double z);
+    void rotate(QQuaternion *q);
 };
 
 #endif

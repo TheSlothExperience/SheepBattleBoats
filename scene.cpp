@@ -22,9 +22,13 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, QObject *parent)
     this->modelViewMatrixStack.push(QMatrix4x4());
 
     Cube *cube = new Cube();
+    Cube *cube2 = new Cube();
+    SceneGraph *s2 = new SceneGraph(cube2);
+    s2->translate(0.5, 0.5, -1.0);
     this->rootDummy = new SceneGraph();
     this->rootNode = new SceneGraph();
-    this->rootNode->add(cube);    
+    this->rootNode->add(cube);
+    this->rootNode->add(s2);
     this->rootDummy->add(rootNode);
     
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);

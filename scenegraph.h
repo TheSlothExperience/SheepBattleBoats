@@ -37,7 +37,11 @@ public:
     int row();
 
     void setParent(SceneGraph *s);
-    
+
+    void translate(double x, double y, double z);
+    void rotate(QQuaternion q);
+
+    std::string getName() {return name;};
     bool isLeaf();
     void add(Primitive *p);
     void add(SceneGraph *s);

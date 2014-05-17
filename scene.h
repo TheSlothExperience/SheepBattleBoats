@@ -39,6 +39,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     
+    SceneGraph *root() {return rootNode;};
     void setLightLocation(GLuint lightPositionLocation);
     void draw(QMatrix4x4 cameraMatrix);
 };
