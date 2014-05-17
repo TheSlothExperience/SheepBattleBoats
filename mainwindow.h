@@ -57,6 +57,9 @@ private:
     void setupGL();
 public slots:
     void showAboutBox();
+    void setSingleView();
+    void setDualView();
+    void setQuadView();
 };
 
 #endif // MAINWINDOW_H

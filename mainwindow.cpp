@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle("Hello Cube!!");
-    setMinimumSize(700,700);
+    setMinimumSize(1000,800);
 
     createActions();
     createMenus();
@@ -86,6 +86,9 @@ void MainWindow::setupGL() {
     sideSplitter->setOrientation(Qt::Vertical);
     sideSplitter->addWidget(topSplitter);
     sideSplitter->addWidget(bottomSplitter);
+
+    frontGLWidget->hide();
+    bottomSplitter->hide();
     
     setCentralWidget(sideSplitter);
 }
@@ -130,16 +133,19 @@ void MainWindow::createActions() {
     singleViewAction->setShortcut(tr("Ctrl+1"));
     singleViewAction->setIcon(QIcon(":/img/view-single.png"));
     singleViewAction->setCheckable(true);
+    connect(singleViewAction, SIGNAL(triggered()), this, SLOT(setSingleView()));
 
     dualViewAction = new QAction("&Dual Viewport", this);
     dualViewAction->setShortcut(tr("Ctrl+2"));
     dualViewAction->setIcon(QIcon(":/img/view-dual.png"));
     dualViewAction->setCheckable(true);
+    connect(dualViewAction, SIGNAL(triggered()), this, SLOT(setDualView()));
 
     quadViewAction = new QAction("&Quad Viewports", this);
     quadViewAction->setShortcut(tr("Ctrl+4"));
     quadViewAction->setIcon(QIcon(":/img/viewports.png"));
     quadViewAction->setCheckable(true);
+    connect(quadViewAction, SIGNAL(triggered()), this, SLOT(setQuadView()));
 
     viewportGroup = new QActionGroup(this);
     viewportGroup->addAction(singleViewAction);
@@ -176,4 +182,19 @@ void MainWindow::showAboutBox() {
     msgBox.setWindowTitle("About Hello Cube!");
     msgBox.setText("Written by Sebas!");
     msgBox.exec();
+}
+
+void MainWindow::setSingleView() {
+    bottomSplitter->hide();
+    frontGLWidget->hide();
+}
+
+void MainWindow::setDualView() {
+    bottomSplitter->hide();
+    frontGLWidget->show();
+}
+
+void MainWindow::setQuadView() {
+    bottomSplitter->show();
+    frontGLWidget->show();
 }
