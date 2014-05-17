@@ -116,12 +116,24 @@ double clampUnit(double x) {
     return std::min(1.0, std::max(-1.0, x));
 }
 
+QQuaternion M4toQuat(QMatrix4x4 mat) {
+    double trace = mat(0,0) + mat(1,1) + mat(2,2) + 1;
+    double s = 0.5 / sqrt(trace);
+    double w = 0.25 / s;
+    double x = (mat(2, 1) - mat(1, 2)) * s;
+    double y = (mat(0, 2) - mat(2, 0)) * s;
+    double z = (mat(1, 0) - mat(0, 1)) * s;
+    return QQuaternion(w, x, y, z);
+}
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::RightButton) && dragging) {
 	double xtrans = (event->pos().x() - lastPoint.x()) / 1000.0;
 	double ytrans = -(event->pos().y() - lastPoint.y()) / 1000.0; //Qt y-coord is inverted
-	emit translate(xtrans, ytrans, 0);
+	QVector4D trans(xtrans, ytrans, 0, 1);
+	QVector4D worldTrans = trans * camera->getCameraMatrix();
+	emit translate(worldTrans.x(), worldTrans.y(), worldTrans.z());
     }
     
     if ((event->buttons() & Qt::LeftButton) && dragging) {
@@ -146,9 +158,10 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	double theta = acos(QVector3D::dotProduct(v1, v2)) / 3.0;
 	
 	//angle/2.0, because the quats double cover SO(3)
-	QQuaternion *newRot = new QQuaternion(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
-
-	emit rotate(newRot);
+	QQuaternion newRot = QQuaternion(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
+	QQuaternion cameraQuat = M4toQuat(camera->getCameraMatrix());
+	QQuaternion worldQuat = cameraQuat.conjugate() * newRot * cameraQuat;
+	emit rotate(&worldQuat);
     }
 }
 
