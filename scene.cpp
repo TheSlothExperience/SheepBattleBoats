@@ -6,6 +6,7 @@
 #include "cylinder.h"
 #include "cone.h"
 #include "sphere.h"
+#include "torus.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -152,6 +153,15 @@ SceneGraph* Scene::addSphere(SceneGraph *node, int tesselationLevel) {
     std::string name("Sphere ");
     name += std::to_string(nextId());
     SceneGraph *s = new SceneGraph(sphere, name);
+
+    node->add(s);
+}
+
+SceneGraph* Scene::addTorus(SceneGraph *node, int tesselationLevel) {
+    Primitive *torus = new Torus(tesselationLevel);
+    std::string name("Torus ");
+    name += std::to_string(nextId());
+    SceneGraph *s = new SceneGraph(torus, name);
 
     node->add(s);
 }

@@ -45,7 +45,8 @@ public:
     SceneGraph* addCube(SceneGraph *node, int tesselationLevel);
     SceneGraph* addCylinder(SceneGraph *node, int tesselationLevel); 
     SceneGraph* addCone(SceneGraph *node, int tesselationLevel); 
-    SceneGraph* addSphere(SceneGraph *node, int tesselationLevel);   
+    SceneGraph* addSphere(SceneGraph *node, int tesselationLevel); 
+    SceneGraph* addTorus(SceneGraph *node, int tesselationLevel);   
     
     SceneGraph *root() {return rootNode;};
     void setLightLocation(GLuint lightPositionLocation);

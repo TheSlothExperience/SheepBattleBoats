@@ -247,7 +247,11 @@ void MainWindow::addSphere(){
     scene->addSphere(currentNode, tesselationLevel);
     emit updateGL();
 }
-void MainWindow::addTorus(){}
+void MainWindow::addTorus(){
+    int tesselationLevel = 3;
+    scene->addTorus(currentNode, tesselationLevel);
+    emit updateGL();
+}
 
 
 void MainWindow::showAboutBox() {

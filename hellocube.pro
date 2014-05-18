@@ -25,6 +25,7 @@ SOURCES += main.cpp\
         cube.cpp \
         cone.cpp \
         sphere.cpp \
+        torus.cpp \
         cylinder.cpp
 
 HEADERS  += mainwindow.h\
@@ -38,6 +39,7 @@ HEADERS  += mainwindow.h\
         cube.h \
         cone.h \
         sphere.h \
+        torus.h \
         cylinder.h
 
 RESOURCES += \
