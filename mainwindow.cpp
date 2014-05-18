@@ -51,6 +51,7 @@ void MainWindow::setupGL() {
     scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     currentNode = scene->root();
+    addCube();
     
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
     perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
