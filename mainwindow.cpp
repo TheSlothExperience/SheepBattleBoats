@@ -192,12 +192,15 @@ void MainWindow::createActions() {
     
     addSphereAction = new QAction(this);
     addSphereAction->setIcon(QIcon(":/img/sphere.png"));
+    connect(addSphereAction, SIGNAL(triggered()), this, SLOT(addSphere()));
     
     addTorusAction = new QAction(this);
     addTorusAction->setIcon(QIcon(":/img/torus.png"));
+    connect(addTorusAction, SIGNAL(triggered()), this, SLOT(addTorus()));
     
     addConeAction = new QAction(this);
     addConeAction->setIcon(QIcon(":/img/cone.png"));
+    connect(addConeAction, SIGNAL(triggered()), this, SLOT(addCone()));
 }
 
 void MainWindow::createMenus() {
@@ -229,9 +232,13 @@ void MainWindow::addCube() {
     emit updateGL();
 }
 
-void MainWindow::addCone(){}
+void MainWindow::addCone(){
+    int tesselationLevel = 3;
+    scene->addCone(currentNode, tesselationLevel);
+    emit updateGL();
+}
 void MainWindow::addCylinder(){
-    int tesselationLevel = 0;
+    int tesselationLevel = 3;
     scene->addCylinder(currentNode, tesselationLevel);
     emit updateGL();
 }
