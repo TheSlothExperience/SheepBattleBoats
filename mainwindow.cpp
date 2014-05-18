@@ -242,7 +242,11 @@ void MainWindow::addCylinder(){
     scene->addCylinder(currentNode, tesselationLevel);
     emit updateGL();
 }
-void MainWindow::addSphere(){}
+void MainWindow::addSphere(){
+    int tesselationLevel = 3;
+    scene->addSphere(currentNode, tesselationLevel);
+    emit updateGL();
+}
 void MainWindow::addTorus(){}
 
 

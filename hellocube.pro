@@ -24,6 +24,7 @@ SOURCES += main.cpp\
         orthocamera.cpp\
         cube.cpp \
         cone.cpp \
+        sphere.cpp \
         cylinder.cpp
 
 HEADERS  += mainwindow.h\
@@ -36,6 +37,7 @@ HEADERS  += mainwindow.h\
         orthocamera.h\
         cube.h \
         cone.h \
+        sphere.h \
         cylinder.h
 
 RESOURCES += \
