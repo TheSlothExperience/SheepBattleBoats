@@ -22,7 +22,8 @@ SOURCES += main.cpp\
         scenegraph.cpp\
         perspectivecamera.cpp\
         orthocamera.cpp\
-        cube.cpp
+        cube.cpp \
+        cylinder.cpp
 
 HEADERS  += mainwindow.h\
         glwidget.h\
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h\
         camera.h\
         perspectivecamera.h\
         orthocamera.h\
-        cube.h
+        cube.h \
+        cylinder.h
 
 RESOURCES += \
     hellocube.qrc

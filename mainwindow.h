@@ -64,10 +64,10 @@ private:
     void setupGL();
 public slots:
     void addCube();
-    void addCone(int tesselationLevel);
-    void addCylinder(int tesselationLevel);
-    void addSphere(int tesselationLevel);
-    void addTorus(int tesselationLevel);
+    void addCone();
+    void addCylinder();
+    void addSphere();
+    void addTorus();
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);

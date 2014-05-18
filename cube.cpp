@@ -3,7 +3,7 @@
 #include "cube.h"
 
 #include <iostream>
-#include <GL/gl.h>
+
 Cube::Cube() {
      
     static const GLfloat vertices[] = {

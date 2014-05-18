@@ -188,6 +188,7 @@ void MainWindow::createActions() {
 
     addCylinderAction = new QAction(this);
     addCylinderAction->setIcon(QIcon(":/img/cylinder.png"));
+    connect(addCylinderAction, SIGNAL(triggered()), this, SLOT(addCylinder()));
     
     addSphereAction = new QAction(this);
     addSphereAction->setIcon(QIcon(":/img/sphere.png"));
@@ -228,10 +229,14 @@ void MainWindow::addCube() {
     emit updateGL();
 }
 
-void MainWindow::addCone(int tesselationLevel){}
-void MainWindow::addCylinder(int tesselationLevel){}
-void MainWindow::addSphere(int tesselationLevel){}
-void MainWindow::addTorus(int tesselationLevel){}
+void MainWindow::addCone(){}
+void MainWindow::addCylinder(){
+    int tesselationLevel = 0;
+    scene->addCylinder(currentNode, tesselationLevel);
+    emit updateGL();
+}
+void MainWindow::addSphere(){}
+void MainWindow::addTorus(){}
 
 
 void MainWindow::showAboutBox() {

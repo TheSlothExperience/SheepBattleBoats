@@ -3,6 +3,7 @@
 #include "scene.h"
 #include "primitive.h"
 #include "cube.h"
+#include "cylinder.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -122,6 +123,15 @@ SceneGraph* Scene::addCube(SceneGraph *node, int tesselationLevel) {
     std::string name("Cube ");
     name += std::to_string(nextId());
     SceneGraph *s = new SceneGraph(cube, name);
+
+    node->add(s);
+}
+
+SceneGraph* Scene::addCylinder(SceneGraph *node, int tesselationLevel) {
+    Primitive *cylinder = new Cylinder(3);
+    std::string name("Cylinder ");
+    name += std::to_string(nextId());
+    SceneGraph *s = new SceneGraph(cylinder, name);
 
     node->add(s);
 }
