@@ -42,6 +42,11 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+    //For editing
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    //bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole);
+    bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
+    
     QModelIndex addCube(SceneGraph *node, int tesselationLevel);
     QModelIndex addCylinder(SceneGraph *node, int tesselationLevel); 
     QModelIndex addCone(SceneGraph *node, int tesselationLevel); 

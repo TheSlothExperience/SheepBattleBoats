@@ -49,11 +49,21 @@ int SceneGraph::childCount() {
 int SceneGraph::columnCount() {
     return 1; //JUST THE NAME OF THE NODE
 }
+
 QVariant SceneGraph::data(int column) {
     if(column == 0) {
 	return QVariant(name.c_str());
     } else {
 	return QVariant();
+    }
+}
+
+bool SceneGraph::setData(int column, const QVariant &value) {
+    if(column != 0) {
+	return false;
+    } else {
+	this->name = value.toString().toUtf8().constData();
+	return true;
     }
 }
 
@@ -64,6 +74,17 @@ int SceneGraph::row() {
     } else {
 	return 0;
     }
+}
+
+bool SceneGraph::removeChildren(int position, int count) {
+    if (position < 0 || position + count > children.size()) {
+	return false;
+    }
+
+    for (int row = 0; row < count; ++row) {
+	children.erase(children.begin() + row);
+    }
+    return true;
 }
 
 SceneGraph* SceneGraph::add(Primitive *p) {

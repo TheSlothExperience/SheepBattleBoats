@@ -108,7 +108,7 @@ Qt::ItemFlags Scene::flags(const QModelIndex &index) const {
     if(!index.isValid()) {
 	return 0;
     } else {
-	return QAbstractItemModel::flags(index);
+	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     }
 }
 
@@ -116,6 +116,32 @@ QVariant Scene::headerData(int section, Qt::Orientation orientation, int role) c
     return QVariant("Scene Model");
 }
 
+
+bool Scene::setData(const QModelIndex &index, const QVariant &value, int role) {
+    if (role != Qt::EditRole) {
+	return false;
+    }
+    
+    SceneGraph *node = static_cast<SceneGraph*>(index.internalPointer());
+    bool result = node->setData(index.column(), value);
+
+    if (result) {
+	emit dataChanged(index, index);
+    }
+    
+    return result;
+}
+
+bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
+    SceneGraph *parentItem = static_cast<SceneGraph*>(parent.internalPointer());
+    bool success = true;
+
+    beginRemoveRows(parent, position, position + rows - 1);
+    success = parentItem->removeChildren(position, rows);
+    endRemoveRows();
+
+    return success;
+}
 
 void Scene::setLightLocation(GLuint lightPositionLocation) {
     this->lightPositionLocation = lightPositionLocation;

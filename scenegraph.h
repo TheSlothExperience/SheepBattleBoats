@@ -36,6 +36,8 @@ public:
     int childCount();
     int columnCount();
     QVariant data(int column);
+    bool setData(int column, const QVariant &value);
+    bool removeChildren(int position, int count);
     int row();
 
     void setParent(SceneGraph *s);
