@@ -132,6 +132,9 @@ void GLWidget::paintGL()
     glBindTexture(GL_TEXTURE_2D, renderTex);
     glUniform1i(textureLocation, 0);
 
+    activeLocation = textureProgram->uniformLocation("selected");
+    glUniform1f(activeLocation, (GLfloat)isActive);
+
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glEnableVertexAttribArray(0);
@@ -172,6 +175,11 @@ void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
 }
 void GLWidget::setTextureProgram(QOpenGLShaderProgram *tp) {
     this->textureProgram = tp;
+}
+
+void GLWidget::setActive(bool active) {
+    this->isActive = active;
+    updateGL();
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

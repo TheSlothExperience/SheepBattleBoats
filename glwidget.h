@@ -34,7 +34,7 @@ public:
 
     void initializeGL();
 
-    void setActive(bool active = true) {this->isActive = active;};
+    void setActive(bool active = true);
     void setCameraActive(bool active = true) {this->cameraActive = active;};
 
 private:
@@ -56,6 +56,7 @@ private:
 
     GLuint canvasQuad;
     GLuint textureLocation;
+    GLuint activeLocation;
     
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;

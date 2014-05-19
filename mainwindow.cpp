@@ -117,6 +117,7 @@ void MainWindow::setupGL() {
 
     frontGLWidget->hide();
     bottomSplitter->hide();
+    perspectiveGLWidget->setActive();
     
     setCentralWidget(sideSplitter);
 }
