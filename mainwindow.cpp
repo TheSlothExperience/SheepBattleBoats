@@ -259,6 +259,20 @@ void MainWindow::createMenus() {
 }
 
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Delete) {
+	QModelIndex idx = sceneOutliner->selectionModel()->currentIndex();
+	QString msg;
+	msg += "Deleting: ";
+	msg += scene->data(idx, Qt::DisplayRole).toString();
+	statusbar->showMessage(msg, 2000);
+	if(scene->removeRows(idx.row(), 1, idx.parent())) {
+	    emit updateGL();
+	}
+    }
+}
+
+
 void MainWindow::addCube() {
     int tesselationLevel = 0;
     QModelIndex idx = scene->addCube(currentNode, tesselationLevel);
