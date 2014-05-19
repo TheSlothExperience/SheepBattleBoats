@@ -92,7 +92,6 @@ void GLWidget::initializeGL()
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
 }
 
 
@@ -101,65 +100,80 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Load the phong shading program
-    shaderProgram->bind();
+    //Draw the scene into a texture and the IDs into the picking color
+    //buffer to be able to pick them with the mouse.
+    {
+	//Load the phong shading program
+	shaderProgram->bind();
     
-    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+	//Bind the fbo and the textures to draw to
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	glDrawBuffers(2, DrawBuffers);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Bind the fbo and the textures to draw to
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, DrawBuffers);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //Draw to the whole texture(the size of the texture, maybe change?)
-    glViewport(0,0,1024,768);
-    //and set tex 0 as active
-    glActiveTexture(GL_TEXTURE0);
+	//Draw to the whole texture(the size of the texture, maybe change?)
+	glViewport(0,0,1024,768);
+	//and set tex 0 as active
+	glActiveTexture(GL_TEXTURE0);
     
-    if(scene != NULL) {
-	//Discombobulate!
-	scene->draw(camera->getCameraMatrix());	
-    } else {
-	std::cout << "no scene yet" << std::endl;
+	if(scene != NULL) {
+	    //Discombobulate!
+	    scene->draw(camera->getCameraMatrix());	
+	} else {
+	    std::cout << "no scene yet" << std::endl;
+	}
+
+	//Release and relax, brah
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	shaderProgram->release();
     }
 
-    //Release and relax, brah
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    shaderProgram->release();
+    //Now take the textures and put it on the canvas quad
+    //also highlight the active widget and the active object.
+    {
+	//Now load program to draw to the magic quad
+	textureProgram->bind();
+	//This time draw to the whole screen
+	glViewport(0,0,this->width(), this->height());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-    //Now load program to draw to the magic quad
-    textureProgram->bind();
-    //This time draw to the whole screen
-    glViewport(0,0,this->width(), this->height());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //Make sure the tex 0 is still active
-    glActiveTexture(GL_TEXTURE0);
-    textureLocation = textureProgram->uniformLocation("renderedTexture");
-    //Send the rendered texture down the pipes
-    glUniform1i(textureLocation, 0);
-    glBindTexture(GL_TEXTURE_2D, renderTex);
+	//Make sure the tex 0 is active for the rendered scene
+	glActiveTexture(GL_TEXTURE0);
+	textureLocation = textureProgram->uniformLocation("renderedTexture");
+	//Send the rendered texture down the pipes
+	glUniform1i(textureLocation, 0);
+	glBindTexture(GL_TEXTURE_2D, renderTex);
     
-    //Make sure the tex 1 is active to send the other tex
-    glActiveTexture(GL_TEXTURE1);
-    textureLocation = textureProgram->uniformLocation("pickingTexture");
-    //Send the picking texture down the pipes
-    glUniform1i(textureLocation, 1);
-    glBindTexture(GL_TEXTURE_2D, pickingTex);
+	//Make sure the tex 1 is active to send the other tex
+	glActiveTexture(GL_TEXTURE1);
+	textureLocation = textureProgram->uniformLocation("pickingTexture");
+	//Send the picking texture down the pipes
+	glUniform1i(textureLocation, 1);
+	glBindTexture(GL_TEXTURE_2D, pickingTex);
 
-    activeLocation = textureProgram->uniformLocation("selected");
-    glUniform1f(activeLocation, (GLfloat)isActive);
+	activeLocation = textureProgram->uniformLocation("selected");
+	glUniform1f(activeLocation, (GLfloat)isActive);
 
-    //Draw our nifty, pretty quad
-    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	//Pack the color of the ID of selected object and send it
+	activeColorLocation = textureProgram->uniformLocation("activeColor");
+	if(activeID >= 0) {
+	    int r = (activeID & 0x000000FF) >>  0;
+	    int g = (activeID & 0x0000FF00) >>  8;
+	    int b = (activeID & 0x00FF0000) >> 16;
+	    glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
+	}
 
-    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+	//Draw our nifty, pretty quad
+	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3*2);
     
-    textureProgram->release();
+	textureProgram->release();
+    }
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -339,6 +353,7 @@ void GLWidget::forceGLupdate() {
 
 void GLWidget::changeActiveId(int id) {
     this->activeID = id;
+    updateGL();
 }
 
 void GLWidget::resetCamera() {

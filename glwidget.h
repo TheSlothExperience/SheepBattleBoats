@@ -61,6 +61,7 @@ private:
     GLuint canvasQuad;
     GLuint textureLocation;
     GLuint activeLocation;
+    GLuint activeColorLocation;
     
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;
