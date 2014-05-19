@@ -21,7 +21,7 @@ void main(){
     } else {
 	vec4 pickColor = texture(pickingTexture, UV);
 	if(pickColor == activeColor) {
-	   color = vec3(1.0, 0.0, 0.0); 
+	  color = vec3(1.0, 0.0, 0.0); 
 	} else {
 	    color = texture(renderedTexture, UV).xyz;
 	}

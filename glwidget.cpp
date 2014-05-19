@@ -235,13 +235,13 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 	unsigned char data[4];
 	int x = 1024 * (event->x() / (float) width());
 	int y = 786 * ((height() - event->y()) / (float) height());
-
+;
 	//Get dem pixorz!
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	//Unpack the data into the id
 	int pickedID = data[0] + data[1] * 256 + data[2] * 256*256;
-	if(pickedID != 13421772) { //The background color, have to make this more robust
+    if(pickedID < 100) { //The background color, have to make this more robust
 	    emit changedActiveId(pickedID);
 	    emit changedCurrent(scene->identify(pickedID));
 	}
