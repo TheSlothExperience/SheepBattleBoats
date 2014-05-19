@@ -14,24 +14,15 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Hello Cube!!");
     setMinimumSize(1000,800);
     
+    //Status bar
+    statusbar = new QStatusBar(this);
+    
     setupGL();
 
     createActions();
     createMenus();
     createToolbar();
-
-    sceneOutliner = new QTreeView();
-    sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
-    sceneOutliner->setModel(scene);
-    connect(sceneOutliner->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(changeCurrentNode(const QModelIndex&, const QModelIndex&)));
     
-    outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
-    outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    outlinerDock->setWidget(sceneOutliner);
-    addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
-    
-    //Status bar
-    statusbar = new QStatusBar(this);
     setStatusBar(statusbar);
     setMenuBar(menuBar);
 }
@@ -59,8 +50,21 @@ void MainWindow::setupGL() {
     //Set the scene and add a cube
     scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
+    
+
+    sceneOutliner = new QTreeView();
+    sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
+    sceneOutliner->setModel(scene);
+    connect(sceneOutliner->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(changeCurrentNode(const QModelIndex&, const QModelIndex&)));
+    
+    outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
+    outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    outlinerDock->setWidget(sceneOutliner);
+    addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
+    
     currentNode = scene->root();
     addCube();
+    
 
     //Create the widgets
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
@@ -257,28 +261,33 @@ void MainWindow::createMenus() {
 
 void MainWindow::addCube() {
     int tesselationLevel = 0;
-    scene->addCube(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addCube(currentNode, tesselationLevel);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
     emit updateGL();
 }
 
 void MainWindow::addCone(){
     int tesselationLevel = 3;
-    scene->addCone(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addCone(currentNode, tesselationLevel);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
     emit updateGL();
 }
 void MainWindow::addCylinder(){
     int tesselationLevel = 3;
-    scene->addCylinder(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addCylinder(currentNode, tesselationLevel);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
     emit updateGL();
 }
 void MainWindow::addSphere(){
     int tesselationLevel = 3;
-    scene->addSphere(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addSphere(currentNode, tesselationLevel);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
     emit updateGL();
 }
 void MainWindow::addTorus(){
     int tesselationLevel = 3;
-    scene->addTorus(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addTorus(currentNode, tesselationLevel);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
     emit updateGL();
 }
 

@@ -42,11 +42,11 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-    SceneGraph* addCube(SceneGraph *node, int tesselationLevel);
-    SceneGraph* addCylinder(SceneGraph *node, int tesselationLevel); 
-    SceneGraph* addCone(SceneGraph *node, int tesselationLevel); 
-    SceneGraph* addSphere(SceneGraph *node, int tesselationLevel); 
-    SceneGraph* addTorus(SceneGraph *node, int tesselationLevel);   
+    QModelIndex addCube(SceneGraph *node, int tesselationLevel);
+    QModelIndex addCylinder(SceneGraph *node, int tesselationLevel); 
+    QModelIndex addCone(SceneGraph *node, int tesselationLevel); 
+    QModelIndex addSphere(SceneGraph *node, int tesselationLevel); 
+    QModelIndex addTorus(SceneGraph *node, int tesselationLevel);   
     
     SceneGraph *root() {return rootNode;};
     void setLightLocation(GLuint lightPositionLocation);
