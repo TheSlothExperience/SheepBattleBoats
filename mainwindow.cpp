@@ -136,10 +136,10 @@ void MainWindow::createToolbar() {
     toolbar = new QToolBar(this);
 
     tesselationSlider = new QSlider(Qt::Horizontal);
-    tesselationSlider->setRange(0,5);
+    tesselationSlider->setRange(1,8);
     tesselationSlider->setTickPosition(QSlider::TicksBothSides);
     tesselationSlider->setTickInterval(1);
-    //connect(tesselationSlider, SIGNAL(valueChanged(int)), glwidget, SLOT(setTesselation(int)));
+    connect(tesselationSlider, SIGNAL(valueChanged(int)), this, SLOT(setTesselation(int)));
     toolbar->addWidget(tesselationSlider);
 
     toolbar->addAction(cameraModeAction);
@@ -288,25 +288,21 @@ void MainWindow::addCube() {
 }
 
 void MainWindow::addCone(){
-    int tesselationLevel = 3;
     QModelIndex idx = scene->addCone(currentNode, tesselationLevel);
     sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 void MainWindow::addCylinder(){
-    int tesselationLevel = 3;
     QModelIndex idx = scene->addCylinder(currentNode, tesselationLevel);
     sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 void MainWindow::addSphere(){
-    int tesselationLevel = 3;
     QModelIndex idx = scene->addSphere(currentNode, tesselationLevel);
     sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 void MainWindow::addTorus(){
-    int tesselationLevel = 3;
     QModelIndex idx = scene->addTorus(currentNode, tesselationLevel);
     sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
@@ -370,6 +366,10 @@ void MainWindow::setObjectInteraction() {
     rightGLWidget->setCameraActive(false);
     
     statusbar->showMessage("Moving dem objects.", 2000);
+}
+
+void MainWindow::setTesselation(int t) {
+    this->tesselationLevel = t;
 }
 
 void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {

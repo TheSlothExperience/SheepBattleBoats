@@ -29,6 +29,7 @@ private:
     QAction *exitAction;
 
     QSlider *tesselationSlider;
+    int tesselationLevel = 1;
 
     QMenu *viewMenu;
     QToolButton *viewDropButton;
@@ -90,6 +91,8 @@ public slots:
 
     void changeCurrent(QModelIndex q);
     void changeActiveId(int id);
+
+    void setTesselation(int t);
     
     void showAboutBox();
     void setSingleView();
