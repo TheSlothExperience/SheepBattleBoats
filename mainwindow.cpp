@@ -374,13 +374,9 @@ void MainWindow::setObjectInteraction() {
 
 void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {
     this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
+    changeActiveId(currentNode->getId());
     statusbar->showMessage(currentNode->getName().c_str(), 2000);
 }
-
-// void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {
-//     this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
-//     statusbar->showMessage(currentNode->getName().c_str(), 2000);
-// }
 
 void MainWindow::translateNode(double x, double y, double z) {
     this->currentNode->translate(x, y, z);

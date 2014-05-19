@@ -95,7 +95,6 @@ public slots:
     void setSingleView();
     void setDualView();
     void setQuadView();
-    //void changeCurrentNode(SceneGraph *current);
     void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
 
 signals:
