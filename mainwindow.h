@@ -87,11 +87,15 @@ public slots:
     void setObjectInteraction();
     void setCameraInteraction();
     void setActiveViewport(GLWidget *active);
+
+    void changeCurrent(QModelIndex q);
+    void changeActiveId(int id);
     
     void showAboutBox();
     void setSingleView();
     void setDualView();
     void setQuadView();
+    //void changeCurrentNode(SceneGraph *current);
     void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
 
 signals:

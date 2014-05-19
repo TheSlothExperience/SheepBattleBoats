@@ -228,7 +228,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 	//Unpack the data into the id
 	int pickedID = data[0] + data[1] * 256 + data[2] * 256*256;
 	if(pickedID != 13421772) { //The background color, have to make this more robust
-	    std::cout << scene->identify(pickedID)->getName() << std::endl;
+	    emit changedActiveId(pickedID);
+	    emit changedCurrent(scene->identify(pickedID));
 	}
 	//Leave as before
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -334,6 +335,10 @@ void GLWidget::setTesselation(int tesselationLevel) {
 
 void GLWidget::forceGLupdate() {
     updateGL();
+}
+
+void GLWidget::changeActiveId(int id) {
+    this->activeID = id;
 }
 
 void GLWidget::resetCamera() {

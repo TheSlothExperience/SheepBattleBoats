@@ -58,7 +58,7 @@ public:
     QModelIndex addTorus(SceneGraph *node, int tesselationLevel);   
     
     SceneGraph *root() {return rootNode;};
-    SceneGraph *identify(int i);
+    QModelIndex identify(int i);
     void setLightLocation(GLuint lightPositionLocation);
     void draw(QMatrix4x4 cameraMatrix);
 };

@@ -148,9 +148,10 @@ void Scene::setLightLocation(GLuint lightPositionLocation) {
     this->lightPositionLocation = lightPositionLocation;
 }
 
-SceneGraph* Scene::identify(int id) {
+QModelIndex Scene::identify(int id) {
     auto it = identifier.find(id);
-    return it->second;
+    SceneGraph *s = it->second;
+    return createIndex(s->row(), 0, s);
 }
 
 QModelIndex Scene::addCube(SceneGraph *node, int tesselationLevel) {

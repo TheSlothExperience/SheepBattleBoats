@@ -6,6 +6,7 @@
 #include <QOpenGLShader>
 
 #include <stack>
+#include <QModelIndex>
 
 #include "scene.h"
 #include "cube.h"
@@ -45,6 +46,7 @@ private:
     bool dragging;
     bool isActive = false;
     bool cameraActive = false;
+    int activeID = -1;
     
     QPoint lastPoint;
 
@@ -81,8 +83,11 @@ public slots:
     void setTesselation(int tesselationLevel);
     void resetCamera();
     void forceGLupdate();
+    void changeActiveId(int id);
 
 signals:
+    void changedActiveId(int id);
+    void changedCurrent(QModelIndex q);
     void translate(double x, double y, double z);
     void rotate(QQuaternion *q);
     void switchActive(GLWidget *active);

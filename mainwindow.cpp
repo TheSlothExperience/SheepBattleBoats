@@ -103,6 +103,12 @@ void MainWindow::setupGL() {
     mapWidgets([=](GLWidget *w){
 	    connect(w, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
 	});
+    mapWidgets([=](GLWidget *w){
+	    connect(w, SIGNAL(changedActiveId(int)), this, SLOT(changeActiveId(int)));
+	});
+    mapWidgets([=](GLWidget *w){
+	    connect(w, SIGNAL(changedCurrent(QModelIndex)), this, SLOT(changeCurrent(QModelIndex)));
+	});
 
     //Add the four viewports to the screen in splitters
     topSplitter = new QSplitter(this);
@@ -306,6 +312,13 @@ void MainWindow::addTorus(){
     emit updateGL();
 }
 
+void MainWindow::changeCurrent(QModelIndex q){
+    sceneOutliner->selectionModel()->setCurrentIndex(q, QItemSelectionModel::Current | QItemSelectionModel::Select);
+}
+void MainWindow::changeActiveId(int id){
+    mapWidgets([=](GLWidget *w){w->changeActiveId(id);});
+}
+
 
 void MainWindow::showAboutBox() {
     QMessageBox msgBox;
@@ -363,6 +376,11 @@ void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex
     this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
     statusbar->showMessage(currentNode->getName().c_str(), 2000);
 }
+
+// void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {
+//     this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
+//     statusbar->showMessage(currentNode->getName().c_str(), 2000);
+// }
 
 void MainWindow::translateNode(double x, double y, double z) {
     this->currentNode->translate(x, y, z);
