@@ -148,6 +148,11 @@ void Scene::setLightLocation(GLuint lightPositionLocation) {
     this->lightPositionLocation = lightPositionLocation;
 }
 
+SceneGraph* Scene::identify(int id) {
+    auto it = identifier.find(id);
+    return it->second;
+}
+
 QModelIndex Scene::addCube(SceneGraph *node, int tesselationLevel) {
     beginResetModel();
     Primitive *cube = new Cube();
@@ -156,6 +161,7 @@ QModelIndex Scene::addCube(SceneGraph *node, int tesselationLevel) {
     name += std::to_string(id);
     SceneGraph *s = new SceneGraph(cube, name);
     s->setId(id);
+    identifier[id] = s;
     
     node->add(s);
     endResetModel();
@@ -166,8 +172,11 @@ QModelIndex Scene::addCylinder(SceneGraph *node, int tesselationLevel) {
     beginResetModel();
     Primitive *cylinder = new Cylinder(tesselationLevel);
     std::string name("Cylinder ");
-    name += std::to_string(nextId());
+    int id = nextId();
+    name += std::to_string(id);
     SceneGraph *s = new SceneGraph(cylinder, name);
+    s->setId(id);
+    identifier[id] = s;
 
     node->add(s);
     endResetModel();
@@ -178,8 +187,11 @@ QModelIndex Scene::addCone(SceneGraph *node, int tesselationLevel) {
     beginResetModel();
     Primitive *cone = new Cone(tesselationLevel);
     std::string name("Cone ");
-    name += std::to_string(nextId());
+    int id = nextId();
+    name += std::to_string(id);
     SceneGraph *s = new SceneGraph(cone, name);
+    s->setId(id);
+    identifier[id] = s;
 
     node->add(s);
     endResetModel();
@@ -190,8 +202,11 @@ QModelIndex Scene::addSphere(SceneGraph *node, int tesselationLevel) {
     beginResetModel();
     Primitive *sphere = new Sphere(tesselationLevel);
     std::string name("Sphere ");
-    name += std::to_string(nextId());
+    int id = nextId();
+    name += std::to_string(id);
     SceneGraph *s = new SceneGraph(sphere, name);
+    s->setId(id);
+    identifier[id] = s;
 
     node->add(s);
     endResetModel();
@@ -202,8 +217,11 @@ QModelIndex Scene::addTorus(SceneGraph *node, int tesselationLevel) {
     beginResetModel();
     Primitive *torus = new Torus(tesselationLevel);
     std::string name("Torus ");
-    name += std::to_string(nextId());
+    int id = nextId();
+    name += std::to_string(id);
     SceneGraph *s = new SceneGraph(torus, name);
+    s->setId(id);
+    identifier[id] = s;
 
     node->add(s);
     endResetModel();

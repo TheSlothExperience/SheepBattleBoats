@@ -4,6 +4,7 @@
 #include "scenegraph.h"
 
 #include <stack>
+#include <map>
 #include <QMatrix4x4>
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -22,6 +23,8 @@ private:
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
     GLuint idLocation;
+
+    std::map<int, SceneGraph*> identifier;
 
     QVector4D lightPosition;
     std::stack<QMatrix4x4> modelViewMatrixStack;
@@ -55,6 +58,7 @@ public:
     QModelIndex addTorus(SceneGraph *node, int tesselationLevel);   
     
     SceneGraph *root() {return rootNode;};
+    SceneGraph *identify(int i);
     void setLightLocation(GLuint lightPositionLocation);
     void draw(QMatrix4x4 cameraMatrix);
 };

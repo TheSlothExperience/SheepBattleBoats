@@ -131,7 +131,10 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
     if(leaf) {
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
 	glUniformMatrix4fv(normalLoc, 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
-	glUniform1f(idLoc, (float)id / (float) 10);
+	int r = (id & 0x000000FF) >>  0;
+	int g = (id & 0x0000FF00) >>  8;
+	int b = (id & 0x00FF0000) >> 16;
+	glUniform4f(idLoc, r/255.0f, g/255.0f, b/255.0f, 1.0f);
 	
 	this->primitive->draw();
     } else {

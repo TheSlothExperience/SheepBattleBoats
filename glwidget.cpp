@@ -205,6 +205,34 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 	lastPoint = event->pos();
 	dragging = true;
     }
+    if(event->button() == Qt::LeftButton) {
+	//Picking
+	//Make sure we sample from the fbo textures
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	//Make sure we are done drawing
+	glFlush();
+	glFinish();
+
+	//We want to sample the picking buffer
+	glReadBuffer( GL_COLOR_ATTACHMENT1);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	//Make some room for the pixel data and transform into tex coords
+	unsigned char data[4];
+	int x = 1024 * (event->x() / (float) width());
+	int y = 786 * ((height() - event->y()) / (float) height());
+
+	//Get dem pixorz!
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	//Unpack the data into the id
+	int pickedID = data[0] + data[1] * 256 + data[2] * 256*256;
+	if(pickedID != 13421772) { //The background color, have to make this more robust
+	    std::cout << scene->identify(pickedID)->getName() << std::endl;
+	}
+	//Leave as before
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
     emit switchActive(this);
 }
 
