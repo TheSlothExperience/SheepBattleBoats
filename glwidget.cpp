@@ -54,6 +54,16 @@ void GLWidget::initializeGL()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTex, 0);
+    
+    //Create picking buffer
+    glGenTextures(1, &pickingTex);
+    
+    glBindTexture(GL_TEXTURE_2D, pickingTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
 
     //Now setup the depth buffer
     glGenRenderbuffers(1, &depthBuffer);
@@ -98,8 +108,8 @@ void GLWidget::paintGL()
 
     //Bind the fbo and the textures to draw to
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-    glDrawBuffers(1, DrawBuffers);
+    GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, DrawBuffers);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Draw to the whole texture(the size of the texture, maybe change?)
@@ -129,8 +139,15 @@ void GLWidget::paintGL()
     glActiveTexture(GL_TEXTURE0);
     textureLocation = textureProgram->uniformLocation("renderedTexture");
     //Send the rendered texture down the pipes
-    glBindTexture(GL_TEXTURE_2D, renderTex);
     glUniform1i(textureLocation, 0);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
+    
+    //Make sure the tex 1 is active to send the other tex
+    glActiveTexture(GL_TEXTURE1);
+    textureLocation = textureProgram->uniformLocation("pickingTexture");
+    //Send the picking texture down the pipes
+    glUniform1i(textureLocation, 1);
+    glBindTexture(GL_TEXTURE_2D, pickingTex);
 
     activeLocation = textureProgram->uniformLocation("selected");
     glUniform1f(activeLocation, (GLfloat)isActive);

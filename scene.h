@@ -21,6 +21,7 @@ private:
     GLuint modelViewMatLocation;
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
+    GLuint idLocation;
 
     QVector4D lightPosition;
     std::stack<QMatrix4x4> modelViewMatrixStack;
@@ -30,7 +31,7 @@ private:
     
 public:
     Scene(QObject *parent = 0);
-    Scene(GLuint mvLoc, GLuint normalLoc, QObject *parent = 0);
+    Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent = 0);
     
     QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;

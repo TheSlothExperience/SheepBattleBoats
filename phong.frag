@@ -3,8 +3,10 @@
 in vec3 N;
 in vec3 V;
 in vec3 L;
+in float id4;
 
-layout(location = 0) out vec3 outputColor;
+layout(location = 0) out vec4 outputColor;
+layout(location = 1) out vec4 pickingColor;
 void main()
 {
 
@@ -20,5 +22,8 @@ void main()
     vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);
     k_spec = clamp(k_spec, 0.0, 1.0);
 
-    outputColor = vec3(k_amb + k_diff + k_spec);
+    outputColor = vec4(k_amb + k_diff + k_spec);
+    pickingColor = vec4(id4);
+    //outputColor = id4.abgr;
+    //outputColor = vec4(id4);
 }

@@ -48,7 +48,8 @@ void MainWindow::setupGL() {
     glWidgetContext->initializeGL();
     
     //Set the scene and add a cube
-    scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
+    GLuint idLocation = glWidgetContext->getShaderProgram()->uniformLocation("id");
+    scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation);
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     
 

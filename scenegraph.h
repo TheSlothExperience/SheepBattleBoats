@@ -16,7 +16,8 @@ class SceneGraph
 private:
     std::string name;
     bool leaf = false;
-
+    int id;
+    
     QQuaternion rotation;
     QVector3D translation;
 
@@ -45,12 +46,14 @@ public:
     void translate(double x, double y, double z);
     void rotate(QQuaternion q);
 
+    void setId(int id) {this->id = id;}
+    int getId() {return this->id;}
     std::string getName() {return name;};
     void setName(std::string name);
     bool isLeaf() {return leaf;};
     SceneGraph* add(Primitive *p);
     SceneGraph* add(SceneGraph *s);
-    void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc);
+    void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
 };
 
 #endif //SCENE_H

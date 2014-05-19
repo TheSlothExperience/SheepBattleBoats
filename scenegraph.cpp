@@ -7,6 +7,7 @@
 #include <QMatrix4x4>
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include <iostream>
 
 #ifdef DEBUG 
 #define D(x) x
@@ -116,7 +117,7 @@ void SceneGraph::setParent(SceneGraph *s) {
     this->parentNode = s;
 }
 
-void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc) {
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc) {
     
     MVStack.push(MVStack.top());
     
@@ -130,9 +131,11 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
     if(leaf) {
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
 	glUniformMatrix4fv(normalLoc, 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
+	glUniform1f(idLoc, (float)id / (float) 10);
+	
 	this->primitive->draw();
     } else {
-	std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc);});
+	std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc);});
     }
 
     MVStack.pop();

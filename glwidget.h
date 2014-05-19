@@ -53,6 +53,7 @@ private:
 
     GLuint fbo;
     GLuint renderTex;
+    GLuint pickingTex;
     GLuint depthBuffer;
 
     GLuint canvasQuad;

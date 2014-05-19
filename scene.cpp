@@ -18,11 +18,12 @@ Scene::Scene(QObject *parent)
 {
     this->modelViewMatrixStack.push(QMatrix4x4());
 }
-Scene::Scene(GLuint mvLoc, GLuint normalLoc, QObject *parent)
+Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
     : QAbstractItemModel(parent)
 {
     this->modelViewMatLocation = mvLoc;
     this->normalMatLocation = normalLoc;
+    this->idLocation = idLoc;
     this->modelViewMatrixStack.push(QMatrix4x4());
 
     this->rootDummy = new SceneGraph();
@@ -151,9 +152,11 @@ QModelIndex Scene::addCube(SceneGraph *node, int tesselationLevel) {
     beginResetModel();
     Primitive *cube = new Cube();
     std::string name("Cube ");
-    name += std::to_string(nextId());
+    int id = nextId();
+    name += std::to_string(id);
     SceneGraph *s = new SceneGraph(cube, name);
-
+    s->setId(id);
+    
     node->add(s);
     endResetModel();
     return createIndex(s->row(), 0, s);
@@ -216,6 +219,6 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
     glUniform3fv(lightPositionLocation, 1, lightDirArray);
     
-    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation);
+    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation);
     modelViewMatrixStack.pop();
 }

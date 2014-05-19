@@ -5,6 +5,8 @@ in vec2 UV;
 out vec3 color;
 
 uniform sampler2D renderedTexture;
+uniform sampler2D pickingTexture;
+
 uniform float selected;
 
 void main(){
