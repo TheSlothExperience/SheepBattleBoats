@@ -262,32 +262,32 @@ void MainWindow::createMenus() {
 void MainWindow::addCube() {
     int tesselationLevel = 0;
     QModelIndex idx = scene->addCube(currentNode, tesselationLevel);
-    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 
 void MainWindow::addCone(){
     int tesselationLevel = 3;
     QModelIndex idx = scene->addCone(currentNode, tesselationLevel);
-    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 void MainWindow::addCylinder(){
     int tesselationLevel = 3;
     QModelIndex idx = scene->addCylinder(currentNode, tesselationLevel);
-    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 void MainWindow::addSphere(){
     int tesselationLevel = 3;
     QModelIndex idx = scene->addSphere(currentNode, tesselationLevel);
-    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 void MainWindow::addTorus(){
     int tesselationLevel = 3;
     QModelIndex idx = scene->addTorus(currentNode, tesselationLevel);
-    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }
 
