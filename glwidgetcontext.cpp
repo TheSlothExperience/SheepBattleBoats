@@ -36,7 +36,7 @@ void GLWidgetContext::initializeGL()
     
     shaderProgram->release();
     
-    loadShaders(":/identity.vert", ":/toTexture.frag", vtexture, ftexture, textureProgram);
+    loadShaders(":/identity.vert", ":/canvas.frag", vtexture, ftexture, textureProgram);
 }
 
 
