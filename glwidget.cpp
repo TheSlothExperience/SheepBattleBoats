@@ -284,6 +284,8 @@ void GLWidget::forceGLupdate() {
 }
 
 void GLWidget::resetCamera() {
-    this->zoom = 0.0;
-    updateGL();
+    if(isActive) {
+	this->camera->reset();
+	updateGL();
+    }
 }

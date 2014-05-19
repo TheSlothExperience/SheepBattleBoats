@@ -23,6 +23,9 @@ OrthoCamera::OrthoCamera(QVector3D position, double width, double height) {
     OrthoCamera(position.x(), position.y(), position.z(), width, height);
 }
 
+void OrthoCamera::rotate(QQuaternion) {
+}
+
 void OrthoCamera::resize(double width, double height) {
     this->projectionMatrix.setToIdentity();
     this->projectionMatrix.ortho(-width/height, width/height, -1.0f, 1.0f, -100.0f, 100.0f);

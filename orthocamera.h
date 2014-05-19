@@ -9,6 +9,7 @@ public:
     OrthoCamera(double x, double y, double z, double width, double height);
     OrthoCamera(QVector3D position, double width, double height);
     void resize(double width, double height);
+    void rotate(QQuaternion q);
 };
 
 #endif

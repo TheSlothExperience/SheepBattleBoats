@@ -13,12 +13,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setWindowTitle("Hello Cube!!");
     setMinimumSize(1000,800);
+    
+    setupGL();
 
     createActions();
     createMenus();
     createToolbar();
-    
-    setupGL();
 
     sceneOutliner = new QTreeView();
     sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
@@ -166,7 +166,10 @@ void MainWindow::createActions() {
 
     resetCameraAction = new QAction("&Reset", this);
     resetCameraAction->setIcon(QIcon(":/img/cam_home.png"));
-    //connect(resetCameraAction, SIGNAL(triggered()), glwidget, SLOT(resetCamera()));
+    connect(resetCameraAction, SIGNAL(triggered()), perspectiveGLWidget, SLOT(resetCamera()));
+    connect(resetCameraAction, SIGNAL(triggered()), topGLWidget, SLOT(resetCamera()));
+    connect(resetCameraAction, SIGNAL(triggered()), frontGLWidget, SLOT(resetCamera()));
+    connect(resetCameraAction, SIGNAL(triggered()), rightGLWidget, SLOT(resetCamera()));
 
     singleViewAction = new QAction("&Single Viewport", this);
     singleViewAction->setShortcut(tr("Ctrl+1"));

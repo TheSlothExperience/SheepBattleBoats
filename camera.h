@@ -46,7 +46,11 @@ public:
 	this->orientation = q * orientation;
     }
     
-
+    virtual void reset() {
+	position = QVector3D();
+	orientation = QQuaternion();
+	poi = QVector3D();
+    }
     virtual void resize(double width, double height) = 0;
 
 };
