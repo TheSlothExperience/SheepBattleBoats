@@ -41,67 +41,65 @@ MainWindow::~MainWindow()
 
 }
 
+template <class UnaryFunction >
+void MainWindow::mapWidgets(UnaryFunction f) {
+    std::for_each(widgetList.begin(), widgetList.end(), f);
+}
+
+/*
+ * Despair all ye who enter here, --
+ * in this unholy mess of signals and slots.
+ */
 void MainWindow::setupGL() {
     //Set central OpenGL widget
     glWidgetContext = new GLWidgetContext();
     glWidgetContext->makeCurrent();
     glWidgetContext->initializeGL();
-
     
+    //Set the scene and add a cube
     scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation());
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
     currentNode = scene->root();
     addCube();
-    
+
+    //Create the widgets
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
+    widgetList.push_back(perspectiveGLWidget);
     perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
-    perspectiveGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-    perspectiveGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
-    perspectiveGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
-    perspectiveGLWidget->setScene(scene);
-    
-    connect(perspectiveGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
-    connect(perspectiveGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
-    connect(this, SIGNAL(updateGL()), perspectiveGLWidget, SLOT(forceGLupdate()));
-    connect(perspectiveGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
     
     frontGLWidget = new GLWidget(this, glWidgetContext);
+    widgetList.push_back(frontGLWidget);
     frontGLWidget->setOrthoCamera(0, 0, 3);
-    frontGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-    frontGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
-    frontGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
-    frontGLWidget->setScene(scene);
-    
-    connect(frontGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
-    connect(frontGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
-    connect(this, SIGNAL(updateGL()), frontGLWidget, SLOT(forceGLupdate()));
-    connect(frontGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
     
     topGLWidget = new GLWidget(this, glWidgetContext);
+    widgetList.push_back(topGLWidget);
     topGLWidget->setOrthoCamera(0, 3, 0);
-    topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-    topGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
-    topGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
-    topGLWidget->setScene(scene);
-    
-    connect(topGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
-    connect(topGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
-    connect(this, SIGNAL(updateGL()), topGLWidget, SLOT(forceGLupdate()));
-    connect(topGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
     
     rightGLWidget = new GLWidget(this, glWidgetContext);
+    widgetList.push_back(rightGLWidget);
     rightGLWidget->setOrthoCamera(3, 0, 0);
-    rightGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
-    rightGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
-    rightGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
-    rightGLWidget->setScene(scene);
+
+
+    //Map over the widgets setting the scene and connecting the signals
+    mapWidgets([=](GLWidget *w){w->setScene(scene);});
+    mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
+    mapWidgets([=](GLWidget *w){w->setTextureProgram(glWidgetContext->getTextureProgram());});
+    mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
     
-    connect(rightGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
-    connect(rightGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
-    connect(this, SIGNAL(updateGL()), rightGLWidget, SLOT(forceGLupdate()));
-    connect(rightGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
+    mapWidgets([=](GLWidget *w){
+	    connect(w, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
+	});
+    mapWidgets([=](GLWidget *w){
+	    connect(w, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
+	});
+    mapWidgets([=](GLWidget *w){
+	    connect(this, SIGNAL(updateGL()), w, SLOT(forceGLupdate()));
+	});
+    mapWidgets([=](GLWidget *w){
+	    connect(w, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
+	});
 
-
+    //Add the four viewports to the screen in splitters
     topSplitter = new QSplitter(this);
     topSplitter->addWidget(perspectiveGLWidget);
     topSplitter->addWidget(frontGLWidget);

@@ -35,6 +35,7 @@ public:
     void initializeGL();
 
     void setActive(bool active = true);
+    bool getActive() {return isActive;};
     void setCameraActive(bool active = true) {this->cameraActive = active;};
 
 private:

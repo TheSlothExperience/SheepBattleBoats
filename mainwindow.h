@@ -6,6 +6,7 @@
 #include <QtWidgets>
 #include "glwidget.h"
 #include "glwidgetcontext.h"
+#include <vector>
 
 class MainWindow : public QMainWindow
 {
@@ -54,6 +55,7 @@ private:
     GLWidget *frontGLWidget;
     GLWidget *topGLWidget;
     GLWidget *rightGLWidget;
+    std::vector<GLWidget*> widgetList;
 
     QTreeView *sceneOutliner;
     QDockWidget *outlinerDock;
@@ -61,6 +63,9 @@ private:
     QSplitter *topSplitter;
     QSplitter *bottomSplitter;
     QSplitter *sideSplitter;
+
+    template <class UnaryFunction >
+    void mapWidgets(UnaryFunction f);
     
     void createActions();
     void createMenus();
