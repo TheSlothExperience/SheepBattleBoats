@@ -180,6 +180,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 	lastPoint = event->pos();
 	dragging = true;
     }
+    emit switchActive(this);
 }
 
 /*
@@ -218,7 +219,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	double ytrans = -(event->pos().y() - lastPoint.y()) / 1000.0; //Qt y-coord is inverted
 	QVector4D trans(xtrans, ytrans, 0, 1);
 	QVector4D worldTrans = trans * camera->getCameraMatrix();
-	emit translate(worldTrans.x(), worldTrans.y(), worldTrans.z());
+	if(cameraActive) {
+	    this->camera->translate(-worldTrans.x(), -worldTrans.y(), -worldTrans.z());
+	    updateGL();
+	} else {
+	    emit translate(worldTrans.x(), worldTrans.y(), worldTrans.z());
+	}
     }
     
     if ((event->buttons() & Qt::LeftButton) && dragging) {
@@ -246,7 +252,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	QQuaternion newRot = QQuaternion(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
 	QQuaternion cameraQuat = M4toQuat(camera->getCameraMatrix());
 	QQuaternion worldQuat = cameraQuat.conjugate() * newRot * cameraQuat;
-	emit rotate(&worldQuat);
+	if(cameraActive) {
+	    this->camera->rotate(newRot);
+	    updateGL();
+	} else {
+	    emit rotate(&worldQuat);	    
+	}
     }
 }
 

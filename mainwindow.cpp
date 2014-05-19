@@ -63,6 +63,7 @@ void MainWindow::setupGL() {
     connect(perspectiveGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
     connect(perspectiveGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
     connect(this, SIGNAL(updateGL()), perspectiveGLWidget, SLOT(forceGLupdate()));
+    connect(perspectiveGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
     
     frontGLWidget = new GLWidget(this, glWidgetContext);
     frontGLWidget->setOrthoCamera(0, 0, 3);
@@ -74,6 +75,7 @@ void MainWindow::setupGL() {
     connect(frontGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
     connect(frontGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
     connect(this, SIGNAL(updateGL()), frontGLWidget, SLOT(forceGLupdate()));
+    connect(frontGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
     
     topGLWidget = new GLWidget(this, glWidgetContext);
     topGLWidget->setOrthoCamera(0, 3, 0);
@@ -85,6 +87,7 @@ void MainWindow::setupGL() {
     connect(topGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
     connect(topGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
     connect(this, SIGNAL(updateGL()), topGLWidget, SLOT(forceGLupdate()));
+    connect(topGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
     
     rightGLWidget = new GLWidget(this, glWidgetContext);
     rightGLWidget->setOrthoCamera(3, 0, 0);
@@ -96,6 +99,7 @@ void MainWindow::setupGL() {
     connect(rightGLWidget, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
     connect(rightGLWidget, SIGNAL(rotate(QQuaternion*)), this, SLOT(rotateNode(QQuaternion*)));
     connect(this, SIGNAL(updateGL()), rightGLWidget, SLOT(forceGLupdate()));
+    connect(rightGLWidget, SIGNAL(switchActive(GLWidget*)), this, SLOT(setActiveViewport(GLWidget*)));
 
 
     topSplitter = new QSplitter(this);
@@ -128,7 +132,10 @@ void MainWindow::createToolbar() {
     //connect(tesselationSlider, SIGNAL(valueChanged(int)), glwidget, SLOT(setTesselation(int)));
     toolbar->addWidget(tesselationSlider);
 
+    toolbar->addAction(cameraModeAction);
+    toolbar->addAction(objectModeAction);
     toolbar->addAction(resetCameraAction);
+
     toolbar->addSeparator();
 
     viewDropButton = new QToolButton(this);
@@ -188,10 +195,18 @@ void MainWindow::createActions() {
 
     cameraModeAction = new QAction("Camera Mode", this);
     cameraModeAction->setIcon(QIcon(":/img/camera.png"));
-    cameraModeAciton->setCheckable(true);
+    cameraModeAction->setCheckable(true);
+    connect(cameraModeAction, SIGNAL(triggered()), this, SLOT(setCameraInteraction()));
 
     objectModeAction = new QAction("Object Mode", this);
     objectModeAction->setIcon(QIcon(":/img/select.png"));
+    objectModeAction->setCheckable(true);
+    connect(objectModeAction, SIGNAL(triggered()), this, SLOT(setObjectInteraction()));
+
+    interactionGroup = new QActionGroup(this);
+    interactionGroup->addAction(cameraModeAction);
+    interactionGroup->addAction(objectModeAction);
+    objectModeAction->setChecked(true);
 
 
     addCubeAction = new QAction(this);
@@ -289,6 +304,33 @@ void MainWindow::setQuadView() {
     statusbar->showMessage("Setting quad view", 2000);
     bottomSplitter->show();
     frontGLWidget->show();
+}
+	    
+void MainWindow::setActiveViewport(GLWidget *active) {
+    perspectiveGLWidget->setActive(false);
+    topGLWidget->setActive(false);
+    frontGLWidget->setActive(false);
+    rightGLWidget->setActive(false);
+
+    active->setActive(true);
+}
+	    
+void MainWindow::setCameraInteraction() {
+    perspectiveGLWidget->setCameraActive(true);
+    topGLWidget->setCameraActive(true);
+    frontGLWidget->setCameraActive(true);
+    rightGLWidget->setCameraActive(true);
+
+    statusbar->showMessage("Camera movement activate!", 2000);
+}
+	    
+void MainWindow::setObjectInteraction() {
+    perspectiveGLWidget->setCameraActive(false);
+    topGLWidget->setCameraActive(false);
+    frontGLWidget->setCameraActive(false);
+    rightGLWidget->setCameraActive(false);
+    
+    statusbar->showMessage("Moving dem objects.", 2000);
 }
 
 void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {

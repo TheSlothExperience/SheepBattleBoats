@@ -23,19 +23,27 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
     void setScene(Scene *scene);
+
     void setShaderProgram(QOpenGLShaderProgram *sp);
     void setTextureProgram(QOpenGLShaderProgram *tp);
+
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
     void setOrthoCamera(double x, double y, double z);
     void setProjectionLocation(GLuint pL);
+
     void initializeGL();
+
+    void setActive(bool active = true) {this->isActive = active;};
+    void setCameraActive(bool active = true) {this->cameraActive = active;};
 
 private:
     int tesselationLevel;
 
     float zoom;
     bool dragging;
+    bool isActive = false;
+    bool cameraActive = false;
     
     QPoint lastPoint;
 
@@ -74,6 +82,7 @@ public slots:
 signals:
     void translate(double x, double y, double z);
     void rotate(QQuaternion *q);
+    void switchActive(GLWidget *active);
 };
 
 #endif

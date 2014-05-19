@@ -75,6 +75,10 @@ public slots:
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);
+
+    void setObjectInteraction();
+    void setCameraInteraction();
+    void setActiveViewport(GLWidget *active);
     
     void showAboutBox();
     void setSingleView();
