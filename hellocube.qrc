@@ -16,5 +16,7 @@
         <file>img/view-single.png</file>
         <file>phong.frag</file>
         <file>phong.vert</file>
+        <file>toTexture.frag</file>
+        <file>identity.vert</file>
     </qresource>
 </RCC>

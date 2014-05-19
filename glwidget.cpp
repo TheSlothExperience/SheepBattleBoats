@@ -39,6 +39,50 @@ void GLWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 
     glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+
+    //Create our fbo to hold the rendered scene
+    //and the pesky picking buffer
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    //Create texture to render to
+    glGenTextures(1, &renderTex);
+    
+    glBindTexture(GL_TEXTURE_2D, renderTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTex, 0);
+
+    //Now setup the depth buffer
+    glGenRenderbuffers(1, &depthBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+	std::cout << "SOMETHING WENT WRONG IN THE FBO, CHIEF!!" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+    //Create the drawing quad
+    static const GLfloat g_quad_vertex_buffer_data[] = {
+	-1.0f, -1.0f, 0.0f,
+	1.0f, -1.0f, 0.0f,
+	-1.0f,  1.0f, 0.0f,
+	-1.0f,  1.0f, 0.0f,
+	1.0f, -1.0f, 0.0f,
+	1.0f,  1.0f, 0.0f,
+    };
+ 
+    glGenBuffers(1, &canvasQuad);
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
 }
 
 
@@ -46,18 +90,56 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Load the phong shading program
     shaderProgram->bind();
     
     glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+
+    //Bind the fbo and the textures to draw to
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, DrawBuffers);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Draw to the whole texture(the size of the texture, maybe change?)
+    glViewport(0,0,1024,768);
+    //and set tex 0 as active
+    glActiveTexture(GL_TEXTURE0);
     
     if(scene != NULL) {
+	//Discombobulate!
 	scene->draw(camera->getCameraMatrix());	
     } else {
 	std::cout << "no scene yet" << std::endl;
     }
-    
+
+    //Release and relax, brah
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     shaderProgram->release();
+
+
+    //Now load program to draw to the magic quad
+    textureProgram->bind();
+    //This time draw to the whole screen
+    glViewport(0,0,this->width(), this->height());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Make sure the tex 0 is still active
+    glActiveTexture(GL_TEXTURE0);
+    textureLocation = textureProgram->uniformLocation("renderedTexture");
+    //Send the rendered texture down the pipes
+    glBindTexture(GL_TEXTURE_2D, renderTex);
+    glUniform1i(textureLocation, 0);
+
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
     
+    textureProgram->release();
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -87,6 +169,9 @@ void GLWidget::setScene(Scene *scene) {
 
 void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
     this->shaderProgram = sp;
+}
+void GLWidget::setTextureProgram(QOpenGLShaderProgram *tp) {
+    this->textureProgram = tp;
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

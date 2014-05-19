@@ -32,6 +32,10 @@ private:
     QAction *dualViewAction;
     QAction *quadViewAction;
     QActionGroup *viewportGroup;
+
+    QAction *cameraModeAction;
+    QAction *objectModeAction;
+    QActionGroup *interactionGroup;
     QAction *resetCameraAction;
 
     QAction *addCubeAction;

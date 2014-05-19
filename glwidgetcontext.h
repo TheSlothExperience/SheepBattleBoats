@@ -23,14 +23,18 @@ public:
     GLuint getNormalMatLocation() {return this->normalMatLocation;};
     GLuint getLightPositionLocation() {return this->lightPositionLocation;};
     QOpenGLShaderProgram* getShaderProgram() {return this->shaderProgram;};
+    QOpenGLShaderProgram* getTextureProgram() {return this->textureProgram;};
     
     void initializeGL();
 
 private:
     QOpenGLShaderProgram *shaderProgram;
-    QOpenGLShader *vshader;
-    QOpenGLShader *fshader;
-    void loadShaders(QString vshader, QString fshader);
+    QOpenGLShaderProgram *textureProgram;
+    QOpenGLShader *vphong;
+    QOpenGLShader *fphong;
+    QOpenGLShader *vtexture;
+    QOpenGLShader *ftexture;
+    void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;
@@ -40,10 +44,6 @@ private:
 protected:
     void paintGL();
     void resizeGL(int width, int height);
-    // void mousePressEvent(QMouseEvent *event);
-    // void mouseMoveEvent(QMouseEvent *event);
-    // void mouseReleaseEvent(QMouseEvent *event);
-    // void wheelEvent (QWheelEvent *event);
 };
 
 #endif

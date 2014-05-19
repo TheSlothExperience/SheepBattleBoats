@@ -24,6 +24,7 @@ public:
     QSize sizeHint() const;
     void setScene(Scene *scene);
     void setShaderProgram(QOpenGLShaderProgram *sp);
+    void setTextureProgram(QOpenGLShaderProgram *tp);
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
     void setOrthoCamera(double x, double y, double z);
@@ -39,7 +40,15 @@ private:
     QPoint lastPoint;
 
     QOpenGLShaderProgram *shaderProgram;
+    QOpenGLShaderProgram *textureProgram;
 
+    GLuint fbo;
+    GLuint renderTex;
+    GLuint depthBuffer;
+
+    GLuint canvasQuad;
+    GLuint textureLocation;
+    
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;
     GLuint normalMatLocation;

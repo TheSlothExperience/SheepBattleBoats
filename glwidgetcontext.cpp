@@ -13,6 +13,8 @@
 GLWidgetContext::GLWidgetContext(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
+    shaderProgram = new QOpenGLShaderProgram();
+    textureProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -22,9 +24,8 @@ GLWidgetContext::~GLWidgetContext()
 
 void GLWidgetContext::initializeGL()
 {   
-    loadShaders(":/phong.vert", ":/phong.frag");
+    loadShaders(":/phong.vert", ":/phong.frag", vphong, fphong, shaderProgram);
 
-    
     shaderProgram->bind();
 
     perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
@@ -34,6 +35,8 @@ void GLWidgetContext::initializeGL()
 
     
     shaderProgram->release();
+    
+    loadShaders(":/identity.vert", ":/toTexture.frag", vtexture, ftexture, textureProgram);
 }
 
 
@@ -50,32 +53,30 @@ void GLWidgetContext::resizeGL(int width, int height)
  * `fshader`, compiles them and links them to the shader program.
  * Outputs warnings and compilation errors should an error occur.
  */
-void GLWidgetContext::loadShaders(QString vshader, QString fshader) {
-    shaderProgram = new QOpenGLShaderProgram;
-    
-    QFileInfo vsh(vshader);
+void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog) {
+    QFileInfo vsh(vstring);
     if (vsh.exists()) {
-	this->vshader = new QOpenGLShader(QOpenGLShader::Vertex);
-	if (this->vshader->compileSourceFile(vshader)) {
-	    shaderProgram->addShader(this->vshader);
+	vshader = new QOpenGLShader(QOpenGLShader::Vertex);
+	if (vshader->compileSourceFile(vstring)) {
+	    prog->addShader(vshader);
 	} else {
-	    qWarning() << "Vertex shader error" << this->vshader->log();
+	    qWarning() << "Vertex shader error" << vshader->log();
 	}
     } else {
-	qWarning() << "Vertex shader source file " << vshader << " not found.";
+	qWarning() << "Vertex shader source file " << vstring << " not found.";
     }
     
-    QFileInfo fsh(fshader);
+    QFileInfo fsh(fstring);
     if (fsh.exists()) {
-	this->fshader = new QOpenGLShader(QOpenGLShader::Fragment);
-	if (this->fshader->compileSourceFile(fshader)) {
-	    shaderProgram->addShader(this->fshader);
+	fshader = new QOpenGLShader(QOpenGLShader::Fragment);
+	if (fshader->compileSourceFile(fstring)) {
+	    prog->addShader(fshader);
 	} else {
-	    qWarning() << "Vertex shader error" << this->fshader->log();
+	    qWarning() << "Vertex shader error" << fshader->log();
 	}
     } else {
-	qWarning() << "Vertex shader source file " << fshader << " not found.";
+	qWarning() << "Vertex shader source file " << fstring << " not found.";
     }
 
-    shaderProgram->link();
+    prog->link();
 }

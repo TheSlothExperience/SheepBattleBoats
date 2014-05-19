@@ -56,6 +56,7 @@ void MainWindow::setupGL() {
     perspectiveGLWidget = new GLWidget(this, glWidgetContext);
     perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
     perspectiveGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    perspectiveGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
     perspectiveGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     perspectiveGLWidget->setScene(scene);
     
@@ -66,6 +67,7 @@ void MainWindow::setupGL() {
     frontGLWidget = new GLWidget(this, glWidgetContext);
     frontGLWidget->setOrthoCamera(0, 0, 3);
     frontGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    frontGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
     frontGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     frontGLWidget->setScene(scene);
     
@@ -76,6 +78,7 @@ void MainWindow::setupGL() {
     topGLWidget = new GLWidget(this, glWidgetContext);
     topGLWidget->setOrthoCamera(0, 3, 0);
     topGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    topGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
     topGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     topGLWidget->setScene(scene);
     
@@ -86,6 +89,7 @@ void MainWindow::setupGL() {
     rightGLWidget = new GLWidget(this, glWidgetContext);
     rightGLWidget->setOrthoCamera(3, 0, 0);
     rightGLWidget->setShaderProgram(glWidgetContext->getShaderProgram());
+    rightGLWidget->setTextureProgram(glWidgetContext->getTextureProgram());
     rightGLWidget->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());
     rightGLWidget->setScene(scene);
     
@@ -180,6 +184,14 @@ void MainWindow::createActions() {
     viewportGroup->addAction(dualViewAction);
     viewportGroup->addAction(quadViewAction);
     singleViewAction->setChecked(true);
+
+
+    cameraModeAction = new QAction("Camera Mode", this);
+    cameraModeAction->setIcon(QIcon(":/img/camera.png"));
+    cameraModeAciton->setCheckable(true);
+
+    objectModeAction = new QAction("Object Mode", this);
+    objectModeAction->setIcon(QIcon(":/img/select.png"));
 
 
     addCubeAction = new QAction(this);
