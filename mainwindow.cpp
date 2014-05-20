@@ -354,12 +354,18 @@ void MainWindow::setSingleView() {
     statusbar->showMessage("Setting single view", 2000);
     bottomSplitter->hide();
     frontGLWidget->hide();
+    setActiveViewport(perspectiveGLWidget);
 }
 
 void MainWindow::setDualView() {
     statusbar->showMessage("Setting dual view", 2000);
     bottomSplitter->hide();
     frontGLWidget->show();
+    //Switch to first VP, except if the second one was
+    //already active.
+    if(!frontGLWidget->getActive()) {
+	setActiveViewport(perspectiveGLWidget);
+    }
 }
 
 void MainWindow::setQuadView() {
