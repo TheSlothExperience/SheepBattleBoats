@@ -244,7 +244,6 @@ QModelIndex Scene::addLight() {
     lights.push_back(s);
     endResetModel();
 
-    std::cout << "We got lights: " << lights.size() << std::endl;
     return createIndex(s->row(), 0, s);
 }
 

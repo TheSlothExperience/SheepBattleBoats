@@ -143,21 +143,21 @@ void MainWindow::createColorDock() {
     redSlider->setValue(255);
     connect(redSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
     
-    blueSlider = new QSlider(Qt::Horizontal,this);
-    blueSlider->setRange(0,255);
-    blueSlider->setValue(255);
-    connect(blueSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
-    
     greenSlider = new QSlider(Qt::Horizontal,this);
     greenSlider->setRange(0,255);
     greenSlider->setValue(255);
     connect(greenSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
+    
+    blueSlider = new QSlider(Qt::Horizontal,this);
+    blueSlider->setRange(0,255);
+    blueSlider->setValue(255);
+    connect(blueSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
 
     QWidget *contents = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(contents);
     layout->addWidget(redSlider);
-    layout->addWidget(blueSlider);
     layout->addWidget(greenSlider);
+    layout->addWidget(blueSlider);
     colorDock->setWidget(contents);
     addDockWidget(Qt::LeftDockWidgetArea, colorDock);
 }
@@ -379,9 +379,6 @@ void MainWindow::addLight(){
     emit updateGL();
 }
 
-void MainWindow::changeCurrent(QModelIndex q){
-    sceneOutliner->selectionModel()->setCurrentIndex(q, QItemSelectionModel::Current | QItemSelectionModel::Select);
-}
 void MainWindow::changeActiveId(int id){
     mapWidgets([=](GLWidget *w){w->changeActiveId(id);});
 }
@@ -455,6 +452,17 @@ void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex
     statusbar->showMessage(currentNode->getName().c_str(), 2000);
 }
 
+void MainWindow::changeCurrent(QModelIndex q){
+    sceneOutliner->selectionModel()->setCurrentIndex(q, QItemSelectionModel::Current | QItemSelectionModel::Select);
+    //Also get the colors!
+    SceneGraph *s = static_cast<SceneGraph*>(q.internalPointer());
+    GLfloat *color = s->getColor();
+    redSlider->setValue(color[0] * 255);
+    greenSlider->setValue(color[1] * 255);
+    blueSlider->setValue(color[2] * 255);
+    statusbar->showMessage(s->getName().c_str(), 2000);
+}
+
 void MainWindow::translateNode(double x, double y, double z) {
     this->currentNode->translate(x, y, z);
     emit updateGL();
@@ -466,5 +474,6 @@ void MainWindow::rotateNode(QQuaternion *q) {
 }
 
 void MainWindow::changedColor() {
-    //this->currentNode->changeColor(redSlider->getPosition() / (float) 255, greenSlider->getPosition() / (float) 255, blueSlider->getPosition() / (float) 255, 1.0f)
+    this->currentNode->changeColor(redSlider->sliderPosition() / (float) 255, greenSlider->sliderPosition() / (float) 255, blueSlider->sliderPosition() / (float) 255, 1.0f);
+    emit updateGL();
 }

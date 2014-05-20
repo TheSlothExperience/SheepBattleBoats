@@ -47,6 +47,7 @@ public:
     void rotate(QQuaternion q);
 
     virtual void changeColor(float r, float g, float b, float a) {}
+    GLfloat* getColor() {return this->color;}
 
     void setId(int id) {this->id = id;}
     int getId() {return this->id;}

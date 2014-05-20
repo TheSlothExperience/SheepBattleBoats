@@ -1,4 +1,5 @@
 #include "lightnode.h"
+#include <iostream>
 
 LightNode::LightNode(Primitive *p, std::string name)
     : SceneGraph(p, name)
@@ -11,4 +12,12 @@ LightNode::LightNode(Primitive *p, std::string name)
 
 QVector3D LightNode::getPosition() {
     return translation;
+}
+
+void LightNode::changeColor(float r, float g, float b, float a) {
+    color[0] = r;
+    color[1] = g;
+    color[2] = b;
+    color[3] = a;
+    std::cout << color[0] << " " << color[1] << " " << color[2] << std::endl;
 }

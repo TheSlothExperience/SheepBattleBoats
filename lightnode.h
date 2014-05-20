@@ -24,8 +24,8 @@ public:
     QVector3D getPosition();
     QVector4D getLightColor() {return lightColor;}
     void setLightColor(QVector4D lc) {lightColor = lc;}
-    GLfloat* getColor() {return this->color;}
+    
+    void changeColor(float r, float g, float b, float a);
 };
-
 
 #endif
