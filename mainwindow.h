@@ -104,6 +104,8 @@ public slots:
     void changeActiveId(int id);
 
     void setTesselation(int t);
+
+    void changedColor();
     
     void showAboutBox();
     void setSingleView();

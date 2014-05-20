@@ -141,12 +141,17 @@ void MainWindow::createColorDock() {
     redSlider = new QSlider(Qt::Horizontal, this);
     redSlider->setRange(0,255);
     redSlider->setValue(255);
+    connect(redSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
+    
     blueSlider = new QSlider(Qt::Horizontal,this);
     blueSlider->setRange(0,255);
     blueSlider->setValue(255);
+    connect(blueSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
+    
     greenSlider = new QSlider(Qt::Horizontal,this);
     greenSlider->setRange(0,255);
     greenSlider->setValue(255);
+    connect(greenSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
 
     QWidget *contents = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(contents);
@@ -458,4 +463,8 @@ void MainWindow::translateNode(double x, double y, double z) {
 void MainWindow::rotateNode(QQuaternion *q) {
     this->currentNode->rotate(*q);
     emit updateGL();
+}
+
+void MainWindow::changedColor() {
+    //this->currentNode->changeColor(redSlider->getPosition() / (float) 255, greenSlider->getPosition() / (float) 255, blueSlider->getPosition() / (float) 255, 1.0f)
 }

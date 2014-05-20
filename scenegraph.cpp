@@ -20,6 +20,10 @@ SceneGraph::SceneGraph(bool isleaf, SceneGraph *parent) {
     primitive = NULL;
     name = "SceneGraph";
     this->parentNode = parent;
+    color[0] = 0.8;
+    color[1] = 0.3;
+    color[2] = 0.0;
+    color[3] = 1.0;
 }
 
 SceneGraph::SceneGraph(Primitive *p, SceneGraph *parent) {
@@ -27,12 +31,20 @@ SceneGraph::SceneGraph(Primitive *p, SceneGraph *parent) {
     this->leaf = true;
     name = "SceneGraph w. Primitive";
     this->parentNode = parent;
+    color[0] = 0.8;
+    color[1] = 0.3;
+    color[2] = 0.0;
+    color[3] = 1.0;
 }
 
 SceneGraph::SceneGraph(Primitive *p, std::string name) {
     this->primitive = p;
     this->leaf = true;
     this->name = name;
+    color[0] = 0.8;
+    color[1] = 0.3;
+    color[2] = 0.0;
+    color[3] = 1.0;
 }
 
 
@@ -117,7 +129,7 @@ void SceneGraph::setParent(SceneGraph *s) {
     this->parentNode = s;
 }
 
-void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc) {
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc) {
     
     MVStack.push(MVStack.top());
     
@@ -127,7 +139,8 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
     QMatrix4x4 tempRot;
     tempRot.rotate(this->rotation.normalized());
     MVStack.top() *= tempRot;
-    
+
+    //If the node is a leaf, draw its contents
     if(leaf) {
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
 	glUniformMatrix4fv(normalLoc, 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
@@ -135,10 +148,13 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
 	int g = (id & 0x0000FF00) >>  8;
 	int b = (id & 0x00FF0000) >> 16;
 	glUniform4f(idLoc, r/255.0f, g/255.0f, b/255.0f, 1.0f);
+
+	glUniform4fv(colorLoc, 1, color);
 	
 	this->primitive->draw();
     } else {
-	std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc);});
+	//Else, recurse into its children
+	std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc, colorLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc, colorLoc);});
     }
 
     MVStack.pop();

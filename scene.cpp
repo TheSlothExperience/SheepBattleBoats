@@ -262,7 +262,8 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     }
     glUniform3fv(shaderProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
     glUniform1i(shaderProgram->uniformLocation("numLights"), lights.size());
-    
-    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation);
+
+    GLuint colorLocation = shaderProgram->uniformLocation("color");
+    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
     modelViewMatrixStack.pop();
 }

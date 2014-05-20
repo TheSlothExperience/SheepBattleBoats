@@ -24,6 +24,7 @@ protected:
     SceneGraph *parentNode;
 
     std::vector<SceneGraph* > children;
+    GLfloat color[4];
 
 public:
     SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
@@ -45,6 +46,8 @@ public:
     void translate(double x, double y, double z);
     void rotate(QQuaternion q);
 
+    virtual void changeColor(float r, float g, float b, float a) {}
+
     void setId(int id) {this->id = id;}
     int getId() {return this->id;}
     std::string getName() {return name;};
@@ -52,7 +55,7 @@ public:
     bool isLeaf() {return leaf;};
     SceneGraph* add(Primitive *p);
     SceneGraph* add(SceneGraph *s);
-    void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
+    void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
 };
 
 #endif //SCENE_H
