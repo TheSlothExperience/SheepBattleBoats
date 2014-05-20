@@ -30,6 +30,5 @@ void main()
     // Calculating The Vector From The Vertex Position To The Light Position
     L = normalize(lightPosition - V);
 
-    //id4 = pack(id);
     id4 = id;
 } 

@@ -9,11 +9,10 @@
 #include <QVector3D>
 
 #include "primitive.h"
-#include "cube.h"
 
 class SceneGraph
 {
-private:
+protected:
     std::string name;
     bool leaf = false;
     int id;

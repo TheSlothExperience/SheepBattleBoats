@@ -24,6 +24,4 @@ void main()
 
     outputColor = vec4(k_amb + k_diff + k_spec);
     pickingColor = id4;
-    //outputColor = id4.abgr;
-    //outputColor = vec4(id4);
 }

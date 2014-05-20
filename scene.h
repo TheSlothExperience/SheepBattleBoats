@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include "scenegraph.h"
+#include "lightnode.h"
 
 #include <stack>
 #include <map>
@@ -25,6 +26,8 @@ private:
     GLuint idLocation;
 
     std::map<int, SceneGraph*> identifier;
+
+    std::vector<LightNode*> lights;
 
     QVector4D lightPosition;
     std::stack<QMatrix4x4> modelViewMatrixStack;
@@ -55,7 +58,9 @@ public:
     QModelIndex addCylinder(SceneGraph *node, int tesselationLevel); 
     QModelIndex addCone(SceneGraph *node, int tesselationLevel); 
     QModelIndex addSphere(SceneGraph *node, int tesselationLevel); 
-    QModelIndex addTorus(SceneGraph *node, int tesselationLevel);   
+    QModelIndex addTorus(SceneGraph *node, int tesselationLevel);
+    
+    QModelIndex addLight();  
     
     SceneGraph *root() {return rootNode;};
     QModelIndex identify(int i);

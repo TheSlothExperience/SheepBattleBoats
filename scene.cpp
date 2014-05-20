@@ -7,6 +7,7 @@
 #include "cone.h"
 #include "sphere.h"
 #include "torus.h"
+#include "light.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -226,6 +227,24 @@ QModelIndex Scene::addTorus(SceneGraph *node, int tesselationLevel) {
 
     node->add(s);
     endResetModel();
+    return createIndex(s->row(), 0, s);
+}
+
+QModelIndex Scene::addLight() {
+    beginResetModel();
+    Primitive *light = new Light();
+    std::string name("Light ");
+    int id = nextId();
+    name += std::to_string(id);
+    LightNode *s = new LightNode(light, name);
+    s->setId(id);
+    identifier[id] = s;
+
+    rootNode->add(s);
+    lights.push_back(s);
+    endResetModel();
+
+    std::cout << "We got lights: " << lights.size() << std::endl;
     return createIndex(s->row(), 0, s);
 }
 

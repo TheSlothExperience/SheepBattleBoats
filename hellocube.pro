@@ -20,19 +20,22 @@ SOURCES += main.cpp\
         glwidgetcontext.cpp\
         scene.cpp\
         scenegraph.cpp\
+        lightnode.cpp \
         perspectivecamera.cpp\
         orthocamera.cpp\
         cube.cpp \
         cone.cpp \
         sphere.cpp \
         torus.cpp \
-        cylinder.cpp
+        cylinder.cpp \
+        light.cpp
 
 HEADERS  += mainwindow.h\
         glwidget.h\
         glwidgetcontext.h\
         scene.h\
         scenegraph.h\
+        lightnode.h\
         camera.h\
         perspectivecamera.h\
         orthocamera.h\
@@ -40,7 +43,8 @@ HEADERS  += mainwindow.h\
         cone.h \
         sphere.h \
         torus.h \
-        cylinder.h
+        cylinder.h\
+        light.h	
 
 RESOURCES += \
     hellocube.qrc

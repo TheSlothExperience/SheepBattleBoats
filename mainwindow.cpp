@@ -161,6 +161,9 @@ void MainWindow::createToolbar() {
     toolbar->addAction(addCylinderAction);
     toolbar->addAction(addSphereAction);
     toolbar->addAction(addTorusAction);
+
+    toolbar->addSeparator();
+    toolbar->addAction(addLightAction);
     
     addToolBar(toolbar);
 }
@@ -240,7 +243,11 @@ void MainWindow::createActions() {
     
     addConeAction = new QAction(this);
     addConeAction->setIcon(QIcon(":/img/cone.png"));
-    connect(addConeAction, SIGNAL(triggered()), this, SLOT(addCone()));
+    connect(addConeAction, SIGNAL(triggered()), this, SLOT(addCone()));;
+    
+    addLightAction = new QAction(this);
+    addLightAction->setIcon(QIcon(":/img/light.png"));
+    connect(addLightAction, SIGNAL(triggered()), this, SLOT(addLight()));
 }
 
 void MainWindow::createMenus() {
@@ -331,6 +338,12 @@ void MainWindow::addSphere(){
 }
 void MainWindow::addTorus(){
     QModelIndex idx = scene->addTorus(currentNode, tesselationLevel);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
+    emit updateGL();
+}
+
+void MainWindow::addLight(){
+    QModelIndex idx = scene->addLight();
     sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
 }

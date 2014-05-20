@@ -50,6 +50,8 @@ private:
     QAction *addConeAction;
     QAction *addSphereAction;
 
+    QAction *addLightAction;
+
     QMenu *helpMenu;
     QAction *aboutAction;
 
@@ -82,6 +84,8 @@ public slots:
     void addCylinder();
     void addSphere();
     void addTorus();
+
+    void addLight();
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);
