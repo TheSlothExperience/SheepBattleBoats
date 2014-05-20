@@ -83,7 +83,7 @@ bool SceneGraph::removeChildren(int position, int count) {
     }
 
     for (int row = 0; row < count; ++row) {
-	children.erase(children.begin() + row);
+	children.erase(children.begin() + position + row);
     }
     return true;
 }
