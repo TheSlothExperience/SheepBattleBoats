@@ -2,7 +2,7 @@
 
 out vec3 N;
 out vec3 V;
-out vec3 L;
+//out vec3 L;
 out vec4 id4;
 
 layout(location = 0) in vec4 position;
@@ -15,7 +15,7 @@ uniform mat4 normalMatrix;
 
 uniform vec4 id;
 
-uniform vec3 lightPosition;
+//uniform vec3 lightPosition;
 
 void main()
 {
@@ -28,7 +28,7 @@ void main()
     V = vec3(modelViewMatrix * position);
     
     // Calculating The Vector From The Vertex Position To The Light Position
-    L = normalize(lightPosition - V);
+    //L = normalize(lightPosition - V);
 
     id4 = id;
 } 

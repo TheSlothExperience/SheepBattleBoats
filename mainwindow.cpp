@@ -51,6 +51,7 @@ void MainWindow::setupGL() {
     GLuint idLocation = glWidgetContext->getShaderProgram()->uniformLocation("id");
     scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation);
     scene->setLightLocation(glWidgetContext->getLightPositionLocation());
+    scene->setShaderProgram(glWidgetContext->getShaderProgram());
     
 
     sceneOutliner = new QTreeView();

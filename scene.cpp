@@ -255,7 +255,9 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     
     QVector4D lightDir = cameraMatrix * lightPosition;
     GLfloat lightDirArray[3] = {lightDir.x(), lightDir.y(), lightDir.z()};
-    glUniform3fv(lightPositionLocation, 1, lightDirArray);
+    int lightNums = 1;
+    glUniform3fv(shaderProgram->uniformLocation("lightPositions"), lightNums, lightDirArray);
+    glUniform1i(shaderProgram->uniformLocation("numLights"), lightNums);
     
     this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation);
     modelViewMatrixStack.pop();

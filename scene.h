@@ -10,6 +10,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <QOpenGLShader>
 
 class Scene : public QAbstractItemModel
 {
@@ -32,6 +33,8 @@ private:
     QVector4D lightPosition;
     std::stack<QMatrix4x4> modelViewMatrixStack;
 
+    QOpenGLShaderProgram *shaderProgram;
+
     int currentId = 0;
     int nextId() {return currentId++;};
     
@@ -51,7 +54,6 @@ public:
 
     //For editing
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    //bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole);
     bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
     
     QModelIndex addCube(SceneGraph *node, int tesselationLevel);
@@ -60,7 +62,9 @@ public:
     QModelIndex addSphere(SceneGraph *node, int tesselationLevel); 
     QModelIndex addTorus(SceneGraph *node, int tesselationLevel);
     
-    QModelIndex addLight();  
+    QModelIndex addLight();
+
+    void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
     
     SceneGraph *root() {return rootNode;};
     QModelIndex identify(int i);

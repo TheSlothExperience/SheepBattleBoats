@@ -6,6 +6,6 @@ LightNode::LightNode(Primitive *p, std::string name)
     
 }
 
-QVector4D LightNode::getPosition() {
-    return QVector4D(translation, 1.0);
+QVector3D LightNode::getPosition() {
+    return translation;
 }

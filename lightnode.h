@@ -32,7 +32,7 @@ private:
 public:
     LightNode(Primitive *p, std::string name);
 
-    QVector4D getPosition();
+    QVector3D getPosition();
     QVector4D getLightColor() {return lightColor;}
     void setLightColor(QVector4D lc) {lightColor = lc;}
     
