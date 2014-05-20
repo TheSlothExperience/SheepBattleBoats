@@ -66,6 +66,11 @@ private:
 
     QTreeView *sceneOutliner;
     QDockWidget *outlinerDock;
+
+    QDockWidget *colorDock;
+    QSlider *redSlider;
+    QSlider *blueSlider;
+    QSlider *greenSlider;
     
     QSplitter *topSplitter;
     QSplitter *bottomSplitter;
@@ -77,6 +82,7 @@ private:
     void createActions();
     void createMenus();
     void createToolbar();
+    void createColorDock();
     void setupGL();
 public slots:
     void addCube();

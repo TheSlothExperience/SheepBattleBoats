@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
     createToolbar();
+    createColorDock();
     
     setStatusBar(statusbar);
     setMenuBar(menuBar);
@@ -130,6 +131,30 @@ void MainWindow::setupGL() {
     perspectiveGLWidget->setActive();
     
     setCentralWidget(sideSplitter);
+}
+
+void MainWindow::createColorDock() {
+    colorDock = new QDockWidget(tr("Colour Selector of Doom"), this);
+    colorDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
+			      Qt::BottomDockWidgetArea);
+
+    redSlider = new QSlider(Qt::Horizontal, this);
+    redSlider->setRange(0,255);
+    redSlider->setValue(255);
+    blueSlider = new QSlider(Qt::Horizontal,this);
+    blueSlider->setRange(0,255);
+    blueSlider->setValue(255);
+    greenSlider = new QSlider(Qt::Horizontal,this);
+    greenSlider->setRange(0,255);
+    greenSlider->setValue(255);
+
+    QWidget *contents = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout(contents);
+    layout->addWidget(redSlider);
+    layout->addWidget(blueSlider);
+    layout->addWidget(greenSlider);
+    colorDock->setWidget(contents);
+    addDockWidget(Qt::LeftDockWidgetArea, colorDock);
 }
 
 void MainWindow::createToolbar() {
