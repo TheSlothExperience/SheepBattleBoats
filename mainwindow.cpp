@@ -268,6 +268,7 @@ void MainWindow::createMenus() {
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if(event->key() == Qt::Key_Delete) {
+	//Delete the current node
 	QModelIndex idx = sceneOutliner->selectionModel()->currentIndex();
 	QString msg;
 	if(static_cast<SceneGraph*>(idx.internalPointer()) == scene->root()) {
@@ -279,6 +280,28 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 	    if(scene->removeRows(idx.row(), 1, idx.parent())) {
 		emit updateGL();
 	    }
+	}
+    } else if(event->key() == Qt::Key_Control) {
+	//Toggle camera and interactive mode
+	if(cameraModeAction->isChecked()) {
+	    objectModeAction->setChecked(true);
+	    objectModeAction->activate(QAction::Trigger);
+	} else {
+	    cameraModeAction->setChecked(true);
+	    cameraModeAction->activate(QAction::Trigger);
+	}
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Control) {
+	//Toggle camera and interactive mode
+	if(cameraModeAction->isChecked()) {
+	    objectModeAction->setChecked(true);
+	    objectModeAction->activate(QAction::Trigger);
+	} else {
+	    cameraModeAction->setChecked(true);
+	    cameraModeAction->activate(QAction::Trigger);
 	}
     }
 }
