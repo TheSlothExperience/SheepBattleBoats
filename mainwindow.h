@@ -50,6 +50,8 @@ private:
     QAction *addConeAction;
     QAction *addSphereAction;
 
+    QAction *addGroupAction;
+
     QAction *addLightAction;
 
     QMenu *helpMenu;
@@ -90,6 +92,8 @@ public slots:
     void addCylinder();
     void addSphere();
     void addTorus();
+
+    void addGroup();
 
     void addLight();
     

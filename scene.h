@@ -63,6 +63,8 @@ public:
     QModelIndex addSphere(SceneGraph *node, int tesselationLevel); 
     QModelIndex addTorus(SceneGraph *node, int tesselationLevel);
     
+    QModelIndex addGroup(SceneGraph *node);
+    
     QModelIndex addLight();
 
     void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}

@@ -236,6 +236,21 @@ QModelIndex Scene::addTorus(SceneGraph *node, int tesselationLevel) {
     return createIndex(s->row(), 0, s);
 }
 
+QModelIndex Scene::addGroup(SceneGraph *node) {
+    beginResetModel();
+    std::string name("Group ");
+    int id = nextId();
+    name += std::to_string(id);
+    SceneGraph *s = new SceneGraph(false);
+    s->setId(id);
+    s->setName(name);
+    identifier[id] = s;
+
+    node->add(s);
+    endResetModel();
+    return createIndex(s->row(), 0, s);
+}
+
 QModelIndex Scene::addLight() {
     beginResetModel();
     Primitive *light = new Light();
