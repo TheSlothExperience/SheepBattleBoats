@@ -44,7 +44,7 @@ void GLWidgetContext::paintGL()
 {
 }
 
-void GLWidgetContext::resizeGL(int width, int height)
+void GLWidgetContext::resizeGL(int, int)
 {
 }
 

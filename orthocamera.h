@@ -10,7 +10,7 @@ public:
     OrthoCamera(QVector3D position, double width, double height);
     void resize(double width, double height);
     void rotate(QQuaternion q);
-    void zoom(double z) {}
+    void zoom(double) {}
 };
 
 #endif

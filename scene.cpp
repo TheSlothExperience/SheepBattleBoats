@@ -126,7 +126,7 @@ Qt::DropActions Scene::supportedDropActions() const
     return Qt::MoveAction;
 }
 
-QVariant Scene::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant Scene::headerData(int, Qt::Orientation, int) const {
     return QVariant("Scene Model");
 }
 
@@ -144,6 +144,17 @@ bool Scene::setData(const QModelIndex &index, const QVariant &value, int role) {
     }
     
     return result;
+}
+
+bool Scene::insertRows(int position, int rows, const QModelIndex &parent) {
+    SceneGraph *parentItem = static_cast<SceneGraph*>(parent.internalPointer());
+    bool success;
+
+    beginInsertRows(parent, position, position + rows - 1);
+    success = parentItem->insertChildren(position, rows, rootNode->columnCount());
+    endInsertRows();
+
+    return success;
 }
 
 bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
@@ -282,7 +293,7 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     //Copy the lights positions into GL friendly arrays
     GLfloat *lightsArray = new GLfloat[3 * lights.size()];
     GLfloat *colorsArray = new GLfloat[4 * lights.size()];
-    for(int i = 0; i < lights.size(); i++) {
+    for(unsigned int i = 0; i < lights.size(); i++) {
 	QVector3D lightDir = cameraMatrix * lights.at(i)->getPosition();
 	lightsArray[3 * i] = lightDir.x();
 	lightsArray[3 * i + 1] = lightDir.y();

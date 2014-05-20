@@ -54,7 +54,9 @@ public:
 
     //For editing
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
+    bool insertRows(int position, int rows, const QModelIndex &parent = QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
+    
     Qt::DropActions supportedDropActions() const;
 	
     QModelIndex addCube(SceneGraph *node, int tesselationLevel);

@@ -39,6 +39,7 @@ public:
     QVariant data(int column);
     bool setData(int column, const QVariant &value);
     bool removeChildren(int position, int count);
+    bool insertChildren(int position, int count, int columns);
     int row();
 
     void setParent(SceneGraph *s);
@@ -46,7 +47,7 @@ public:
     void translate(double x, double y, double z);
     void rotate(QQuaternion q);
 
-    virtual void changeColor(float r, float g, float b, float a) {}
+    virtual void changeColor(float, float, float, float) {}
     GLfloat* getColor() {return this->color;}
 
     void setId(int id) {this->id = id;}
