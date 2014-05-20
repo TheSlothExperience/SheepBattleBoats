@@ -110,8 +110,14 @@ Qt::ItemFlags Scene::flags(const QModelIndex &index) const {
     if(!index.isValid()) {
 	return 0;
     } else {
-	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+	if(static_cast<SceneGraph*>(index.internalPointer())->isLeaf()) {
+	    return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+		Qt::ItemIsDragEnabled;
+	    
+	} else {
+	    return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable |
 	    Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+	}
     }
 }
 
