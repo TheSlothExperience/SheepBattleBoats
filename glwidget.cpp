@@ -338,7 +338,8 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    this->zoom += event->delta()/300.0;
+    double zoom = event->delta()/300.0;
+    this->camera->zoom(zoom);
     updateGL();
 }
 

@@ -27,7 +27,7 @@ protected:
     }
 
 public:
-    QMatrix4x4 getCameraMatrix() {
+    virtual QMatrix4x4 getCameraMatrix() {
 	cameraMatrix.setToIdentity();
 	cameraMatrix.rotate(initialOrientation);
 	cameraMatrix.translate(-initialPosition);
@@ -35,9 +35,8 @@ public:
 	cameraMatrix.translate(-position);
 	return cameraMatrix;
     };
-    QMatrix4x4 getProjectionMatrix() {return this->projectionMatrix;};
+    virtual QMatrix4x4 getProjectionMatrix() {return this->projectionMatrix;};
 
-    //virtual void translate(QVector3D t) = 0;
     virtual void translate(double x, double y, double z) {
 	this->position += QVector3D(x, y, z);
     }
@@ -52,6 +51,7 @@ public:
 	poi = QVector3D();
     }
     virtual void resize(double width, double height) = 0;
+    virtual void zoom(double z) = 0;
 
 };
 
