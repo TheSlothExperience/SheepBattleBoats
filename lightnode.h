@@ -15,17 +15,6 @@
 class LightNode : public SceneGraph
 {
 private:
-    std::string name;
-    bool leaf = false;
-    int id;
-    
-    QQuaternion rotation;
-    QVector3D translation;
-
-    Primitive *primitive;
-    SceneGraph *parentNode;
-
-    std::vector<SceneGraph* > children;
 
     QVector4D lightColor;
 
