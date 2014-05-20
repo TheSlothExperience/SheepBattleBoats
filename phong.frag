@@ -7,6 +7,7 @@ in vec4 id4;
 
 const int maxLights = 12;
 uniform vec3 lightPositions[maxLights];
+uniform vec4 lightColors[maxLights];
 uniform int numLights;
 
 uniform vec4 color;
@@ -21,10 +22,11 @@ void main()
     for(i = 0; i < numLights; i++) {
 	vec3 L = normalize(lightPositions[i] - V);
 	vec3 R = normalize(-reflect(L,N));
-    
+	vec4 lightColor = lightColors[i];
+	
 	vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
     
-	vec4 k_diff = color * max(0.0, dot(L, N));
+	vec4 k_diff = color * lightColor * max(0.0, dot(L, N));
 	k_diff = clamp(k_diff, 0.0, 1.0);
 
 	vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);

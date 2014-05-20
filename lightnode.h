@@ -24,8 +24,7 @@ public:
     QVector3D getPosition();
     QVector4D getLightColor() {return lightColor;}
     void setLightColor(QVector4D lc) {lightColor = lc;}
-    
-    //void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
+    GLfloat* getColor() {return this->color;}
 };
 
 
