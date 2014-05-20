@@ -19,5 +19,4 @@ void LightNode::changeColor(float r, float g, float b, float a) {
     color[1] = g;
     color[2] = b;
     color[3] = a;
-    std::cout << color[0] << " " << color[1] << " " << color[2] << std::endl;
 }

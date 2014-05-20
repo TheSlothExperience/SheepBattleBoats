@@ -58,6 +58,11 @@ void MainWindow::setupGL() {
     sceneOutliner = new QTreeView();
     sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
     sceneOutliner->setModel(scene);
+    sceneOutliner->setDragEnabled(true);
+    sceneOutliner->setAcceptDrops(true);
+    sceneOutliner->setDragDropMode(QAbstractItemView::InternalMove);
+    sceneOutliner->setDropIndicatorShown(true);
+    
     connect(sceneOutliner->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(changeCurrentNode(const QModelIndex&, const QModelIndex&)));
     
     outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
@@ -170,6 +175,8 @@ void MainWindow::createToolbar() {
     tesselationSlider->setRange(1,8);
     tesselationSlider->setTickPosition(QSlider::TicksBothSides);
     tesselationSlider->setTickInterval(1);
+    tesselationSlider->setValue(3);
+    tesselationLevel = 3;
     connect(tesselationSlider, SIGNAL(valueChanged(int)), this, SLOT(setTesselation(int)));
     toolbar->addWidget(tesselationSlider);
 

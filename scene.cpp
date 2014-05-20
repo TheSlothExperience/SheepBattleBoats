@@ -110,8 +110,14 @@ Qt::ItemFlags Scene::flags(const QModelIndex &index) const {
     if(!index.isValid()) {
 	return 0;
     } else {
-	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+	    Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     }
+}
+
+Qt::DropActions Scene::supportedDropActions() const
+{
+    return Qt::MoveAction;
 }
 
 QVariant Scene::headerData(int section, Qt::Orientation orientation, int role) const {
