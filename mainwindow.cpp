@@ -270,11 +270,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     if(event->key() == Qt::Key_Delete) {
 	QModelIndex idx = sceneOutliner->selectionModel()->currentIndex();
 	QString msg;
-	msg += "Deleting: ";
-	msg += scene->data(idx, Qt::DisplayRole).toString();
-	statusbar->showMessage(msg, 2000);
-	if(scene->removeRows(idx.row(), 1, idx.parent())) {
-	    emit updateGL();
+	if(static_cast<SceneGraph*>(idx.internalPointer()) == scene->root()) {
+	    statusbar->showMessage("Cannot delete the root, fool!", 5000);
+	} else {
+	    msg += "Deleting: ";
+	    msg += scene->data(idx, Qt::DisplayRole).toString();
+	    statusbar->showMessage(msg, 5000);
+	    if(scene->removeRows(idx.row(), 1, idx.parent())) {
+		emit updateGL();
+	    }
 	}
     }
 }
