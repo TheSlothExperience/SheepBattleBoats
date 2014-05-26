@@ -34,8 +34,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
     
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
-    Volume *volume = new Volume();
-    this->volumeNode = new VolumeNode(volume, "Volume");
+    addVolume();
 }
  
 
@@ -284,6 +283,23 @@ QModelIndex Scene::addLight() {
 
     rootNode->add(s);
     lights.push_back(s);
+    endResetModel();
+
+    return createIndex(s->row(), 0, s);
+}
+
+QModelIndex Scene::addVolume() {
+    beginResetModel();
+    Volume *vol = new Volume();
+    std::string name("Volume ");
+    int id = nextId();
+    name += std::to_string(id);
+    VolumeNode *s = new VolumeNode(vol, name);
+    s->setId(id);
+    identifier[id] = s;
+
+    rootNode->add(s);
+    this->volumeNode = s;
     endResetModel();
 
     return createIndex(s->row(), 0, s);

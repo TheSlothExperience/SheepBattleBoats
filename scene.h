@@ -71,6 +71,7 @@ public:
     QModelIndex addGroup(SceneGraph *node);
     
     QModelIndex addLight();
+    QModelIndex addVolume();
 
     void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
     

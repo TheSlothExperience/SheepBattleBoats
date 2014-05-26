@@ -71,7 +71,6 @@ void MainWindow::setupGL() {
     addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
     
     currentNode = scene->root();
-    addCube();
     
 
     //Create the widgets
