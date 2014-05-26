@@ -35,6 +35,8 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
     addVolume();
+    addLight();
+    lights.at(0)->translate(0.5, 0.0, 2.0);
 }
  
 
