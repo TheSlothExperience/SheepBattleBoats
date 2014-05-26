@@ -173,35 +173,34 @@ void GLWidget::paintGL()
     	volumeProgram->release();
     }
     
-    // //Draw the scene into a texture and the IDs into the picking color
-    // //buffer to be able to pick them with the mouse.
-    // {
-    // 	//Load the phong shading program
-    // 	shaderProgram->bind();
+    //Draw the scene into a texture and the IDs into the picking color
+    //buffer to be able to pick them with the mouse.
+    {
+    	//Load the phong shading program
+    	shaderProgram->bind();
     
-    // 	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
-    // 	//Bind the fbo and the textures to draw to
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    // 	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    // 	glDrawBuffers(2, DrawBuffers);
-    // 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    	//Bind the fbo and the textures to draw to
+    	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    	glDrawBuffers(2, DrawBuffers);
 
-    // 	//Draw to the whole texture(the size of the texture, maybe change?)
-    // 	glViewport(0,0,1024,768);
-    // 	//and set tex 0 as active
-    // 	glActiveTexture(GL_TEXTURE0);
+    	//Draw to the whole texture(the size of the texture, maybe change?)
+    	glViewport(0,0,1024,768);
+    	//and set tex 0 as active
+    	glActiveTexture(GL_TEXTURE0);
     
-    // 	if(scene != NULL) {
-    // 	    //Discombobulate!
-    // 	    scene->draw(camera->getCameraMatrix());	
-    // 	} else {
-    // 	    std::cout << "no scene yet" << std::endl;
-    // 	}
+    	if(scene != NULL) {
+    	    //Discombobulate!
+    	    scene->draw(camera->getCameraMatrix());	
+    	} else {
+    	    std::cout << "no scene yet" << std::endl;
+    	}
 
-    // 	//Release and relax, brah
-    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // 	shaderProgram->release();
-    // }
+    	//Release and relax, brah
+    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    	shaderProgram->release();
+    }
 
     //Now take the textures and put it on the canvas quad
     //also highlight the active widget and the active object.
