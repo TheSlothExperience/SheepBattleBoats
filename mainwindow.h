@@ -54,6 +54,8 @@ private:
 
     QAction *addLightAction;
 
+    QAction *loadVolumeDataAction;
+
     QMenu *helpMenu;
     QAction *aboutAction;
 
@@ -96,6 +98,8 @@ public slots:
     void addGroup();
 
     void addLight();
+
+    void loadVolumeData();
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);

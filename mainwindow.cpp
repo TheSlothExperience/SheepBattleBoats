@@ -204,6 +204,9 @@ void MainWindow::createToolbar() {
     toolbar->addAction(addGroupAction);
 
     toolbar->addSeparator();
+    toolbar->addAction(loadVolumeDataAction);
+
+    toolbar->addSeparator();
     toolbar->addAction(addLightAction);
     
     addToolBar(toolbar);
@@ -213,6 +216,10 @@ void MainWindow::createActions() {
     exitAction = new QAction("E&xit", this);
     exitAction->setShortcut(tr("Ctrl+5"));
     connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
+
+    loadVolumeDataAction = new QAction("&Load volumetric data", this);
+    loadVolumeDataAction->setShortcut(Qt::CTRL + Qt::Key_L);
+    connect(loadVolumeDataAction, SIGNAL(triggered()), this, SLOT(loadVolumeData()));
 
     
     aboutAction = new QAction("&About", this);
@@ -301,6 +308,7 @@ void MainWindow::createMenus() {
     //Actions for the file menu
     fileMenu = new QMenu("&File");
     fileMenu->addAction(exitAction);
+    fileMenu->addAction(loadVolumeDataAction);
     menuBar->addMenu(fileMenu);
 
     //Viewports menu
@@ -496,4 +504,8 @@ void MainWindow::rotateNode(QQuaternion *q) {
 void MainWindow::changedColor() {
     this->currentNode->changeColor(redSlider->sliderPosition() / (float) 255, greenSlider->sliderPosition() / (float) 255, blueSlider->sliderPosition() / (float) 255, 1.0f);
     emit updateGL();
+}
+
+void MainWindow::loadVolumeData() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load volumetric data"), ".", tr("Volume Data (*.raw)"));
 }
