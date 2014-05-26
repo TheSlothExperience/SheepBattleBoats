@@ -511,7 +511,7 @@ void MainWindow::changedColor() {
 
 void MainWindow::loadVolumeData() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load volumetric data"), ".", tr("Volume Data (*.raw)"));
-    fileName = "/home/sebas/Projects/Grapa/hellocube/data/lobster.raw";
+    std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
     if(!fileName.isEmpty()) {
 	FILE *fp;
 	fp = fopen(fileName.toLocal8Bit().data(), "r");
@@ -520,10 +520,16 @@ void MainWindow::loadVolumeData() {
 	float ax, ay, az;
 	fscanf(fp, "%f %f %f\n", &ax, &ay, &az);
 
-	char raw[] = new int[x*y*z];
+	char *raw = new char[x*y*z];
 	for(int i = 0; i < 10; i++) {
 	    raw[i] = (char) fgetc(fp);
 	}
 	fclose(fp);
+	std::cout << "Loading texture with: "
+		  << "(" << x << ", " << y << ", " << z << ")"
+		  << " and aspect ratios of: "
+		  << ax << " " << ay << " " << az << std::endl;
+	this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
+	emit updateGL();
     }
 }

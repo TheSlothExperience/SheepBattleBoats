@@ -3,11 +3,35 @@
 #include "volumenode.h"
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include <iostream>
 
 VolumeNode::VolumeNode(Volume *p, std::string name)
     : SceneGraph(p, name)
 {
     this->volume = p;
+    glGenTextures(1, &tex3DLocation);
+    glBindTexture(GL_TEXTURE_3D, tex3DLocation);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    glBindTexture(GL_TEXTURE_3D, 0);
+}
+
+void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, char* raw) {
+    //Create a new texture with the right size and data
+    glBindTexture(GL_TEXTURE_3D, tex3DLocation);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R8, x, y, z, 0, GL_RED, 
+             GL_UNSIGNED_BYTE, (void*)raw);
+    glBindTexture(GL_TEXTURE_3D, 0);
+    
+    delete this->volume;
+    //Normalize the aspects
+    float m = std::max(ax, std::max(ay, az));
+    ax /= m; ay /= m; az /= m;
+    std::cout << "Creating a new volume cube with: " << ax << " " << ay << " " << az << std::endl;
+    this->volume = new Volume(ax, ay, az);
 }
 
 void VolumeNode::drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {

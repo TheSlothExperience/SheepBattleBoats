@@ -315,6 +315,9 @@ void Scene::drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
     
     modelViewMatrixStack.pop();
 }
+void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, char* raw) {
+    this->volumeNode->loadTexture(x, y, z, ax, ay, az, raw);
+}
 
 void Scene::draw(QMatrix4x4 cameraMatrix) {
     modelViewMatrixStack.push(modelViewMatrixStack.top());

@@ -10,10 +10,13 @@ class VolumeNode : public SceneGraph
 {
 private:
     Volume* volume;
-
+    GLuint tex3DLocation;
 public:
     VolumeNode(Volume *p, std::string name);
     void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
+
+    void loadTexture(int x, int y, int z, float ax, float ay, float az, char* raw);
+    GLuint getTexLocation() {return tex3DLocation;}
 };
 
 #endif
