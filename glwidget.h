@@ -27,6 +27,8 @@ public:
 
     void setShaderProgram(QOpenGLShaderProgram *sp);
     void setTextureProgram(QOpenGLShaderProgram *tp);
+    void setVolumeProgram(QOpenGLShaderProgram *vp);
+    void setQuadViewProgram(QOpenGLShaderProgram *qp);
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -52,11 +54,14 @@ private:
 
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLShaderProgram *textureProgram;
+    QOpenGLShaderProgram *volumeProgram;
+    QOpenGLShaderProgram *quadviewProgram;
 
     GLuint fbo;
     GLuint renderTex;
     GLuint pickingTex;
     GLuint depthBuffer;
+    GLuint volumeBuffer;
 
     GLuint canvasQuad;
     GLuint textureLocation;

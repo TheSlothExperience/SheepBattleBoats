@@ -64,6 +64,17 @@ void GLWidget::initializeGL()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
+    
+    //Create texture to render the volume quad to
+    glGenTextures(1, &volumeBuffer);
+    
+    glBindTexture(GL_TEXTURE_2D, volumeBuffer);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, volumeBuffer, 0);
+    
 
     //Now setup the depth buffer
     glGenRenderbuffers(1, &depthBuffer);
@@ -100,35 +111,97 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Draw the scene into a texture and the IDs into the picking color
-    //buffer to be able to pick them with the mouse.
+    //Draw backface of the backface of the quead
     {
-	//Load the phong shading program
-	shaderProgram->bind();
-    
-	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
-	//Bind the fbo and the textures to draw to
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(2, DrawBuffers);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    	quadviewProgram->bind();
+	
+    	glUniformMatrix4fv(quadviewProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    	//Bind the fbo and the textures to draw to
+    	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
+    	glDrawBuffers(1, DrawBuffers);
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Draw to the whole texture(the size of the texture, maybe change?)
-	glViewport(0,0,1024,768);
-	//and set tex 0 as active
-	glActiveTexture(GL_TEXTURE0);
-    
-	if(scene != NULL) {
-	    //Discombobulate!
-	    scene->draw(camera->getCameraMatrix());	
-	} else {
-	    std::cout << "no scene yet" << std::endl;
-	}
+    	//Draw to the whole texture(the size of the texture, maybe change?)
+    	glViewport(0,0,1024,768);
+    	//and set tex 0 as active
+    	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 
-	//Release and relax, brah
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	shaderProgram->release();
+    	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), quadviewProgram->uniformLocation("modelViewMatrix"));
+
+    	//Release and relax, brah
+    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    	quadviewProgram->release();
     }
+	
+    //Now draw the other face of the quad and ray march
+    {
+    	//Now load program to draw to volumetric stuff
+    	volumeProgram->bind();
+	
+    	//Bind the fbo and the textures to draw to
+    	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    	GLenum VolumeBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    	glDrawBuffers(2, VolumeBuffers);
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//This time render the front face of the cube
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	
+    	glUniformMatrix4fv(volumeProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
+
+    	//Make sure the tex 0 is active for the rendered scene
+    	glActiveTexture(GL_TEXTURE0);
+    	textureLocation = volumeProgram->uniformLocation("renderedTexture");
+    	//Send the rendered texture down the pipes
+    	glUniform1i(textureLocation, 0);
+    	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
+
+    	//Draw to the whole texture(the size of the texture, maybe change?)
+    	glViewport(0,0,1024,768);
+
+	static GLfloat resolution[] = {1024, 768};
+	glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
+	//Draw the cube
+    	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), volumeProgram->uniformLocation("modelViewMatrix"));
+	
+    	//Release and relax, brah
+    	glBindFramebuffer(GL_FRAMEBUFFER, 0);    
+    	volumeProgram->release();
+    }
+    
+    // //Draw the scene into a texture and the IDs into the picking color
+    // //buffer to be able to pick them with the mouse.
+    // {
+    // 	//Load the phong shading program
+    // 	shaderProgram->bind();
+    
+    // 	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    // 	//Bind the fbo and the textures to draw to
+    // 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    // 	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    // 	glDrawBuffers(2, DrawBuffers);
+    // 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // 	//Draw to the whole texture(the size of the texture, maybe change?)
+    // 	glViewport(0,0,1024,768);
+    // 	//and set tex 0 as active
+    // 	glActiveTexture(GL_TEXTURE0);
+    
+    // 	if(scene != NULL) {
+    // 	    //Discombobulate!
+    // 	    scene->draw(camera->getCameraMatrix());	
+    // 	} else {
+    // 	    std::cout << "no scene yet" << std::endl;
+    // 	}
+
+    // 	//Release and relax, brah
+    // 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // 	shaderProgram->release();
+    // }
 
     //Now take the textures and put it on the canvas quad
     //also highlight the active widget and the active object.
@@ -206,6 +279,12 @@ void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
 }
 void GLWidget::setTextureProgram(QOpenGLShaderProgram *tp) {
     this->textureProgram = tp;
+}
+void GLWidget::setVolumeProgram(QOpenGLShaderProgram *vp) {
+    this->volumeProgram = vp;
+}
+void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
+    this->quadviewProgram = qp;
 }
 
 void GLWidget::setActive(bool active) {

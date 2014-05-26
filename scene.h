@@ -3,6 +3,7 @@
 
 #include "scenegraph.h"
 #include "lightnode.h"
+#include "volumenode.h"
 
 #include <stack>
 #include <map>
@@ -29,6 +30,8 @@ private:
     std::map<int, SceneGraph*> identifier;
 
     std::vector<LightNode*> lights;
+
+    VolumeNode* volumeNode;
 
     QVector4D lightPosition;
     std::stack<QMatrix4x4> modelViewMatrixStack;
@@ -74,6 +77,9 @@ public:
     SceneGraph *root() {return rootNode;};
     QModelIndex identify(int i);
     void setLightLocation(GLuint lightPositionLocation);
+
+    void drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc);
+    
     void draw(QMatrix4x4 cameraMatrix);
 };
 

@@ -21,6 +21,7 @@ SOURCES += main.cpp\
         scene.cpp\
         scenegraph.cpp\
         lightnode.cpp \
+        volumenode.cpp \
         perspectivecamera.cpp\
         orthocamera.cpp\
         cube.cpp \
@@ -28,6 +29,7 @@ SOURCES += main.cpp\
         sphere.cpp \
         torus.cpp \
         cylinder.cpp \
+        volume.cpp \
         light.cpp
 
 HEADERS  += mainwindow.h\
@@ -36,6 +38,7 @@ HEADERS  += mainwindow.h\
         scene.h\
         scenegraph.h\
         lightnode.h\
+        volumenode.h\
         camera.h\
         perspectivecamera.h\
         orthocamera.h\
@@ -44,6 +47,7 @@ HEADERS  += mainwindow.h\
         sphere.h \
         torus.h \
         cylinder.h\
+        volume.h\
         light.h	
 
 RESOURCES += \

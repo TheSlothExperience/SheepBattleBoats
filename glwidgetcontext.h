@@ -24,16 +24,24 @@ public:
     GLuint getLightPositionLocation() {return this->lightPositionLocation;};
     QOpenGLShaderProgram* getShaderProgram() {return this->shaderProgram;};
     QOpenGLShaderProgram* getTextureProgram() {return this->textureProgram;};
+    QOpenGLShaderProgram* getVolumeProgram() {return this->volumeProgram;};
+    QOpenGLShaderProgram* getQuadViewProgram() {return this->quadviewProgram;};
     
     void initializeGL();
 
 private:
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLShaderProgram *textureProgram;
+    QOpenGLShaderProgram *volumeProgram;
+    QOpenGLShaderProgram *quadviewProgram;
     QOpenGLShader *vphong;
     QOpenGLShader *fphong;
     QOpenGLShader *vtexture;
     QOpenGLShader *ftexture;
+    QOpenGLShader *vvolume;
+    QOpenGLShader *fvolume;
+    QOpenGLShader *vquadview;
+    QOpenGLShader *fquadview;
     void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 
     GLuint perspectiveMatLocation;

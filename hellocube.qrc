@@ -20,5 +20,9 @@
         <file>phong.vert</file>
         <file>canvas.frag</file>
         <file>identity.vert</file>
+        <file>viewpoint.frag</file>
+        <file>viewpoint.vert</file>
+        <file>volumetric.vert</file>
+        <file>volumetric.frag</file>
     </qresource>
 </RCC>

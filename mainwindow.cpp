@@ -96,6 +96,9 @@ void MainWindow::setupGL() {
     mapWidgets([=](GLWidget *w){w->setScene(scene);});
     mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
     mapWidgets([=](GLWidget *w){w->setTextureProgram(glWidgetContext->getTextureProgram());});
+    mapWidgets([=](GLWidget *w){w->setVolumeProgram(glWidgetContext->getVolumeProgram());});
+    mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
+    
     mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
     
     mapWidgets([=](GLWidget *w){

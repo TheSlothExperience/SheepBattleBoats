@@ -8,6 +8,7 @@
 #include "sphere.h"
 #include "torus.h"
 #include "light.h"
+#include "volume.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -32,6 +33,9 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
     this->rootDummy->add(rootNode);
     
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
+
+    Volume *volume = new Volume();
+    this->volumeNode = new VolumeNode(volume, "Volume");
 }
  
 
@@ -285,6 +289,14 @@ QModelIndex Scene::addLight() {
     return createIndex(s->row(), 0, s);
 }
 
+void Scene::drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
+    modelViewMatrixStack.push(modelViewMatrixStack.top());
+    modelViewMatrixStack.top() *= cameraMatrix;
+    
+    this->volumeNode->drawBB(modelViewMatrixStack, mvLoc);
+    
+    modelViewMatrixStack.pop();
+}
 
 void Scene::draw(QMatrix4x4 cameraMatrix) {
     modelViewMatrixStack.push(modelViewMatrixStack.top());
@@ -312,4 +324,7 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     GLuint colorLocation = shaderProgram->uniformLocation("color");
     this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
     modelViewMatrixStack.pop();
+
+    delete[] lightsArray;
+    delete[] colorsArray;
 }
