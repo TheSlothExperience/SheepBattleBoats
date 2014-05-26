@@ -7,6 +7,9 @@
 #include "orthocamera.h"
 
 #include <iostream>
+#include <QDataStream>
+#include <QFile>
+#include <cstdio>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -508,4 +511,19 @@ void MainWindow::changedColor() {
 
 void MainWindow::loadVolumeData() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load volumetric data"), ".", tr("Volume Data (*.raw)"));
+    fileName = "/home/sebas/Projects/Grapa/hellocube/data/lobster.raw";
+    if(!fileName.isEmpty()) {
+	FILE *fp;
+	fp = fopen(fileName.toLocal8Bit().data(), "r");
+	int x, y, z;
+	fscanf(fp, "%d %d %d\n", &x, &y, &z);
+	float ax, ay, az;
+	fscanf(fp, "%f %f %f\n", &ax, &ay, &az);
+
+	char raw[] = new int[x*y*z];
+	for(int i = 0; i < 10; i++) {
+	    raw[i] = (char) fgetc(fp);
+	}
+	fclose(fp);
+    }
 }
