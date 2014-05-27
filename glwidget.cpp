@@ -163,9 +163,9 @@ void GLWidget::paintGL()
     	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
 
     	//Make sure the tex 0 is active for the rendered scene
-    	glActiveTexture(GL_TEXTURE1);
+    	glActiveTexture(GL_TEXTURE2);
     	//Send the rendered texture down the pipes
-    	glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 1);
+    	glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 2);
     	glBindTexture(GL_TEXTURE_3D, scene->volume()->getTexLocation());
 
     	//Draw to the whole texture(the size of the texture, maybe change?)
