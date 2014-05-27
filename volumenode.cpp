@@ -19,9 +19,12 @@ VolumeNode::VolumeNode(Volume *p, std::string name)
     glBindTexture(GL_TEXTURE_3D, 0);
 }
 
-void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, char* raw) {
+void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw) {
     //Create a new texture with the right size and data
     glBindTexture(GL_TEXTURE_3D, tex3DLocation);
+    //MAKE SURE THE ROWS ARE ALIGNED!!!
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glTexImage3D(GL_TEXTURE_3D, 0, GL_R8, x, y, z, 0, GL_RED, 
              GL_UNSIGNED_BYTE, (void*)raw);
     glBindTexture(GL_TEXTURE_3D, 0);
@@ -30,7 +33,6 @@ void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, 
     //Normalize the aspects
     float m = std::max(ax, std::max(ay, az));
     ax /= m; ay /= m; az /= m;
-    std::cout << "Creating a new volume cube with: " << ax << " " << ay << " " << az << std::endl;
     this->volume = new Volume(ax, ay, az);
 }
 

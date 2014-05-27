@@ -26,6 +26,7 @@ GLWidgetContext::~GLWidgetContext()
 
 void GLWidgetContext::initializeGL()
 {   
+    glEnable(GL_TEXTURE_3D);
     loadShaders(":/phong.vert", ":/phong.frag", vphong, fphong, shaderProgram);
 
     shaderProgram->bind();

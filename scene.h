@@ -73,11 +73,12 @@ public:
     QModelIndex addLight();
     QModelIndex addVolume();
 
-    void loadVolumeData(int x, int y, int z, float ax, float ay, float az, char* raw);
+    void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
 
     void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
     
     SceneGraph *root() {return rootNode;};
+    VolumeNode *volume() {return volumeNode;}
     QModelIndex identify(int i);
     void setLightLocation(GLuint lightPositionLocation);
 

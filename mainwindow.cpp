@@ -520,9 +520,9 @@ void MainWindow::loadVolumeData() {
 	float ax, ay, az;
 	fscanf(fp, "%f %f %f\n", &ax, &ay, &az);
 
-	char *raw = new char[x*y*z];
-	for(int i = 0; i < 10; i++) {
-	    raw[i] = (char) fgetc(fp);
+	unsigned char *raw = new unsigned char[x*y*z];
+	for(int i = 0; i < x*y*z; i++) {
+	    raw[i] = (unsigned char) fgetc(fp);
 	}
 	fclose(fp);
 	std::cout << "Loading texture with: "

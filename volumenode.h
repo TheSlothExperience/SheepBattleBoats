@@ -15,7 +15,7 @@ public:
     VolumeNode(Volume *p, std::string name);
     void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
 
-    void loadTexture(int x, int y, int z, float ax, float ay, float az, char* raw);
+    void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
     GLuint getTexLocation() {return tex3DLocation;}
 };
 

@@ -38,6 +38,8 @@ void GLWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
+    glEnable(GL_TEXTURE_3D);
+
     glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
     //Create our fbo to hold the rendered scene
@@ -159,6 +161,12 @@ void GLWidget::paintGL()
     	//Send the rendered texture down the pipes
     	glUniform1i(textureLocation, 0);
     	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
+
+    	//Make sure the tex 0 is active for the rendered scene
+    	glActiveTexture(GL_TEXTURE1);
+    	//Send the rendered texture down the pipes
+    	glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 1);
+    	glBindTexture(GL_TEXTURE_3D, scene->volume()->getTexLocation());
 
     	//Draw to the whole texture(the size of the texture, maybe change?)
     	glViewport(0,0,1024,768);
