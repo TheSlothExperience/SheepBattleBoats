@@ -22,16 +22,16 @@ void main(){
     float len = length(rayDir);
     //rayDir = normalize(rayDir);
     
-    float delta = 0.01;
+    float delta = 0.002;
     float i = 0.0;
     float alpha_acc = 0.0;
     vec4 color_acc = vec4(0.0);
     vec3 texvec = color;
-    
+    //color_acc = vec4(color, 1.0);
     for(i = 0.0; i < 1.0; i += delta) {
         float vol_sample = texture(volumetricTexture, texvec).x;
     	vec4 color_sample = vec4(vol_sample);
-    	float alpha_sample = color_sample.a;
+    	float alpha_sample = 0.03 * color_sample.a;
     	color_acc += alpha_sample * color_sample;
     	alpha_acc += alpha_sample;
     	texvec += delta * rayDir;

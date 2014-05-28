@@ -18,5 +18,6 @@ void main()
     // Transforming The Vertex Position To ModelView-Space
     V = vec3(modelViewMatrix * position);
 
-    color = vec3(position) + vec3(0.5);
+    //Norm to unit cube (radius = 0.5)
+    color = vec3(sign(position.x), sign(position.y), sign(position.z)) * 0.5 + vec3(0.5);
 } 
