@@ -4,9 +4,11 @@
 #include <QMainWindow>
 #include <QtGui>
 #include <QtWidgets>
+#include <vector>
+
 #include "glwidget.h"
 #include "glwidgetcontext.h"
-#include <vector>
+#include "tfEditor.h"
 
 class MainWindow : public QMainWindow
 {
@@ -55,7 +57,8 @@ private:
     QAction *addLightAction;
 
     QAction *loadVolumeDataAction;
-
+    TfEditor *tfeditor;
+    
     QMenu *helpMenu;
     QAction *aboutAction;
 
@@ -86,6 +89,7 @@ private:
     void createActions();
     void createMenus();
     void createToolbar();
+    void createTfEditor();
     void createColorDock();
     void setupGL();
 public slots:

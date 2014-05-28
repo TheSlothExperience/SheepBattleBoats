@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
     createToolbar();
+    createTfEditor();
     createColorDock();
     
     setStatusBar(statusbar);
@@ -141,6 +142,11 @@ void MainWindow::setupGL() {
     perspectiveGLWidget->setActive();
     
     setCentralWidget(sideSplitter);
+}
+
+void MainWindow::createTfEditor() {
+    tfeditor = new TfEditor();
+    addDockWidget(Qt::LeftDockWidgetArea, tfeditor);
 }
 
 void MainWindow::createColorDock() {

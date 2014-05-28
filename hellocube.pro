@@ -16,6 +16,8 @@ QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp\
+        tfEditor.cpp \
+        tfDisplay.cpp \
         glwidget.cpp\
         glwidgetcontext.cpp\
         scene.cpp\
@@ -35,6 +37,8 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h\
         glwidget.h\
         glwidgetcontext.h\
+        tfEditor.h \
+        tfDisplay.h \
         scene.h\
         scenegraph.h\
         lightnode.h\
