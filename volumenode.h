@@ -11,6 +11,8 @@ class VolumeNode : public SceneGraph
 private:
     Volume* volume;
     GLuint tex3DLocation;
+
+    unsigned char transferFunction[256][4];
 public:
     VolumeNode(Volume *p, std::string name);
     void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
