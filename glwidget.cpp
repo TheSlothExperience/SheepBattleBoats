@@ -168,6 +168,11 @@ void GLWidget::paintGL()
     	glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 2);
     	glBindTexture(GL_TEXTURE_3D, scene->volume()->getTexLocation());
 
+	//Load the transfer function
+	glActiveTexture(GL_TEXTURE3);
+	glUniform1i(volumeProgram->uniformLocation("transferFunction"), 3);
+	glBindTexture(GL_TEXTURE_1D, scene->volume()->getTFLocation());
+
     	//Draw to the whole texture(the size of the texture, maybe change?)
     	glViewport(0,0,1024,768);
 

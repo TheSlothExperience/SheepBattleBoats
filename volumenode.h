@@ -11,6 +11,7 @@ class VolumeNode : public SceneGraph
 private:
     Volume* volume;
     GLuint tex3DLocation;
+    GLuint tfLocation;
 
     unsigned char transferFunction[256][4];
 public:
@@ -20,6 +21,7 @@ public:
     void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
     void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
     GLuint getTexLocation() {return tex3DLocation;}
+    GLuint getTFLocation() {return tfLocation;}
 };
 
 #endif

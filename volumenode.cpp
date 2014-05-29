@@ -17,6 +17,22 @@ VolumeNode::VolumeNode(Volume *p, std::string name)
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     glBindTexture(GL_TEXTURE_3D, 0);
+
+    //Init transferfunction as a diagonal
+    for(int i = 0; i < 256; i++) {
+	transferFunction[i][0] = i;
+	transferFunction[i][1] = i;
+	transferFunction[i][2] = i;
+	transferFunction[i][3] = i;
+    }
+    glGenTextures(1, &tfLocation);
+    glBindTexture(GL_TEXTURE_1D, tfLocation);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, 
+             GL_UNSIGNED_BYTE, (void*)transferFunction);
+    glBindTexture(GL_TEXTURE_1D, 0);
 }
 
 void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw) {
