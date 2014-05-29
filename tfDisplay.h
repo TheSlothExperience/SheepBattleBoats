@@ -21,6 +21,11 @@ public:
     QSize sizeHint() const;
 
     void updateHistogram(unsigned char histogram[]);
+    unsigned char (&getTF())[256][4] {return transferFunction;}
+
+signals:
+    void tfChanged();
+    
 protected:
     void paintEvent(QPaintEvent *event);
 

@@ -30,6 +30,7 @@ TfEditor::TfEditor(QWidget *parent)
     QWidget *contents = new QWidget;
     QGridLayout *mainLayout = new QGridLayout(contents);
     mainLayout->addWidget(&tfDisplay, 0, 0, 3, 3, Qt::AlignCenter);
+    connect(&tfDisplay, SIGNAL(tfChanged()), this, SLOT(changeTF()));
     mainLayout->addWidget(loadButton, 4, 0);
     mainLayout->addWidget(saveButton, 4, 1);
     mainLayout->addWidget(resetButton, 5, 0);
@@ -48,6 +49,10 @@ TfEditor::TfEditor(QWidget *parent)
 
 void TfEditor::updateHistogram(unsigned char histogram[]) {
     tfDisplay.updateHistogram(histogram);
+}
+
+void TfEditor::changeTF() {
+    emit tfChanged();
 }
 
 void TfEditor::setRed() {

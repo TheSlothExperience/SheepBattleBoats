@@ -104,6 +104,7 @@ public slots:
     void addLight();
 
     void loadVolumeData();
+    void changeTF();
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);

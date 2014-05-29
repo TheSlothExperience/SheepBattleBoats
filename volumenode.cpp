@@ -35,6 +35,20 @@ VolumeNode::VolumeNode(Volume *p, std::string name)
     glBindTexture(GL_TEXTURE_1D, 0);
 }
 
+
+void VolumeNode::changeTF(unsigned char tf[][4]) {
+    for(int i = 0; i < 256; i++) {
+	transferFunction[i][0] = tf[i][0];
+	transferFunction[i][1] = tf[i][1];
+	transferFunction[i][2] = tf[i][2];
+	transferFunction[i][3] = tf[i][3];
+    }
+    glBindTexture(GL_TEXTURE_1D, tfLocation);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, 
+             GL_UNSIGNED_BYTE, (void*)transferFunction);
+    glBindTexture(GL_TEXTURE_1D, 0);
+}
+
 void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw) {
     //Create a new texture with the right size and data
     glBindTexture(GL_TEXTURE_3D, tex3DLocation);

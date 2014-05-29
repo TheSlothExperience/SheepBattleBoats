@@ -22,6 +22,8 @@ public:
     void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
     GLuint getTexLocation() {return tex3DLocation;}
     GLuint getTFLocation() {return tfLocation;}
+
+    void changeTF(unsigned char tf[][4]);
 };
 
 #endif

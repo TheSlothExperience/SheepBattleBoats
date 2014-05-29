@@ -6,6 +6,13 @@ TfDisplay::TfDisplay(QWidget *parent)
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setFixedSize(256, 256);
+    
+    for(int i = 0; i < 256; i++) {
+	transferFunction[i][0] = i;
+	transferFunction[i][1] = i;
+	transferFunction[i][2] = i;
+	transferFunction[i][3] = i;
+    }
 }
       
 QSize TfDisplay::sizeHint() const
@@ -55,6 +62,7 @@ void TfDisplay::mousePressEvent(QMouseEvent *event)
 	if(alpha) transferFunction[x][3] = y;
 	drawing = true;
 	update();
+	emit tfChanged();
     }
 }
 
@@ -69,6 +77,7 @@ void TfDisplay::mouseMoveEvent(QMouseEvent *event)
 	if(blue) transferFunction[x][2] = y;
 	if(alpha) transferFunction[x][3] = y;
 	update();
+	emit tfChanged();
     }
 }
 

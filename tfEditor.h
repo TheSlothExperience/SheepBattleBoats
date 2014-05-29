@@ -14,6 +14,8 @@ public:
     TfEditor(QWidget *parent = 0);
 
     void updateHistogram(unsigned char histogram[]);
+
+    TfDisplay tfDisplay;
 private:
     QCheckBox *redCheckBox;
     QCheckBox *greenCheckBox;
@@ -26,9 +28,12 @@ private:
     QPushButton *smoothButton;
     QPushButton *closeButton;
 
-    TfDisplay tfDisplay;
+signals:
+    void tfChanged();
 
 public slots:
+    void changeTF();
+    
     void setRed();
     void setGreen();
     void setBlue();

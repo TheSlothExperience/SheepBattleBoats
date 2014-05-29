@@ -146,6 +146,7 @@ void MainWindow::setupGL() {
 
 void MainWindow::createTfEditor() {
     tfeditor = new TfEditor();
+    connect(tfeditor, SIGNAL(tfChanged()), this, SLOT(changeTF()));
     addDockWidget(Qt::LeftDockWidgetArea, tfeditor);
 }
 
@@ -512,6 +513,11 @@ void MainWindow::rotateNode(QQuaternion *q) {
 
 void MainWindow::changedColor() {
     this->currentNode->changeColor(redSlider->sliderPosition() / (float) 255, greenSlider->sliderPosition() / (float) 255, blueSlider->sliderPosition() / (float) 255, 1.0f);
+    emit updateGL();
+}
+
+void MainWindow::changeTF() {
+    this->scene->volume()->changeTF(tfeditor->tfDisplay.getTF());
     emit updateGL();
 }
 
