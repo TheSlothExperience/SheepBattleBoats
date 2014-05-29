@@ -36,6 +36,23 @@ void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, 
     this->volume = new Volume(ax, ay, az);
 }
 
+void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw) {
+    //Create a new texture with the right size and data
+    glBindTexture(GL_TEXTURE_3D, tex3DLocation);
+    //MAKE SURE THE ROWS ARE ALIGNED!!!
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+    glPixelStorei(GL_PACK_ALIGNMENT, 2);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_R8, x, y, z, 0, GL_RED, 
+             GL_UNSIGNED_SHORT, (void*)raw);
+    glBindTexture(GL_TEXTURE_3D, 0);
+    
+    delete this->volume;
+    //Normalize the aspects
+    float m = std::max(ax, std::max(ay, az));
+    ax /= m; ay /= m; az /= m;
+    this->volume = new Volume(ax, ay, az);
+}
+
 void VolumeNode::drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {
     
     MVStack.push(MVStack.top());  

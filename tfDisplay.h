@@ -14,8 +14,12 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
+    void updateHistogram(unsigned char histogram[]);
 protected:
     void paintEvent(QPaintEvent *event);
+
+    unsigned char histogram[256];
+    unsigned char transferFunction[256][4];
 };
 
 #endif

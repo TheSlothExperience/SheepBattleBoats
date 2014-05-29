@@ -18,6 +18,7 @@ public:
     void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
 
     void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
+    void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
     GLuint getTexLocation() {return tex3DLocation;}
 };
 

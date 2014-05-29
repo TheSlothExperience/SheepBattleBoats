@@ -41,3 +41,7 @@ TfEditor::TfEditor(QWidget *parent)
     mainLayout->addLayout(colorLayout, 4, 2, 3, 1);
     setWidget(contents);
 }
+
+void TfEditor::updateHistogram(unsigned char histogram[]) {
+    tfDisplay.updateHistogram(histogram);
+}

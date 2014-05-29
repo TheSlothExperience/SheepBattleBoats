@@ -517,6 +517,7 @@ void MainWindow::changedColor() {
 
 void MainWindow::loadVolumeData() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load volumetric data"), ".", tr("Volume Data (*.raw)"));
+    QFileInfo info(fileName);
     std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
     if(!fileName.isEmpty()) {
 	FILE *fp;
@@ -526,16 +527,74 @@ void MainWindow::loadVolumeData() {
 	float ax, ay, az;
 	fscanf(fp, "%f %f %f\n", &ax, &ay, &az);
 
-	unsigned char *raw = new unsigned char[x*y*z];
-	for(int i = 0; i < x*y*z; i++) {
-	    raw[i] = (unsigned char) fgetc(fp);
+	if(info.baseName() == QString("Tooth")) {
+	    unsigned short *raw = new unsigned short[x*y*z];
+	    fread((void *)raw, 2, x*y*z, fp);
+	    std::cout << "Loading tooth texture with: "
+		      << "(" << x << ", " << y << ", " << z << ")"
+		      << " and aspect ratios of: "
+		      << ax << " " << ay << " " << az << std::endl;
+	
+
+	    //Calculate histogram
+	    int histogram_acc[256];
+	    for(int i = 0; i < 256; i++) {
+		histogram_acc[i] = 0;
+	    }
+	    for(int i = 1; i < x*y*z; i++) {
+		int idx = (float) raw[i] * (255.0 / 65536.0);
+		histogram_acc[idx] += 1;
+	    }
+	    int m = 0;
+	    for(int i = 1; i < 256; i++) {
+		if(histogram_acc[i] > m) {
+		    m = histogram_acc[i];
+		}
+	    }
+	    float scale = 255.0 / (float) m;
+	    //Normalize histogram
+	    unsigned char histogram[256];
+	    for(int i = 0; i < 256; i++) {
+		histogram[i] = (unsigned char)((float)histogram_acc[i] * scale);
+	    }
+	    //Send the raw data to the texture
+	    this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
+	    tfeditor->updateHistogram(histogram);
+	    
+	} else {
+	    unsigned char *raw = new unsigned char[x*y*z];
+	    fread((void *)raw, 1, x*y*z, fp);
+	    std::cout << "Loading texture with: "
+		      << "(" << x << ", " << y << ", " << z << ")"
+		      << " and aspect ratios of: "
+		      << ax << " " << ay << " " << az << std::endl;
+	
+
+	    //Calculate histogram
+	    int histogram_acc[256];
+	    for(int i = 0; i < 256; i++) {
+		histogram_acc[i] = 0;
+	    }
+	    for(int i = 0; i < x*y*z; i++) {
+		histogram_acc[(int)raw[i]] += 1;
+	    }
+	    int m = 0;
+	    for(int i = 1; i < 256; i++) {
+		if(histogram_acc[i] > m) {
+		    m = histogram_acc[i];
+		}
+	    }
+	    float scale = 255.0 / (float) m;
+	    //Normalize histogram
+	    unsigned char histogram[256];
+	    for(int i = 1; i < 256; i++) {
+		histogram[i] = (unsigned char)((float)histogram_acc[i] * scale);
+	    }
+	    //Send the raw data to the texture
+	    this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
+	    tfeditor->updateHistogram(histogram);
 	}
 	fclose(fp);
-	std::cout << "Loading texture with: "
-		  << "(" << x << ", " << y << ", " << z << ")"
-		  << " and aspect ratios of: "
-		  << ax << " " << ay << " " << az << std::endl;
-	this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
 	emit updateGL();
     }
 }

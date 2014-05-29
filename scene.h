@@ -74,6 +74,7 @@ public:
     QModelIndex addVolume();
 
     void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
+    void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
 
     void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
     

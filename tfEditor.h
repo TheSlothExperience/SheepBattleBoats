@@ -13,6 +13,7 @@ class TfEditor : public QDockWidget
 public:
     TfEditor(QWidget *parent = 0);
 
+    void updateHistogram(unsigned char histogram[]);
 private:
     QCheckBox *redCheckBox;
     QCheckBox *greenCheckBox;
