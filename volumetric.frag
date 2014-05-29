@@ -11,6 +11,7 @@ uniform sampler1D transferFunction;
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
+const float halfTexel = 0.5/256.0;
 
 void main(){
     //Get the coords into the backface texture
@@ -29,7 +30,9 @@ void main(){
     vec3 texvec = color;
     for(i = 0.0; i < 1.0; i += delta) {
         float vol_sample = texture(volumetricTexture, texvec).x;
-    	vec4 color_sample = texture(transferFunction, vol_sample);
+	//Move half a texel to sample from the center
+	float tfTexel = clamp(vol_sample + halfTexel, 0.0, 1.0 - halfTexel);
+    	vec4 color_sample = texture(transferFunction, tfTexel);
     	float alpha_sample = 0.03 * color_sample.a;
     	color_acc += alpha_sample * color_sample;
     	alpha_acc += alpha_sample;
