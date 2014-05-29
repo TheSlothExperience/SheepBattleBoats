@@ -11,12 +11,22 @@ class TfDisplay : public QWidget
 public:
     TfDisplay(QWidget *parent = 0);
 
+    bool red = true;
+    bool green = true;
+    bool blue = true;
+    bool alpha = true;
+    bool drawing = false;
+    
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
 
     void updateHistogram(unsigned char histogram[]);
 protected:
     void paintEvent(QPaintEvent *event);
+
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
     unsigned char histogram[256];
     unsigned char transferFunction[256][4];

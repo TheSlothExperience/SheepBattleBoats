@@ -30,16 +30,52 @@ void TfDisplay::paintEvent(QPaintEvent *event) {
     for(int i = 0; i < 256; i ++) {
 	//red
 	painter.setPen(QColor(255, 0, 0));
-	painter.drawLine(QLineF(i, 255, i, 255 - transferFunction[i][0]));
+	painter.drawPoint(i, 255 - transferFunction[i][0]);
 	//green
 	painter.setPen(QColor(0, 255, 0));
-	painter.drawLine(QLineF(i, 255, i, 255 - transferFunction[i][1]));
+	painter.drawPoint(i, 255 - transferFunction[i][1]);
 	//blue
 	painter.setPen(QColor(0, 0, 255));
-	painter.drawLine(QLineF(i, 255, i, 255 - transferFunction[i][2]));
+	painter.drawPoint(i, 255 - transferFunction[i][2]);
 	//alpha
 	painter.setPen(QColor(0, 0, 0));
-	painter.drawLine(QLineF(i, 255, i, 255 - transferFunction[i][3]));
+	painter.drawPoint(i, 255 - transferFunction[i][3]);
+    }
+}
+
+void TfDisplay::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+	int x = event->x();
+	int y = 255 - event->y();
+
+	if(red) transferFunction[x][0] = y;
+	if(green) transferFunction[x][1] = y;
+	if(blue) transferFunction[x][2] = y;
+	if(alpha) transferFunction[x][3] = y;
+	drawing = true;
+	update();
+    }
+}
+
+void TfDisplay::mouseMoveEvent(QMouseEvent *event)
+{
+    if (drawing) {
+	int x = event->x();
+	int y = 255 - event->y();
+
+	if(red) transferFunction[x][0] = y;
+	if(green) transferFunction[x][1] = y;
+	if(blue) transferFunction[x][2] = y;
+	if(alpha) transferFunction[x][3] = y;
+	update();
+    }
+}
+
+void TfDisplay::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+	drawing = false;
     }
 }
 
@@ -47,4 +83,5 @@ void TfDisplay::updateHistogram(unsigned char h[]) {
     for(int i = 0; i < 256; i++) {
 	histogram[i] = h[i];
     }
+    update();
 }

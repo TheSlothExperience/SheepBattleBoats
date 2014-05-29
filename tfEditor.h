@@ -26,7 +26,13 @@ private:
     QPushButton *smoothButton;
     QPushButton *closeButton;
 
-    TfDisplay tfDisplay; 
+    TfDisplay tfDisplay;
+
+public slots:
+    void setRed();
+    void setGreen();
+    void setBlue();
+    void setAlpha();
 };
 
 #endif

@@ -8,12 +8,16 @@ TfEditor::TfEditor(QWidget *parent)
     setWindowTitle("Transfer Function Awesomizer");
     redCheckBox = new QCheckBox("red");
     redCheckBox->setChecked(true);
+    connect(redCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setRed()));
     greenCheckBox = new QCheckBox("green");
     greenCheckBox->setChecked(true);
+    connect(greenCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setGreen()));
     blueCheckBox = new QCheckBox("blue");
     blueCheckBox->setChecked(true);
+    connect(blueCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setBlue()));
     alphaCheckBox = new QCheckBox("alpha");
     alphaCheckBox->setChecked(true);
+    connect(alphaCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setAlpha()));
 
     
     loadButton = new QPushButton("Load");
@@ -44,4 +48,20 @@ TfEditor::TfEditor(QWidget *parent)
 
 void TfEditor::updateHistogram(unsigned char histogram[]) {
     tfDisplay.updateHistogram(histogram);
+}
+
+void TfEditor::setRed() {
+    tfDisplay.red = redCheckBox->isChecked();
+}
+
+void TfEditor::setGreen() {
+    tfDisplay.green = greenCheckBox->isChecked();
+}
+
+void TfEditor::setBlue() {
+    tfDisplay.blue = blueCheckBox->isChecked();
+}
+
+void TfEditor::setAlpha() {
+    tfDisplay.alpha = alphaCheckBox->isChecked();
 }
