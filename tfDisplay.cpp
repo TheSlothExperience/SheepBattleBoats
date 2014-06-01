@@ -41,7 +41,7 @@ void TfDisplay::paintEvent(QPaintEvent *event) {
 	painter.setPen(QColor(255, 0, 0));
 	painter.drawPoint(i, 255 - transferFunction[i][0]);
 	//green
-	painter.setPen(QColor(0, 255, 0));
+	painter.setPen(QColor(0, 180, 10));
 	painter.drawPoint(i, 255 - transferFunction[i][1]);
 	//blue
 	painter.setPen(QColor(0, 0, 255));
