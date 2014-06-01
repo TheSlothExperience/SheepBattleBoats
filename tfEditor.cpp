@@ -8,22 +8,23 @@ TfEditor::TfEditor(QWidget *parent)
     setWindowTitle("Transfer Function Awesomizer");
     redCheckBox = new QCheckBox("red");
     redCheckBox->setChecked(true);
-    connect(redCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setRed()));
+    connect(redCheckBox, SIGNAL(toggled(bool)), this, SLOT(setRed(bool)));
     greenCheckBox = new QCheckBox("green");
-    greenCheckBox->setChecked(true);
-    connect(greenCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setGreen()));
+    greenCheckBox->setChecked(true); 
+    connect(greenCheckBox, SIGNAL(toggled(bool)), this, SLOT(setGreen(bool)));
     blueCheckBox = new QCheckBox("blue");
     blueCheckBox->setChecked(true);
-    connect(blueCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setBlue()));
+    connect(blueCheckBox, SIGNAL(toggled(bool)), this, SLOT(setBlue(bool)));
     alphaCheckBox = new QCheckBox("alpha");
     alphaCheckBox->setChecked(true);
-    connect(alphaCheckBox, SIGNAL(stateChanged(int)), this, SLOT(setAlpha()));
+    connect(alphaCheckBox, SIGNAL(toggled(bool)), this, SLOT(setAlpha(bool)));
 
     
     loadButton = new QPushButton("Load");
     saveButton = new QPushButton("Save");
     resetButton = new QPushButton("Reset");
     smoothButton = new QPushButton("Smooth");
+    connect(smoothButton, SIGNAL(clicked()), &tfDisplay, SLOT(smoothTF()));
     closeButton = new QPushButton("Close");
 
 
@@ -55,18 +56,18 @@ void TfEditor::changeTF() {
     emit tfChanged();
 }
 
-void TfEditor::setRed() {
-    tfDisplay.red = redCheckBox->isChecked();
+void TfEditor::setRed(bool checked) {
+    tfDisplay.red = checked;
 }
 
-void TfEditor::setGreen() {
-    tfDisplay.green = greenCheckBox->isChecked();
+void TfEditor::setGreen(bool checked) {
+    tfDisplay.green = checked;
 }
 
-void TfEditor::setBlue() {
-    tfDisplay.blue = blueCheckBox->isChecked();
+void TfEditor::setBlue(bool checked) {
+    tfDisplay.blue = checked;
 }
 
-void TfEditor::setAlpha() {
-    tfDisplay.alpha = alphaCheckBox->isChecked();
+void TfEditor::setAlpha(bool checked) {
+    tfDisplay.alpha = checked;
 }

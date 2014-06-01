@@ -35,6 +35,9 @@ protected:
 
     unsigned char histogram[256];
     unsigned char transferFunction[256][4];
+
+public slots:
+    void smoothTF();
 };
 
 #endif

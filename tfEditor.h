@@ -34,10 +34,10 @@ signals:
 public slots:
     void changeTF();
     
-    void setRed();
-    void setGreen();
-    void setBlue();
-    void setAlpha();
+    void setRed(bool checked);
+    void setGreen(bool checked);
+    void setBlue(bool checked);
+    void setAlpha(bool checked);
 };
 
 #endif
