@@ -33,6 +33,9 @@ signals:
 
 public slots:
     void changeTF();
+
+    void saveTF();
+    void loadTF();
     
     void setRed(bool checked);
     void setGreen(bool checked);

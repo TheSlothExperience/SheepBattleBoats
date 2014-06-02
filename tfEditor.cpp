@@ -1,6 +1,10 @@
 #include "tfEditor.h"
+
+#include <iostream>
 #include <QGridLayout>
 #include <QBoxLayout>
+#include <QFile>
+#include <QTextStream>
 
 TfEditor::TfEditor(QWidget *parent)
     : QDockWidget(parent)
@@ -21,7 +25,9 @@ TfEditor::TfEditor(QWidget *parent)
 
     
     loadButton = new QPushButton("Load");
+    connect(loadButton, SIGNAL(clicked()), this, SLOT(loadTF()));
     saveButton = new QPushButton("Save");
+    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveTF()));
     resetButton = new QPushButton("Reset");
     connect(resetButton, SIGNAL(clicked()), &tfDisplay, SLOT(resetTF()));
     smoothButton = new QPushButton("Smooth");
@@ -55,6 +61,23 @@ void TfEditor::updateHistogram(unsigned char histogram[]) {
 
 void TfEditor::changeTF() {
     emit tfChanged();
+}
+
+void TfEditor::saveTF() {
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transfer Function"), ".", ".tf");
+    QFile f(fileName);
+    f.open(QIODevice::WriteOnly);
+    QTextStream out(&f);
+    auto tf = tfDisplay.getTF();
+
+    for(int i = 0; i < 256; i++) {
+	out << (int)tf[i][0] << " " << (int)tf[i][1] << " " <<(int) tf[i][2] << " " << (int)tf[i][3] << "\n";
+    }
+    f.close();
+}
+
+void TfEditor::loadTF() {
+    
 }
 
 void TfEditor::setRed(bool checked) {
