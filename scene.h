@@ -79,6 +79,7 @@ public:
 
     
     void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
+    void setMIP(QOpenGLShaderProgram *sp);
     void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
     
     SceneGraph *root() {return rootNode;};

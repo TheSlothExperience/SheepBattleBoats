@@ -16,11 +16,17 @@ public:
     void updateHistogram(unsigned char histogram[]);
 
     TfDisplay tfDisplay;
+
+    bool getMIP() {return mip;}
 private:
+    bool mip = false;
+    
     QCheckBox *redCheckBox;
     QCheckBox *greenCheckBox;
     QCheckBox *blueCheckBox;
     QCheckBox *alphaCheckBox;
+    
+    QCheckBox *mipCheckBox;
 
     QPushButton *loadButton;
     QPushButton *saveButton;
@@ -36,6 +42,8 @@ public slots:
 
     void saveTF();
     void loadTF();
+
+    void setMIP(bool checked);
     
     void setRed(bool checked);
     void setGreen(bool checked);

@@ -353,6 +353,10 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
     delete[] colorsArray;
 }
 
+void Scene::setMIP(QOpenGLShaderProgram *sp) {
+    glUniform1i(sp->uniformLocation("mip"), (int)volumeNode->getMIP());
+}
+
 void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {    
     //Copy the lights positions into GL friendly arrays
     GLfloat *lightsArray = new GLfloat[3 * lights.size()];

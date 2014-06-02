@@ -22,6 +22,10 @@ TfEditor::TfEditor(QWidget *parent)
     alphaCheckBox = new QCheckBox("alpha");
     alphaCheckBox->setChecked(true);
     connect(alphaCheckBox, SIGNAL(toggled(bool)), this, SLOT(setAlpha(bool)));
+    
+    mipCheckBox = new QCheckBox("MIP");
+    mipCheckBox->setChecked(false);
+    connect(mipCheckBox, SIGNAL(toggled(bool)), this, SLOT(setMIP(bool)));
 
     
     loadButton = new QPushButton("Load");
@@ -44,6 +48,7 @@ TfEditor::TfEditor(QWidget *parent)
     mainLayout->addWidget(resetButton, 5, 0);
     mainLayout->addWidget(smoothButton, 5, 1);
     mainLayout->addWidget(closeButton, 6, 0);
+    mainLayout->addWidget(mipCheckBox, 6, 1);
 
     QBoxLayout *colorLayout = new QBoxLayout(QBoxLayout::TopToBottom);
     colorLayout->addWidget(redCheckBox);
@@ -112,4 +117,9 @@ void TfEditor::setBlue(bool checked) {
 
 void TfEditor::setAlpha(bool checked) {
     tfDisplay.alpha = checked;
+}
+
+void TfEditor::setMIP(bool checked) {
+    mip = checked;
+    emit tfChanged();
 }

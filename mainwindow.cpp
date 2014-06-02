@@ -518,6 +518,7 @@ void MainWindow::changedColor() {
 
 void MainWindow::changeTF() {
     this->scene->volume()->changeTF(tfeditor->tfDisplay.getTF());
+    this->scene->volume()->setMIP(tfeditor->getMIP());
     emit updateGL();
 }
 

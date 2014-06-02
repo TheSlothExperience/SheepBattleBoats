@@ -12,6 +12,7 @@ private:
     Volume* volume;
     GLuint tex3DLocation;
     GLuint tfLocation;
+    bool mip = false;
 
     unsigned char transferFunction[256][4];
 public:
@@ -22,6 +23,9 @@ public:
     void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
     GLuint getTexLocation() {return tex3DLocation;}
     GLuint getTFLocation() {return tfLocation;}
+
+    bool getMIP() {return mip;}
+    void setMIP(bool value) {mip = value;}
 
     void changeTF(unsigned char tf[][4]);
 };
