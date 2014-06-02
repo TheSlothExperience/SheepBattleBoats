@@ -2,7 +2,6 @@
 
 out vec3 N;
 out vec3 V;
-//out vec3 L;
 out vec4 id4;
 
 layout(location = 0) in vec4 position;
@@ -26,9 +25,6 @@ void main()
     
     // Transforming The Vertex Position To ModelView-Space
     V = vec3(modelViewMatrix * position);
-    
-    // Calculating The Vector From The Vertex Position To The Light Position
-    //L = normalize(lightPosition - V);
 
     id4 = id;
 } 

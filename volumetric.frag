@@ -49,14 +49,13 @@ vec4 phongShading(vec3 pos, vec4 color) {
     vec3 G = calculateGradient(pos, 0.01);
 
     vec4 shadedColor = vec4(0.0);
+    vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
     
     //Iterate over the lights
     for(i = 0; i < numLights; i++) {
 	vec3 L = normalize(lightPositions[i] - V);
 	vec3 R = normalize(-reflect(L,G));
-	vec4 lightColor = lightColors[i];
-	
-	vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
+	vec4 lightColor = lightColors[i];	
     
 	vec4 k_diff = color * lightColor * max(0.0, dot(L, G));
 	k_diff = clamp(k_diff, 0.0, 1.0);

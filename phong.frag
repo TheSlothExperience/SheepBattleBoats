@@ -2,7 +2,6 @@
 
 in vec3 N;
 in vec3 V;
-in vec3 L;
 in vec4 id4;
 
 const int maxLights = 12;
