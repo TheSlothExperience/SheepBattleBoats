@@ -8,10 +8,67 @@ uniform sampler3D volumetricTexture;
 uniform vec2 resolution;
 uniform sampler1D transferFunction;
 
+uniform mat4 modelViewMatrix;
+
+const int maxLights = 12;
+uniform vec3 lightPositions[maxLights];
+uniform vec4 lightColors[maxLights];
+uniform int numLights;
+
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
 const float halfTexel = 0.5/256.0;
+
+
+//Sample the 3D texture, moved by half a texel to the center of the texel
+float sampleVolumeTexture(vec3 pos) {
+    return clamp(texture(volumetricTexture, pos).x + halfTexel, 0.0, 1.0 - halfTexel);
+}
+
+//Calculate the gradient using central differences, needs 6 lookups
+vec3 calculateGradient(vec3 pos, float offset) {
+    float vxl = texture(transferFunction, sampleVolumeTexture(pos - vec3(offset, 0, 0))).a;
+    float vxr = texture(transferFunction, sampleVolumeTexture(pos + vec3(offset, 0, 0))).a;
+    
+    float vyl = texture(transferFunction, sampleVolumeTexture(pos - vec3(0, offset, 0))).a;
+    float vyr = texture(transferFunction, sampleVolumeTexture(pos + vec3(0, offset, 0))).a;
+    
+    float vzl  = texture(transferFunction, sampleVolumeTexture(pos - vec3(0, 0, offset))).a;
+    float vzr = texture(transferFunction, sampleVolumeTexture(pos + vec3(0, 0, offset))).a;
+    
+    return normalize(vec3(vxr - vxl, vyr - vyl, vzr - vzl));
+}
+
+vec4 phongShading(vec3 pos, vec4 color) {
+    int i = 0;
+    vec3 V = vec3(modelViewMatrix * vec4(pos, 1.0));
+    vec3 E = normalize(-V);
+
+    //Calculate the gradient at that position
+    vec3 G = calculateGradient(pos, 0.01);
+
+    vec4 shadedColor = vec4(0.0);
+    
+    //Iterate over the lights
+    for(i = 0; i < numLights; i++) {
+	vec3 L = normalize(lightPositions[i] - V);
+	vec3 R = normalize(-reflect(L,G));
+	vec4 lightColor = lightColors[i];
+	
+	vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
+    
+	vec4 k_diff = color * lightColor * max(0.0, dot(L, G));
+	k_diff = clamp(k_diff, 0.0, 1.0);
+
+	vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);
+	k_spec = clamp(k_spec, 0.0, 1.0);
+
+	shadedColor += vec4(k_amb + k_diff + k_spec);
+    }
+    
+    return shadedColor;
+}
 
 void main(){
     //Get the coords into the backface texture
@@ -28,15 +85,25 @@ void main(){
     float alpha_acc = 0.0;
     vec4 color_acc = vec4(0.0);
     vec3 texvec = color;
+
+    //Start the ray marching
     for(i = 0.0; i < 1.0; i += delta) {
-        float vol_sample = texture(volumetricTexture, texvec).x;
-	//Move half a texel to sample from the center
-	float tfTexel = clamp(vol_sample + halfTexel, 0.0, 1.0 - halfTexel);
+	//Sample the x value from the 3D tex
+	float tfTexel = sampleVolumeTexture(texvec);
+
+	//Look up the value in the TF
     	vec4 color_sample = texture(transferFunction, tfTexel);
     	float alpha_sample = 0.03 * color_sample.a;
-    	color_acc += alpha_sample * color_sample;
+
+	//Apply phong shading to the sampled color
+    	color_acc += alpha_sample * phongShading(texvec, color_sample);
+	
     	alpha_acc += alpha_sample;
+
+	//Move the ray forward
     	texvec += delta * rayDir;
+
+	//Don't oversaturate. Stop marching
     	if(alpha_acc >= 1.0) break;
     }
     outputColor = color_acc;

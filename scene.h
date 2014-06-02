@@ -38,6 +38,7 @@ private:
 
     QOpenGLShaderProgram *shaderProgram;
 
+
     int currentId = 0;
     int nextId() {return currentId++;};
     
@@ -76,6 +77,8 @@ public:
     void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
     void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
 
+    
+    void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
     void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
     
     SceneGraph *root() {return rootNode;};

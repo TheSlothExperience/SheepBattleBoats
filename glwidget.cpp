@@ -178,6 +178,10 @@ void GLWidget::paintGL()
 
 	static GLfloat resolution[] = {1024, 768};
 	glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
+
+	//Pass the light sources to the shader
+	scene->passLights(camera->getCameraMatrix(), volumeProgram);
+	
 	//Draw the cube
     	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), volumeProgram->uniformLocation("modelViewMatrix"));
 	
