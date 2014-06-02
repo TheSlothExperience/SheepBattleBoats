@@ -22,6 +22,7 @@ public:
 
     void updateHistogram(unsigned char histogram[]);
     unsigned char (&getTF())[256][4] {return transferFunction;}
+    void setTF(unsigned char newTF[][4]);
 
 signals:
     void tfChanged();

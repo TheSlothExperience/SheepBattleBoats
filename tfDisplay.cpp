@@ -231,7 +231,18 @@ void TfDisplay::resetTF() {
 	if(green) transferFunction[i][1] = i;
 	if(blue) transferFunction[i][2] = i;
 	if(alpha) transferFunction[i][3] = i;
-    }  
+    }
+    update(); 
+    emit tfChanged(); 
+}
+
+void TfDisplay::setTF(unsigned char newTF[][4]) {
+    for(int i = 0; i < 256; i++) {
+	transferFunction[i][0] = newTF[i][0];
+	transferFunction[i][1] = newTF[i][1]; 
+	transferFunction[i][2] = newTF[i][2]; 
+	transferFunction[i][3] = newTF[i][3]; 
+    }
     update(); 
     emit tfChanged(); 
 }

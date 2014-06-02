@@ -64,20 +64,38 @@ void TfEditor::changeTF() {
 }
 
 void TfEditor::saveTF() {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transfer Function"), ".", ".tf");
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transfer Function"), ".");
     QFile f(fileName);
-    f.open(QIODevice::WriteOnly);
-    QTextStream out(&f);
-    auto tf = tfDisplay.getTF();
+    if(f.open(QIODevice::WriteOnly))  {
+	QTextStream out(&f);
+	auto tf = tfDisplay.getTF();
 
-    for(int i = 0; i < 256; i++) {
-	out << (int)tf[i][0] << " " << (int)tf[i][1] << " " <<(int) tf[i][2] << " " << (int)tf[i][3] << "\n";
+	for(int i = 0; i < 256; i++) {
+	    out << (int)tf[i][0] << " " << (int)tf[i][1] << " " <<(int) tf[i][2] << " " << (int)tf[i][3] << "\n";
+	}
+	f.close();
     }
-    f.close();
 }
 
 void TfEditor::loadTF() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load Transfer Function"), ".");
+    QFile f(fileName);
+    if(f.open(QIODevice::ReadOnly)) {
+	QTextStream in(&f);
+
+	unsigned char newTF[256][4];
+	int r, g, b, a;
     
+	for(int i = 0; i < 256; i++) {
+	    in >> r >> g >> b >> a;
+	    newTF[i][0] = (unsigned char)r;
+	    newTF[i][1] = (unsigned char)g;
+	    newTF[i][2] = (unsigned char)b;
+	    newTF[i][3] = (unsigned char)a;
+	}
+	f.close();
+	tfDisplay.setTF(newTF);
+    }
 }
 
 void TfEditor::setRed(bool checked) {
