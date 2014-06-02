@@ -15,6 +15,8 @@ uniform vec3 lightPositions[maxLights];
 uniform vec4 lightColors[maxLights];
 uniform int numLights;
 
+uniform int mip;
+
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
@@ -69,21 +71,11 @@ vec4 phongShading(vec3 pos, vec4 color) {
     return shadedColor;
 }
 
-void main(){
-    //Get the coords into the backface texture
-    vec2 backtc = gl_FragCoord.xy / resolution.xy;
-    vec4 backColor = texture(renderedTexture, backtc);
-
-    //Get the direction vector by substracting the backface
-    //from the frontface
-    vec3 rayDir = backColor.xyz - color;
-    float len = length(rayDir);
-    
+vec4 rayMarchAcc(vec3 texvec, vec3 rayDir) {
     float delta = 0.002;
     float i = 0.0;
     float alpha_acc = 0.0;
     vec4 color_acc = vec4(0.0);
-    vec3 texvec = color;
 
     //Start the ray marching
     for(i = 0.0; i < 1.0; i += delta) {
@@ -105,6 +97,47 @@ void main(){
 	//Don't oversaturate. Stop marching
     	if(alpha_acc >= 1.0) break;
     }
-    outputColor = color_acc;
+    return color_acc;
+}
+
+vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
+    float delta = 0.002;
+    float i = 0.0;
+    float color_max = 0.0;
+    vec3 vec_max = vec3(0.0);
+
+    //Start the ray marching
+    for(i = 0.0; i < 1.0; i += delta) {
+	//Sample the x value from the 3D tex
+	float tfTexel = sampleVolumeTexture(texvec);
+
+	if(tfTexel > color_max) {
+	    color_max = tfTexel;
+	    vec_max = texvec;
+	}
+	
+	//Move the ray forward
+    	texvec += delta * rayDir;
+    }
+    vec4 color_sample = texture(transferFunction, color_max);
+    return color_sample;
+}
+
+
+void main(){
+    //Get the coords into the backface texture
+    vec2 backtc = gl_FragCoord.xy / resolution.xy;
+    vec4 backColor = texture(renderedTexture, backtc);
+
+    //Get the direction vector by substracting the backface
+    //from the frontface
+    vec3 rayDir = backColor.xyz - color;
+
+    if(mip == 0) {
+	outputColor = rayMarchAcc(color, rayDir);	
+    } else {
+	outputColor = rayMarchMIP(color, rayDir);
+    }
+
     pickingColor = vec4(-1);
 }
