@@ -38,6 +38,7 @@ protected:
 
 public slots:
     void smoothTF();
+    void resetTF();
 };
 
 #endif

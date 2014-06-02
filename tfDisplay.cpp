@@ -177,6 +177,7 @@ void TfDisplay::smoothTF() {
 	if(alpha) transferFunction[i][3] = acc_a[i];
     }
     update();
+    emit tfChanged();
 }
 
 void TfDisplay::mousePressEvent(QMouseEvent *event)
@@ -222,4 +223,15 @@ void TfDisplay::updateHistogram(unsigned char h[]) {
 	histogram[i] = h[i];
     }
     update();
+}
+
+void TfDisplay::resetTF() {
+    for(int i = 0; i < 256; i++) {
+	if(red) transferFunction[i][0] = i;
+	if(green) transferFunction[i][1] = i;
+	if(blue) transferFunction[i][2] = i;
+	if(alpha) transferFunction[i][3] = i;
+    }  
+    update(); 
+    emit tfChanged(); 
 }

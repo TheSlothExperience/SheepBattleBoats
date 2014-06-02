@@ -23,6 +23,7 @@ TfEditor::TfEditor(QWidget *parent)
     loadButton = new QPushButton("Load");
     saveButton = new QPushButton("Save");
     resetButton = new QPushButton("Reset");
+    connect(resetButton, SIGNAL(clicked()), &tfDisplay, SLOT(resetTF()));
     smoothButton = new QPushButton("Smooth");
     connect(smoothButton, SIGNAL(clicked()), &tfDisplay, SLOT(smoothTF()));
     closeButton = new QPushButton("Close");
