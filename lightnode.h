@@ -20,6 +20,7 @@ private:
 
 public:
     LightNode(Primitive *p, std::string name);
+    ~LightNode();
 
     QVector3D getPosition();
     QVector4D getLightColor() {return lightColor;}

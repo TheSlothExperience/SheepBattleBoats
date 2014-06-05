@@ -166,6 +166,14 @@ bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
     SceneGraph *parentItem = static_cast<SceneGraph*>(parent.internalPointer());
     bool success = true;
 
+    //Check if light or volume node
+    for(int i = 0; i < rows; i++) {
+	SceneGraph *toRemove = parentItem->child(position + i);
+	int found = std::find(lights.begin(), lights.end(), toRemove) - lights.begin();
+	if(found < lights.size()) {
+	    lights.erase(lights.begin() + found);
+	}
+    }
     beginRemoveRows(parent, position, position + rows - 1);
     success = parentItem->removeChildren(position, rows);
     endRemoveRows();

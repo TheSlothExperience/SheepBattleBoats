@@ -10,6 +10,10 @@ LightNode::LightNode(Primitive *p, std::string name)
     color[3] = 1.0;
 }
 
+LightNode::~LightNode() {
+    
+}
+
 QVector3D LightNode::getPosition() {
     return translation;
 }

@@ -30,7 +30,7 @@ public:
     SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
     SceneGraph(Primitive *p, SceneGraph *parent = 0);
     SceneGraph(Primitive *p, std::string name);
-    ~SceneGraph();
+    virtual ~SceneGraph();
     
     SceneGraph* parent();
 
