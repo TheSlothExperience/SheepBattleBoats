@@ -12,6 +12,7 @@ private:
     int count;
 public:
     Cylinder(int tesselationLevel);
+    ~Cylinder();
     void draw();
 };
 

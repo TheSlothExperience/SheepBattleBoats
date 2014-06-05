@@ -64,6 +64,12 @@ Sphere::Sphere(int tesselationLevel) {
     delete[] indices;
 }
 
+Sphere::~Sphere() {
+    glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &normalBufferObject);
+    glDeleteBuffers(1, &indexBufferObject);
+}
+
 void Sphere::draw() {
     // //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);

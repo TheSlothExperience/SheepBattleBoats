@@ -98,6 +98,11 @@ Cube::Cube() {
     
 }
 
+Cube::~Cube() {
+    glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &normalBufferObject);
+}
+
 void Cube::draw() {
     //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);

@@ -15,6 +15,7 @@ private:
     int idxPerPart;
 public:
     Torus(int tesselationLevel);
+    ~Torus();
     void draw();
 };
 

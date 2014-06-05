@@ -10,6 +10,7 @@ class Cube : public Primitive
     
 public:
     Cube();
+    ~Cube();
     void draw();
 };
 

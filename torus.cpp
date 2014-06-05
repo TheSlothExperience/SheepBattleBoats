@@ -71,6 +71,11 @@ Torus::Torus(int tesselationLevel) {
     delete[] indices;
 }
 
+Torus::~Torus() {
+    glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &normalBufferObject);
+    glDeleteBuffers(1, &indexBufferObject);
+}
 
 void Torus::draw() {
     int vertIdx = parts * idxPerPart;
@@ -88,5 +93,4 @@ void Torus::draw() {
     for(int i = 0; i < parts; i++) {
 	glDrawElements(GL_TRIANGLE_STRIP, idxPerPart, GL_UNSIGNED_SHORT, (GLvoid*) (sizeof(GLshort)*i*idxPerPart));
     }
-    
 }

@@ -12,6 +12,7 @@ private:
     int count;
 public:
     Cone(int tesselationLevel);
+    ~Cone();
     void draw();
 };
 

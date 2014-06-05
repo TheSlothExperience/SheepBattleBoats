@@ -12,6 +12,7 @@ private:
     int count;
 public:
     Sphere(int tesselationLevel);
+    ~Sphere();
     void draw();
 };
 

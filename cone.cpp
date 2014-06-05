@@ -114,6 +114,12 @@ Cone::Cone(int tesselationLevel) {
     delete[] indices;
 }
 
+Cone::~Cone() {
+    glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &normalBufferObject);
+    glDeleteBuffers(1, &indexBufferObject);
+}
+
 void Cone::draw() {
     // //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);

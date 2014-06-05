@@ -10,7 +10,9 @@ protected:
     GLuint normalBufferObject;
 
 public:
+    virtual ~Primitive() = 0;
     virtual void draw() = 0;
 };
 
+inline Primitive::~Primitive() {}
 #endif //PRIMITIVE_H
