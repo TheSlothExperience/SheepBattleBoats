@@ -47,6 +47,13 @@ SceneGraph::SceneGraph(Primitive *p, std::string name) {
     color[3] = 1.0;
 }
 
+SceneGraph::~SceneGraph() {
+    delete primitive;
+    for(int i = 0; i < children.size(); i++) {
+	delete children.at(i);
+    }
+}
+
 
 SceneGraph* SceneGraph::parent() {
     return parentNode;
@@ -95,6 +102,8 @@ bool SceneGraph::removeChildren(int position, int count) {
     }
     
     for (int row = 0; row < count; ++row) {
+	SceneGraph *toDelete = children.at(position + row);
+	delete toDelete;
 	children.erase(children.begin() + position + row);
     }
     return true;
