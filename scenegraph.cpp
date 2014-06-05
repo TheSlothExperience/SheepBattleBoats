@@ -93,10 +93,9 @@ bool SceneGraph::removeChildren(int position, int count) {
     if (position < 0 || position + count > children.size()) {
 	return false;
     }
-
+    
     for (int row = 0; row < count; ++row) {
-	SceneGraph *s = new SceneGraph(false, this);
-	children.insert(children.begin() + position + row, s);
+	children.erase(children.begin() + position + row);
     }
     return true;
 }
@@ -105,10 +104,12 @@ bool SceneGraph::insertChildren(int position, int count, int column) {
     if (position < 0 || position + count > children.size()) {
 	return false;
     }
-
+    
     for (int row = 0; row < count; ++row) {
-	children.erase(children.begin() + position + row);
+	SceneGraph *s = new SceneGraph(false, this);
+	children.insert(children.begin() + position + row, s);
     }
+    
     return true;
 }
 
