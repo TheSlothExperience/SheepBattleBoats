@@ -74,6 +74,10 @@ private:
     QTreeView *sceneOutliner;
     QDockWidget *outlinerDock;
 
+    QDockWidget *isoDock;
+    QSlider *isovalueSlider;
+    QCheckBox *isovalueCheckBox;
+
     QDockWidget *colorDock;
     QSlider *redSlider;
     QSlider *blueSlider;
@@ -90,6 +94,7 @@ private:
     void createMenus();
     void createToolbar();
     void createTfEditor();
+    void createIsoValuer();
     void createColorDock();
     void setupGL();
 public slots:

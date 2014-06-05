@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     createActions();
     createMenus();
     createToolbar();
+    createIsoValuer();
     createTfEditor();
     createColorDock();
     
@@ -148,6 +149,26 @@ void MainWindow::createTfEditor() {
     tfeditor = new TfEditor();
     connect(tfeditor, SIGNAL(tfChanged()), this, SLOT(changeTF()));
     addDockWidget(Qt::LeftDockWidgetArea, tfeditor);
+}
+
+void MainWindow::createIsoValuer() {
+    isovalueSlider = new QSlider(Qt::Horizontal, this);
+    isovalueSlider->setRange(0, 255);
+    isovalueSlider->setValue(100);
+
+    isovalueCheckBox = new QCheckBox("IsoSurface");
+    isovalueCheckBox->setChecked(false);
+
+    isoDock = new QDockWidget(tr("IsoSurface Selector Quantizer"), this);
+    isoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
+			    Qt::BottomDockWidgetArea);
+
+    QWidget *contents = new QWidget;
+    QHBoxLayout *layout = new QHBoxLayout(contents);
+    layout->addWidget(isovalueCheckBox);
+    layout->addWidget(isovalueSlider);
+    isoDock->setWidget(contents);
+    addDockWidget(Qt::LeftDockWidgetArea, isoDock);
 }
 
 void MainWindow::createColorDock() {
