@@ -49,9 +49,9 @@ vec4 phongShading(vec3 pos, vec4 color) {
 
     //Calculate the gradient at that position
     vec3 G = calculateGradient(pos, 0.01);
-
-    vec4 shadedColor = vec4(0.0);
+    
     vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
+    vec4 shadedColor = k_amb;
     
     //Iterate over the lights
     for(i = 0; i < numLights; i++) {
@@ -65,7 +65,7 @@ vec4 phongShading(vec3 pos, vec4 color) {
 	vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);
 	k_spec = clamp(k_spec, 0.0, 1.0);
 
-	shadedColor += vec4(k_amb + k_diff + k_spec);
+	shadedColor += vec4(k_diff + k_spec);
     }
     
     return shadedColor;
