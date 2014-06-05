@@ -281,6 +281,12 @@ Volume::Volume(float ax, float ay, float az) {
     
 }
 
+Volume::~Volume() {
+   glDeleteBuffers(1, &vertexBufferObject);
+   glDeleteBuffers(1, &normalBufferObject);
+   glDeleteBuffers(1, &texcoordsBufferObject);
+}
+
 void Volume::draw() {
     
 }

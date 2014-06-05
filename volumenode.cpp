@@ -35,6 +35,11 @@ VolumeNode::VolumeNode(Volume *p, std::string name)
     glBindTexture(GL_TEXTURE_1D, 0);
 }
 
+VolumeNode::~VolumeNode() {
+    std::cout << "DELETING VOLUME NODE" << std::endl;
+    //glDeleteTextures(1, &tex3DLocation);
+    //glDeleteTextures(1, &tfLocation);
+}
 
 void VolumeNode::changeTF(unsigned char tf[][4]) {
     for(int i = 0; i < 256; i++) {

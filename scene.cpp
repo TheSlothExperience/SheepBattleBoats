@@ -169,6 +169,10 @@ bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
     //Check if light or volume node
     for(int i = 0; i < rows; i++) {
 	SceneGraph *toRemove = parentItem->child(position + i);
+	if(toRemove == volumeNode) {
+	    std::cout << "FOUND VOLUME NODE" << std::endl;
+	    return false;
+	}
 	int found = std::find(lights.begin(), lights.end(), toRemove) - lights.begin();
 	if(found < lights.size()) {
 	    lights.erase(lights.begin() + found);
@@ -318,15 +322,23 @@ QModelIndex Scene::addVolume() {
 void Scene::drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= cameraMatrix;
-    
-    this->volumeNode->drawBB(modelViewMatrixStack, mvLoc);
+
+    if(volumeNode != NULL) {	
+	this->volumeNode->drawBB(modelViewMatrixStack, mvLoc);
+    }
     
     modelViewMatrixStack.pop();
 }
 void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw) {
+    if(volumeNode == NULL) {
+	addVolume();
+    }
     this->volumeNode->loadTexture(x, y, z, ax, ay, az, raw);
 }
 void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned short* raw) {
+    if(volumeNode == NULL) {
+	addVolume();
+    }
     this->volumeNode->loadTexture(x, y, z, ax, ay, az, raw);
 }
 

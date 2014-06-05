@@ -11,7 +11,6 @@ LightNode::LightNode(Primitive *p, std::string name)
 }
 
 LightNode::~LightNode() {
-    
 }
 
 QVector3D LightNode::getPosition() {

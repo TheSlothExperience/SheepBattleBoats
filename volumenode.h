@@ -17,6 +17,7 @@ private:
     unsigned char transferFunction[256][4];
 public:
     VolumeNode(Volume *p, std::string name);
+    ~VolumeNode();
     void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
 
     void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);

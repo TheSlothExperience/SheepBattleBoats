@@ -12,6 +12,7 @@ private:
 public:
     Volume();
     Volume(float ax, float ay, float az);
+    ~Volume();
     void drawVolume();
     void drawBB();
     void draw();

@@ -113,7 +113,8 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Draw backface of the backface of the quead
+    //Draw backface of the backface of the quad
+    if(scene->hasVolume())
     {
     	quadviewProgram->bind();
 	
@@ -136,9 +137,12 @@ void GLWidget::paintGL()
     	//Release and relax, brah
     	glBindFramebuffer(GL_FRAMEBUFFER, 0);
     	quadviewProgram->release();
+    } else {
+	std::cout << "No volume to draw!" << std::endl;
     }
 	
     //Now draw the other face of the quad and ray march
+    if(scene->hasVolume())
     {
     	//Now load program to draw to volumetric stuff
     	volumeProgram->bind();
@@ -190,6 +194,8 @@ void GLWidget::paintGL()
     	//Release and relax, brah
     	glBindFramebuffer(GL_FRAMEBUFFER, 0);    
     	volumeProgram->release();
+    } else {
+	std::cout << "No volume to draw!!" << std::endl;
     }
     
     //Draw the scene into a texture and the IDs into the picking color
