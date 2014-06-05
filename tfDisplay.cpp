@@ -14,6 +14,8 @@ TfDisplay::TfDisplay(QWidget *parent)
 	transferFunction[i][1] = i;
 	transferFunction[i][2] = i;
 	transferFunction[i][3] = i;
+
+	histogram[i] = 0;
     }
 }
       
@@ -186,13 +188,15 @@ void TfDisplay::mousePressEvent(QMouseEvent *event)
 	int x = event->x();
 	int y = 255 - event->y();
 
-	if(red) transferFunction[x][0] = y;
-	if(green) transferFunction[x][1] = y;
-	if(blue) transferFunction[x][2] = y;
-	if(alpha) transferFunction[x][3] = y;
-	drawing = true;
-	update();
-	emit tfChanged();
+	if(x < 256 && y < 256 && x >= 0 && y >= 0) {
+	    if(red) transferFunction[x][0] = y;
+	    if(green) transferFunction[x][1] = y;
+	    if(blue) transferFunction[x][2] = y;
+	    if(alpha) transferFunction[x][3] = y;
+	    drawing = true;
+	    update();
+	    emit tfChanged();
+	}
     }
 }
 
@@ -202,12 +206,14 @@ void TfDisplay::mouseMoveEvent(QMouseEvent *event)
 	int x = event->x();
 	int y = 255 - event->y();
 
-	if(red) transferFunction[x][0] = y;
-	if(green) transferFunction[x][1] = y;
-	if(blue) transferFunction[x][2] = y;
-	if(alpha) transferFunction[x][3] = y;
-	update();
-	emit tfChanged();
+	if(x < 256 && y < 256 && x >= 0 && y >= 0) {
+	    if(red) transferFunction[x][0] = y;
+	    if(green) transferFunction[x][1] = y;
+	    if(blue) transferFunction[x][2] = y;
+	    if(alpha) transferFunction[x][3] = y;
+	    update();
+	    emit tfChanged();
+	}
     }
 }
 
