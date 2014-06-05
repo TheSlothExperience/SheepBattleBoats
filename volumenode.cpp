@@ -60,10 +60,13 @@ void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, 
     glBindTexture(GL_TEXTURE_3D, 0);
     
     delete this->volume;
+    float nx = (float) x * ax;
+    float ny = (float) y * ay;
+    float nz = (float) z * az;
     //Normalize the aspects
-    float m = std::max(ax, std::max(ay, az));
-    ax /= m; ay /= m; az /= m;
-    this->volume = new Volume(ax, ay, az);
+    float m = std::max(nx, std::max(ny, nz));
+    nx /= m; ny /= m; nz /= m;
+    this->volume = new Volume(nx, ny, nz);
 }
 
 void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw) {
@@ -77,10 +80,13 @@ void VolumeNode::loadTexture(int x, int y, int z, float ax, float ay, float az, 
     glBindTexture(GL_TEXTURE_3D, 0);
     
     delete this->volume;
+    float nx = (float) x * ax;
+    float ny = (float) y * ay;
+    float nz = (float) z * az;
     //Normalize the aspects
-    float m = std::max(ax, std::max(ay, az));
-    ax /= m; ay /= m; az /= m;
-    this->volume = new Volume(ax, ay, az);
+    float m = std::max(nx, std::max(ny, nz));
+    nx /= m; ny /= m; nz /= m;
+    this->volume = new Volume(nx, ny, nz);
 }
 
 void VolumeNode::drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {
