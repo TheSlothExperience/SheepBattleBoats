@@ -25,8 +25,8 @@ layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
 const float halfTexel = 0.5/256.0;
-const float delta = 0.002;
-const float epsilon = 0.0005;
+const float delta = 0.001;
+const float epsilon = 0.00005;
 
 //Sample the 3D texture, moved by half a texel to the center of the texel
 float sampleVolumeTexture(vec3 pos) {
@@ -53,7 +53,7 @@ vec4 phongShading(vec3 pos, vec4 color) {
     vec3 E = normalize(-V);
 
     //Calculate the gradient at that position
-    vec3 G = calculateGradient(pos, 0.01);
+    vec3 G = calculateGradient(pos, 0.0001);
     
     vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
     vec4 shadedColor = k_amb;
@@ -132,15 +132,18 @@ vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
 
 vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
     float i = 0.0;
-    float previous_value = 0.0;
+    float previous_value = isovalue;
     vec3 vec_prev = vec3(0.0);
     vec4 color_acc = vec4(0.0);
     vec3 ray = normalize(rayDir);
     float len = length(rayDir);
+    float alpha_acc = 0.0;
 
     int max_iterations = 100;
     //Start the ray marching
     for(i = 0.0; i < len; i += delta) {
+	if(alpha_acc >= 1.0) break;
+	
 	//Sample the x value from the 3D tex
 	float tfTexel = sampleVolumeTexture(texvec);
 
@@ -174,7 +177,8 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
 		}
 	    }
 	    fr += isovalue; //renormalize
-	    vec4 color_sample = texture(transferFunction, isovalue);
+	    vec4 color_sample = vec4(vec3(texture(transferFunction, isovalue)), isoAlpha);
+	    alpha_acc += color_sample.a;
 	    color_acc += color_sample.a * phongShading(r, color_sample);
 	}
 	
