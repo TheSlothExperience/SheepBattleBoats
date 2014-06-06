@@ -173,7 +173,8 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
 		}
 	    }
 	    fr += isovalue; //renormalize
-	    color_acc += texture(transferFunction, isovalue);
+	    vec4 color_sample = texture(transferFunction, isovalue);
+	    color_acc += color_sample.a * phongShading(r, color_sample);
 	}
 	
 	//Else keep marching
