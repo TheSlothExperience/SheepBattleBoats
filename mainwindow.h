@@ -115,6 +115,7 @@ public slots:
 
     void showIsoSurface(bool show);
     void changeIsovalue(int value);
+    void changeIsoAlpha(int value);
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);

@@ -15,6 +15,7 @@ private:
     bool mip = false;
     bool iso = false;
     int isoValue = 100;
+    int isoAlpha = 255;
     
     unsigned char transferFunction[256][4];
 public:
@@ -35,6 +36,9 @@ public:
 
     int getIsoValue() {return isoValue;}
     void setIsoValue(int newVal) {isoValue = newVal;}
+    
+    int getIsoAlpha() {return isoAlpha;}
+    void setIsoAlpha(int newVal) {isoAlpha = newVal;}
     
     void changeTF(unsigned char tf[][4]);
 };

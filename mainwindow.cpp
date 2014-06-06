@@ -164,6 +164,7 @@ void MainWindow::createIsoValuer() {
     isovalueAlpha = new QSlider(Qt::Horizontal, this);
     isovalueAlpha->setRange(0, 255);
     isovalueAlpha->setValue(255);
+    connect(isovalueAlpha, SIGNAL(valueChanged(int)), this, SLOT(changeIsoAlpha(int)));
 
     isovalueAlphaLabel = new QLabel("Opacity: ", this);
     
@@ -549,6 +550,11 @@ void MainWindow::showIsoSurface(bool show) {
 
 void MainWindow::changeIsovalue(int value) {
     this->scene->volume()->setIsoValue(value);
+    emit updateGL();
+}
+
+void MainWindow::changeIsoAlpha(int value) {
+    this->scene->volume()->setIsoAlpha(value);
     emit updateGL();
 }
 

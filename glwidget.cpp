@@ -185,6 +185,7 @@ void GLWidget::paintGL()
 
 	//Pass the isosurface information
 	glUniform1f(volumeProgram->uniformLocation("isovalue"), (float)scene->volume()->getIsoValue() / 256.0);
+	glUniform1f(volumeProgram->uniformLocation("isoAlpha"), (float)scene->volume()->getIsoAlpha() / 256.0);
 	glUniform1i(volumeProgram->uniformLocation("isop"), (int)scene->volume()->showIso());
 	
 

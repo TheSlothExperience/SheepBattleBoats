@@ -19,6 +19,7 @@ uniform int mip;
 
 uniform int isop;
 uniform float isovalue;
+uniform float isoAlpha;
 
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
