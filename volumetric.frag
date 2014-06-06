@@ -136,7 +136,8 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
     vec4 color_acc = vec4(0.0);
     vec3 ray = normalize(rayDir);
     float len = length(rayDir);
-    
+
+    int max_iterations = 100;
     //Start the ray marching
     for(i = 0.0; i < len; i += delta) {
 	//Sample the x value from the 3D tex
@@ -145,7 +146,34 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
 	//If the two consecutive samples surround a zero (the isovalue)
 	//then find the zero
 	if((previous_value - isovalue) * (tfTexel - isovalue) < 0.0) {
-	    color_acc += texture(transferFunction, tfTexel);
+	    //Isovalue in interval, use false position method to find root
+	    float fs = (previous_value - isovalue);
+	    float ft =  (tfTexel - isovalue);
+	    vec3 s = vec_prev;
+	    vec3 t = texvec;
+	    vec3 r;
+	    float fr;
+	    int side = -1;
+	    
+	    for(int n = 0; n < max_iterations; n++) {
+		r = (fs * t - ft * s) / (fs - ft);
+		if(abs(length(t - s)) < epsilon * abs(length(t + s))) break;
+		fr = sampleVolumeTexture(r);
+
+		if(fr * ft > 0.0) {
+		    t = r; ft = fr;
+		    if(side == -1) fs /= 2;
+		    side = -1;
+		} else if (fs * fr > 0.0) {
+		    s = r; fs = fr;
+		    if(side == +1) ft /= 2;
+		    side = +1;
+		} else {
+		    break;
+		}
+	    }
+	    fr += isovalue; //renormalize
+	    color_acc += texture(transferFunction, isovalue);
 	}
 	
 	//Else keep marching
