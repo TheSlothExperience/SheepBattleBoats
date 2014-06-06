@@ -79,9 +79,11 @@ vec4 rayMarchAcc(vec3 texvec, vec3 rayDir) {
     float i = 0.0;
     float alpha_acc = 0.0;
     vec4 color_acc = vec4(0.0);
-
+    vec3 ray = normalize(rayDir);
+    float len = length(rayDir);
+    
     //Start the ray marching
-    for(i = 0.0; i < 1.0; i += delta) {
+    for(i = 0.0; i < len; i += delta) {
 	//Sample the x value from the 3D tex
 	float tfTexel = sampleVolumeTexture(texvec);
 
@@ -95,8 +97,8 @@ vec4 rayMarchAcc(vec3 texvec, vec3 rayDir) {
     	alpha_acc += alpha_sample;
 
 	//Move the ray forward
-    	texvec += delta * rayDir;
-
+    	texvec += delta * ray;
+	
 	//Don't oversaturate. Stop marching
     	if(alpha_acc >= 1.0) break;
     }
@@ -107,9 +109,11 @@ vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
     float i = 0.0;
     float color_max = 0.0;
     vec3 vec_max = vec3(0.0);
+    vec3 ray = normalize(rayDir);
+    float len = length(rayDir);
 
     //Start the ray marching
-    for(i = 0.0; i < 1.0; i += delta) {
+    for(i = 0.0; i < len; i += delta) {
 	//Sample the x value from the 3D tex
 	float tfTexel = sampleVolumeTexture(texvec);
 
@@ -119,7 +123,7 @@ vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
 	}
 	
 	//Move the ray forward
-    	texvec += delta * rayDir;
+    	texvec += delta * ray;
     }
     vec4 color_sample = texture(transferFunction, color_max);
     return color_sample;
@@ -130,9 +134,11 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
     float previous_value = 0.0;
     vec3 vec_prev = vec3(0.0);
     vec4 color_acc = vec4(0.0);
+    vec3 ray = normalize(rayDir);
+    float len = length(rayDir);
     
     //Start the ray marching
-    for(i = 0.0; i < 1.0; i += delta) {
+    for(i = 0.0; i < len; i += delta) {
 	//Sample the x value from the 3D tex
 	float tfTexel = sampleVolumeTexture(texvec);
 
@@ -146,7 +152,7 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
 	previous_value = tfTexel;
 	vec_prev = texvec;
 	//Move the ray forward
-    	texvec += delta * rayDir;
+    	texvec += delta * ray;
     }
     return color_acc;
 }
