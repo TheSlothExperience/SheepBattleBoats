@@ -155,9 +155,11 @@ void MainWindow::createIsoValuer() {
     isovalueSlider = new QSlider(Qt::Horizontal, this);
     isovalueSlider->setRange(0, 255);
     isovalueSlider->setValue(100);
+    connect(isovalueSlider, SIGNAL(valueChanged(int)), this, SLOT(changeIsovalue(int)));
 
     isovalueCheckBox = new QCheckBox("IsoSurface");
     isovalueCheckBox->setChecked(false);
+    connect(isovalueCheckBox, SIGNAL(toggled(bool)), this, SLOT(showIsoSurface(bool)));
 
     isoDock = new QDockWidget(tr("IsoSurface Selector Quantizer"), this);
     isoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
@@ -529,6 +531,16 @@ void MainWindow::translateNode(double x, double y, double z) {
 
 void MainWindow::rotateNode(QQuaternion *q) {
     this->currentNode->rotate(*q);
+    emit updateGL();
+}
+
+void MainWindow::showIsoSurface(bool show) {
+    this->scene->volume()->setIso(show);
+    emit updateGL();
+}
+
+void MainWindow::changeIsovalue(int value) {
+    this->scene->volume()->setIsoValue(value);
     emit updateGL();
 }
 

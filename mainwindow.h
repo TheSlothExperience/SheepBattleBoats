@@ -110,6 +110,9 @@ public slots:
 
     void loadVolumeData();
     void changeTF();
+
+    void showIsoSurface(bool show);
+    void changeIsovalue(int value);
     
     void translateNode(double x, double y, double z);
     void rotateNode(QQuaternion *q);

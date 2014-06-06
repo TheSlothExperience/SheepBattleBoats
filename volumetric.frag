@@ -17,6 +17,9 @@ uniform int numLights;
 
 uniform int mip;
 
+uniform int isop;
+uniform float isovalue;
+
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
@@ -123,6 +126,9 @@ vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
     return color_sample;
 }
 
+vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
+    return vec4(isovalue);
+}
 
 void main(){
     //Get the coords into the backface texture
@@ -133,10 +139,12 @@ void main(){
     //from the frontface
     vec3 rayDir = backColor.xyz - color;
 
-    if(mip == 0) {
-	outputColor = rayMarchAcc(color, rayDir);	
-    } else {
+    if(mip != 0) { //Maximum Intensity Projection
 	outputColor = rayMarchMIP(color, rayDir);
+    } else if (isop != 0) { //Isosurface
+	outputColor = rayMarchIsoSurf(color, rayDir);
+    } else { //Normal ray marching
+	outputColor = rayMarchAcc(color, rayDir);
     }
 
     pickingColor = vec4(-1);

@@ -182,6 +182,10 @@ void GLWidget::paintGL()
 
 	static GLfloat resolution[] = {1024, 768};
 	glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
+
+	//Pass the isosurface information
+	glUniform1f(volumeProgram->uniformLocation("isovalue"), (float)scene->volume()->getIsoValue() / 256.0);
+	glUniform1i(volumeProgram->uniformLocation("isop"), (int)scene->volume()->showIso());
 	
 
 	//Pass the light sources to the shader

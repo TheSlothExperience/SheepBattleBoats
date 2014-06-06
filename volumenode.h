@@ -13,7 +13,9 @@ private:
     GLuint tex3DLocation;
     GLuint tfLocation;
     bool mip = false;
-
+    bool iso = false;
+    int isoValue = 100;
+    
     unsigned char transferFunction[256][4];
 public:
     VolumeNode(Volume *p, std::string name);
@@ -28,6 +30,12 @@ public:
     bool getMIP() {return mip;}
     void setMIP(bool value) {mip = value;}
 
+    bool showIso() {return iso;}
+    void setIso(bool show) {iso = show;}
+
+    int getIsoValue() {return isoValue;}
+    void setIsoValue(int newVal) {isoValue = newVal;}
+    
     void changeTF(unsigned char tf[][4]);
 };
 
