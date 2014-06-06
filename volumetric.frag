@@ -24,7 +24,8 @@ layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
 const float halfTexel = 0.5/256.0;
-
+const float delta = 0.002;
+const float epsilon = 0.0005;
 
 //Sample the 3D texture, moved by half a texel to the center of the texel
 float sampleVolumeTexture(vec3 pos) {
@@ -75,7 +76,6 @@ vec4 phongShading(vec3 pos, vec4 color) {
 }
 
 vec4 rayMarchAcc(vec3 texvec, vec3 rayDir) {
-    float delta = 0.002;
     float i = 0.0;
     float alpha_acc = 0.0;
     vec4 color_acc = vec4(0.0);
@@ -104,7 +104,6 @@ vec4 rayMarchAcc(vec3 texvec, vec3 rayDir) {
 }
 
 vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
-    float delta = 0.002;
     float i = 0.0;
     float color_max = 0.0;
     vec3 vec_max = vec3(0.0);
@@ -127,7 +126,29 @@ vec4 rayMarchMIP(vec3 texvec, vec3 rayDir) {
 }
 
 vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
-    return vec4(isovalue);
+    float i = 0.0;
+    float previous_value = 0.0;
+    vec3 vec_prev = vec3(0.0);
+    vec4 color_acc = vec4(0.0);
+    
+    //Start the ray marching
+    for(i = 0.0; i < 1.0; i += delta) {
+	//Sample the x value from the 3D tex
+	float tfTexel = sampleVolumeTexture(texvec);
+
+	//If the two consecutive samples surround a zero (the isovalue)
+	//then find the zero
+	if((previous_value - isovalue) * (tfTexel - isovalue) < 0.0) {
+	    color_acc += texture(transferFunction, tfTexel);
+	}
+	
+	//Else keep marching
+	previous_value = tfTexel;
+	vec_prev = texvec;
+	//Move the ray forward
+    	texvec += delta * rayDir;
+    }
+    return color_acc;
 }
 
 void main(){
