@@ -161,14 +161,22 @@ void MainWindow::createIsoValuer() {
     isovalueCheckBox->setChecked(false);
     connect(isovalueCheckBox, SIGNAL(toggled(bool)), this, SLOT(showIsoSurface(bool)));
 
+    isovalueAlpha = new QSlider(Qt::Horizontal, this);
+    isovalueAlpha->setRange(0, 255);
+    isovalueAlpha->setValue(255);
+
+    isovalueAlphaLabel = new QLabel("Opacity: ", this);
+    
     isoDock = new QDockWidget(tr("IsoSurface Selector Quantizer"), this);
     isoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 			    Qt::BottomDockWidgetArea);
 
     QWidget *contents = new QWidget;
-    QHBoxLayout *layout = new QHBoxLayout(contents);
-    layout->addWidget(isovalueCheckBox);
-    layout->addWidget(isovalueSlider);
+    QGridLayout *layout = new QGridLayout(contents);
+    layout->addWidget(isovalueCheckBox, 0, 0);
+    layout->addWidget(isovalueSlider, 0, 1);
+    layout->addWidget(isovalueAlphaLabel, 1, 0);
+    layout->addWidget(isovalueAlpha, 1, 1);
     isoDock->setWidget(contents);
     addDockWidget(Qt::LeftDockWidgetArea, isoDock);
 }

@@ -77,6 +77,8 @@ private:
     QDockWidget *isoDock;
     QSlider *isovalueSlider;
     QCheckBox *isovalueCheckBox;
+    QSlider *isovalueAlpha;
+    QLabel *isovalueAlphaLabel;
 
     QDockWidget *colorDock;
     QSlider *redSlider;
