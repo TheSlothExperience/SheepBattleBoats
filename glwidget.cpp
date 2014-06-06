@@ -10,6 +10,9 @@
 #include "perspectivecamera.h"
 #include "orthocamera.h"
 
+const int TEXTURE_WIDTH = 2096;
+const int TEXTURE_HEIGHT = 1536;
+
 GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget),
       tesselationLevel(0),
@@ -53,7 +56,7 @@ void GLWidget::initializeGL()
     glBindTexture(GL_TEXTURE_2D, renderTex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTex, 0);
     
@@ -63,7 +66,7 @@ void GLWidget::initializeGL()
     glBindTexture(GL_TEXTURE_2D, pickingTex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
     
@@ -73,7 +76,7 @@ void GLWidget::initializeGL()
     glBindTexture(GL_TEXTURE_2D, volumeBuffer);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, volumeBuffer, 0);
     
@@ -81,7 +84,7 @@ void GLWidget::initializeGL()
     //Now setup the depth buffer
     glGenRenderbuffers(1, &depthBuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
 
@@ -126,7 +129,7 @@ void GLWidget::paintGL()
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     	//Draw to the whole texture(the size of the texture, maybe change?)
-    	glViewport(0,0,1024,768);
+    	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
     	//and set tex 0 as active
     	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_CULL_FACE);
@@ -178,9 +181,9 @@ void GLWidget::paintGL()
 	glBindTexture(GL_TEXTURE_1D, scene->volume()->getTFLocation());
 
     	//Draw to the whole texture(the size of the texture, maybe change?)
-    	glViewport(0,0,1024,768);
+    	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
 
-	static GLfloat resolution[] = {1024, 768};
+	static GLfloat resolution[] = {TEXTURE_WIDTH, TEXTURE_HEIGHT};
 	glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
 
 	//Pass the isosurface information
@@ -216,7 +219,7 @@ void GLWidget::paintGL()
     	glDrawBuffers(2, DrawBuffers);
 
     	//Draw to the whole texture(the size of the texture, maybe change?)
-    	glViewport(0,0,1024,768);
+    	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
     	//and set tex 0 as active
     	glActiveTexture(GL_TEXTURE0);
     
