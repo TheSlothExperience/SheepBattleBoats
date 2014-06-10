@@ -23,7 +23,7 @@ public:
     GLuint getNormalMatLocation() {return this->normalMatLocation;};
     GLuint getLightPositionLocation() {return this->lightPositionLocation;};
     QOpenGLShaderProgram* getShaderProgram() {return this->shaderProgram;};
-    QOpenGLShaderProgram* getTextureProgram() {return this->textureProgram;};
+    QOpenGLShaderProgram* getCanvasProgram() {return this->canvasProgram;};
     QOpenGLShaderProgram* getVolumeProgram() {return this->volumeProgram;};
     QOpenGLShaderProgram* getQuadViewProgram() {return this->quadviewProgram;};
     
@@ -31,13 +31,13 @@ public:
 
 private:
     QOpenGLShaderProgram *shaderProgram;
-    QOpenGLShaderProgram *textureProgram;
+    QOpenGLShaderProgram *canvasProgram;
     QOpenGLShaderProgram *volumeProgram;
     QOpenGLShaderProgram *quadviewProgram;
     QOpenGLShader *vphong;
     QOpenGLShader *fphong;
-    QOpenGLShader *vtexture;
-    QOpenGLShader *ftexture;
+    QOpenGLShader *vcanvas;
+    QOpenGLShader *fcanvas;
     QOpenGLShader *vvolume;
     QOpenGLShader *fvolume;
     QOpenGLShader *vquadview;

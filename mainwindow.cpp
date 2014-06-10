@@ -99,7 +99,7 @@ void MainWindow::setupGL() {
     //Map over the widgets setting the scene and connecting the signals
     mapWidgets([=](GLWidget *w){w->setScene(scene);});
     mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
-    mapWidgets([=](GLWidget *w){w->setTextureProgram(glWidgetContext->getTextureProgram());});
+    mapWidgets([=](GLWidget *w){w->setCanvasProgram(glWidgetContext->getCanvasProgram());});
     mapWidgets([=](GLWidget *w){w->setVolumeProgram(glWidgetContext->getVolumeProgram());});
     mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
     

@@ -3,7 +3,7 @@
 in vec3 color;
 in vec3 uv;
 
-uniform sampler2D renderedTexture;
+uniform sampler2D backfaceTexture;
 uniform sampler3D volumetricTexture;
 uniform vec2 resolution;
 uniform sampler1D transferFunction;
@@ -25,7 +25,7 @@ layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
 const float halfTexel = 0.5/256.0;
-const float delta = 0.001;
+const float delta = 0.002;
 const float epsilon = 0.00005;
 
 //Sample the 3D texture, moved by half a texel to the center of the texel
@@ -194,7 +194,7 @@ vec4 rayMarchIsoSurf(vec3 texvec, vec3 rayDir) {
 void main(){
     //Get the coords into the backface texture
     vec2 backtc = gl_FragCoord.xy / resolution.xy;
-    vec4 backColor = texture(renderedTexture, backtc);
+    vec4 backColor = texture(backfaceTexture, backtc);
 
     //Get the direction vector by substracting the backface
     //from the frontface

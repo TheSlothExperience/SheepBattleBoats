@@ -26,7 +26,7 @@ public:
     void setScene(Scene *scene);
 
     void setShaderProgram(QOpenGLShaderProgram *sp);
-    void setTextureProgram(QOpenGLShaderProgram *tp);
+    void setCanvasProgram(QOpenGLShaderProgram *cp);
     void setVolumeProgram(QOpenGLShaderProgram *vp);
     void setQuadViewProgram(QOpenGLShaderProgram *qp);
 
@@ -53,9 +53,15 @@ private:
     QPoint lastPoint;
 
     QOpenGLShaderProgram *shaderProgram;
-    QOpenGLShaderProgram *textureProgram;
+    QOpenGLShaderProgram *canvasProgram;
     QOpenGLShaderProgram *volumeProgram;
     QOpenGLShaderProgram *quadviewProgram;
+
+    void drawBackFace();
+    void rayMarchVolume();
+    void renderVolumetricData();
+    void renderScene();
+    void paintSceneToCanvas();
 
     GLuint fbo;
     GLuint renderTex;

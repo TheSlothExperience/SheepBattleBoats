@@ -10,8 +10,8 @@
 #include "perspectivecamera.h"
 #include "orthocamera.h"
 
-const int TEXTURE_WIDTH = 2096;
-const int TEXTURE_HEIGHT = 1536;
+const int TEXTURE_WIDTH = 1024;
+const int TEXTURE_HEIGHT = 768;
 
 GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget),
@@ -116,169 +116,206 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Draw backface of the backface of the quad
-    if(scene->hasVolume())
-    {
-    	quadviewProgram->bind();
-	
-    	glUniformMatrix4fv(quadviewProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
-    	//Bind the fbo and the textures to draw to
-    	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
-    	glDrawBuffers(1, DrawBuffers);
-    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    	//Draw to the whole texture(the size of the texture, maybe change?)
-    	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
-    	//and set tex 0 as active
-    	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
-
-    	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), quadviewProgram->uniformLocation("modelViewMatrix"));
-
-    	//Release and relax, brah
-    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    	quadviewProgram->release();
+    //If there is a volumetric dataset, render it
+    //by raymarching.
+    if(scene->hasVolume()) {
+	renderVolumetricData();
     } else {
 	std::cout << "No volume to draw!" << std::endl;
     }
+
+    //Render the whole Scene tree recurtively
+    renderScene();
+
+    //Paint the scene into a quad covering the viewport
+    paintSceneToCanvas();
+}
+
+/* Draw the volumetric data by ray marching
+ * into the containing cube.
+ * The result is painted into the first
+ * color attachment of the FBO.
+ */
+void GLWidget::renderVolumetricData() {
+    //Draw backface of volume cube
+    drawBackFace();
+
+    //Draw the frontface and raymarch
+    rayMarchVolume();
+}
+
+/*
+ * Draw the back face of the volume cube
+ * to the texture in GL_COLOR_ATTACHMENT2
+ */
+void GLWidget::drawBackFace() {
+    quadviewProgram->bind();
 	
-    //Now draw the other face of the quad and ray march
-    if(scene->hasVolume())
-    {
-    	//Now load program to draw to volumetric stuff
-    	volumeProgram->bind();
+    glUniformMatrix4fv(quadviewProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    //Bind the fbo and the textures to draw to
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
+    glDrawBuffers(1, DrawBuffers);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Draw to the whole texture(the size of the texture, maybe change?)
+    glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
+    //and set tex 0 as active
+    glActiveTexture(GL_TEXTURE0);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
+    scene->drawVolumeBoundingBox(camera->getCameraMatrix(), quadviewProgram->uniformLocation("modelViewMatrix"));
+
+    //Release and relax, brah
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    quadviewProgram->release();
+}
+
+/*
+ * Draws the 3D data stored in the volume node
+ * by ray marching and aggregating the values
+ * using a Transfer Function as a lookup for the
+ * color and transparency.
+ * Assumes that the backface of the cube has
+ * already been rendered to the FBO.
+ */
+void GLWidget::rayMarchVolume() {
+    //Now load program to draw to volumetric stuff
+    volumeProgram->bind();
 	
-    	//Bind the fbo and the textures to draw to
-    	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    	GLenum VolumeBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    	glDrawBuffers(2, VolumeBuffers);
-    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //Bind the fbo and the textures to draw to
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    GLenum VolumeBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, VolumeBuffers);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//This time render the front face of the cube
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+    //This time render the front face of the cube
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 	
-    	glUniformMatrix4fv(volumeProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    glUniformMatrix4fv(volumeProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
 
-    	//Make sure the tex 0 is active for the rendered scene
-    	glActiveTexture(GL_TEXTURE0);
-    	textureLocation = volumeProgram->uniformLocation("renderedTexture");
-    	//Send the rendered texture down the pipes
-    	glUniform1i(textureLocation, 0);
-    	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
+    //Make sure the tex 0 is active for the rendered scene
+    glActiveTexture(GL_TEXTURE0);
+    textureLocation = volumeProgram->uniformLocation("backfaceTexture");
+    //Send the rendered texture down the pipes
+    glUniform1i(textureLocation, 0);
+    glBindTexture(GL_TEXTURE_2D, volumeBuffer);
 
-    	//Make sure the tex 0 is active for the rendered scene
-    	glActiveTexture(GL_TEXTURE2);
-    	//Send the rendered texture down the pipes
-    	glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 2);
-    	glBindTexture(GL_TEXTURE_3D, scene->volume()->getTexLocation());
+    glActiveTexture(GL_TEXTURE2);
+    //Send the 3D data down the pipes
+    glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 2);
+    glBindTexture(GL_TEXTURE_3D, scene->volume()->getTexLocation());
 
-	//Load the transfer function
-	glActiveTexture(GL_TEXTURE3);
-	glUniform1i(volumeProgram->uniformLocation("transferFunction"), 3);
-	glBindTexture(GL_TEXTURE_1D, scene->volume()->getTFLocation());
+    //Load the transfer function
+    glActiveTexture(GL_TEXTURE3);
+    glUniform1i(volumeProgram->uniformLocation("transferFunction"), 3);
+    glBindTexture(GL_TEXTURE_1D, scene->volume()->getTFLocation());
 
-    	//Draw to the whole texture(the size of the texture, maybe change?)
-    	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
+    //Draw to the whole texture(the size of the texture, maybe change?)
+    glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
 
-	static GLfloat resolution[] = {TEXTURE_WIDTH, TEXTURE_HEIGHT};
-	glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
+    static GLfloat resolution[] = {TEXTURE_WIDTH, TEXTURE_HEIGHT};
+    glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
 
-	//Pass the isosurface information
-	glUniform1f(volumeProgram->uniformLocation("isovalue"), (float)scene->volume()->getIsoValue() / 256.0);
-	glUniform1f(volumeProgram->uniformLocation("isoAlpha"), (float)scene->volume()->getIsoAlpha() / 256.0);
-	glUniform1i(volumeProgram->uniformLocation("isop"), (int)scene->volume()->showIso());
+    //Pass the isosurface information
+    glUniform1f(volumeProgram->uniformLocation("isovalue"), (float)scene->volume()->getIsoValue() / 256.0);
+    glUniform1f(volumeProgram->uniformLocation("isoAlpha"), (float)scene->volume()->getIsoAlpha() / 256.0);
+    glUniform1i(volumeProgram->uniformLocation("isop"), (int)scene->volume()->showIso());
 	
 
-	//Pass the light sources to the shader
-	scene->passLights(camera->getCameraMatrix(), volumeProgram);
-	scene->setMIP(volumeProgram);
+    //Pass the light sources to the shader
+    scene->passLights(camera->getCameraMatrix(), volumeProgram);
+    scene->setMIP(volumeProgram);
 	
-	//Draw the cube
-    	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), volumeProgram->uniformLocation("modelViewMatrix"));
+    //Draw the cube
+    scene->drawVolumeBoundingBox(camera->getCameraMatrix(), volumeProgram->uniformLocation("modelViewMatrix"));
 	
-    	//Release and relax, brah
-    	glBindFramebuffer(GL_FRAMEBUFFER, 0);    
-    	volumeProgram->release();
+    //Release and relax, brah
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);    
+    volumeProgram->release();
+}
+
+/*
+ * Render the SceneGraph with lighting and phong shading.
+ * The result is painted into the first color attachment
+ * of the FBO.
+ * The second one will contain the picking information.
+ */
+void GLWidget::renderScene() { 
+    //Load the phong shading program
+    shaderProgram->bind();
+    
+    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    //Bind the fbo and the textures to draw to
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, DrawBuffers);
+
+    //Draw to the whole texture(the size of the texture, maybe change?)
+    glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
+    //and set tex 0 as active
+    glActiveTexture(GL_TEXTURE0);
+    
+    if(scene != NULL) {
+	//Discombobulate!
+	scene->draw(camera->getCameraMatrix());	
     } else {
-	std::cout << "No volume to draw!!" << std::endl;
-    }
-    
-    //Draw the scene into a texture and the IDs into the picking color
-    //buffer to be able to pick them with the mouse.
-    {
-    	//Load the phong shading program
-    	shaderProgram->bind();
-    
-    	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
-    	//Bind the fbo and the textures to draw to
-    	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    	glDrawBuffers(2, DrawBuffers);
-
-    	//Draw to the whole texture(the size of the texture, maybe change?)
-    	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
-    	//and set tex 0 as active
-    	glActiveTexture(GL_TEXTURE0);
-    
-    	if(scene != NULL) {
-    	    //Discombobulate!
-    	    scene->draw(camera->getCameraMatrix());	
-    	} else {
-    	    std::cout << "no scene yet" << std::endl;
-    	}
-
-    	//Release and relax, brah
-    	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    	shaderProgram->release();
+	std::cout << "no scene yet" << std::endl;
     }
 
-    //Now take the textures and put it on the canvas quad
-    //also highlight the active widget and the active object.
-    {
-	//Now load program to draw to the magic quad
-	textureProgram->bind();
-	//This time draw to the whole screen
-	glViewport(0,0,this->width(), this->height());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //Release and relax, brah
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    shaderProgram->release();
+}
 
-	//Make sure the tex 0 is active for the rendered scene
-	glActiveTexture(GL_TEXTURE0);
-	textureLocation = textureProgram->uniformLocation("renderedTexture");
-	//Send the rendered texture down the pipes
-	glUniform1i(textureLocation, 0);
-	glBindTexture(GL_TEXTURE_2D, renderTex);
+/* Paint the textures in the FBO onto a quad
+ * canvas covering the viewport.
+ * Also mark the border of the active glwidget
+ * and the border of the selected primitive.
+ */
+void GLWidget::paintSceneToCanvas() {   
+    //Now load program to draw to the magic quad
+    canvasProgram->bind();
+    //This time draw to the whole screen
+    glViewport(0,0,this->width(), this->height());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //Make sure the tex 0 is active for the rendered scene
+    glActiveTexture(GL_TEXTURE0);
+    textureLocation = canvasProgram->uniformLocation("renderedTexture");
+    //Send the rendered texture down the pipes
+    glUniform1i(textureLocation, 0);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
     
-	//Make sure the tex 1 is active to send the other tex
-	glActiveTexture(GL_TEXTURE1);
-	textureLocation = textureProgram->uniformLocation("pickingTexture");
-	//Send the picking texture down the pipes
-	glUniform1i(textureLocation, 1);
-	glBindTexture(GL_TEXTURE_2D, pickingTex);
+    //Make sure the tex 1 is active to send the other tex
+    glActiveTexture(GL_TEXTURE1);
+    textureLocation = canvasProgram->uniformLocation("pickingTexture");
+    //Send the picking texture down the pipes
+    glUniform1i(textureLocation, 1);
+    glBindTexture(GL_TEXTURE_2D, pickingTex);
 
-	activeLocation = textureProgram->uniformLocation("selected");
-	glUniform1f(activeLocation, (GLfloat)isActive);
+    activeLocation = canvasProgram->uniformLocation("selected");
+    glUniform1f(activeLocation, (GLfloat)isActive);
 
-	//Pack the color of the ID of selected object and send it
-	activeColorLocation = textureProgram->uniformLocation("activeColor");
-	if(activeID >= 0) {
-	    int r = (activeID & 0x000000FF) >>  0;
-	    int g = (activeID & 0x0000FF00) >>  8;
-	    int b = (activeID & 0x00FF0000) >> 16;
-	    glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
-	}
-
-	//Draw our nifty, pretty quad
-	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 3*2);
-    
-	textureProgram->release();
+    //Pack the color of the ID of selected object and send it
+    activeColorLocation = canvasProgram->uniformLocation("activeColor");
+    if(activeID >= 0) {
+	int r = (activeID & 0x000000FF) >>  0;
+	int g = (activeID & 0x0000FF00) >>  8;
+	int b = (activeID & 0x00FF0000) >> 16;
+	glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
     }
+
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+    
+    canvasProgram->release();
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -309,8 +346,8 @@ void GLWidget::setScene(Scene *scene) {
 void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
     this->shaderProgram = sp;
 }
-void GLWidget::setTextureProgram(QOpenGLShaderProgram *tp) {
-    this->textureProgram = tp;
+void GLWidget::setCanvasProgram(QOpenGLShaderProgram *cp) {
+    this->canvasProgram = cp;
 }
 void GLWidget::setVolumeProgram(QOpenGLShaderProgram *vp) {
     this->volumeProgram = vp;

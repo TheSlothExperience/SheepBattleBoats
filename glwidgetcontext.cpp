@@ -14,7 +14,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     shaderProgram = new QOpenGLShaderProgram();
-    textureProgram = new QOpenGLShaderProgram();
+    canvasProgram = new QOpenGLShaderProgram();
     volumeProgram = new QOpenGLShaderProgram();
     quadviewProgram = new QOpenGLShaderProgram();
 }
@@ -39,7 +39,7 @@ void GLWidgetContext::initializeGL()
     
     shaderProgram->release();
     
-    loadShaders(":/identity.vert", ":/canvas.frag", vtexture, ftexture, textureProgram);
+    loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
     loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
     loadShaders(":/volumetric.vert", ":/volumetric.frag", vvolume, fvolume, volumeProgram);
     

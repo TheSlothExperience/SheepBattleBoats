@@ -37,4 +37,5 @@ void main(){
 	    color = texture(renderedTexture, UV).xyz;
 	}
     }
+    
 }
