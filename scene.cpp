@@ -173,7 +173,7 @@ bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
 	    std::cout << "FOUND VOLUME NODE" << std::endl;
 	    return false;
 	}
-	int found = std::find(lights.begin(), lights.end(), toRemove) - lights.begin();
+	unsigned int found = std::find(lights.begin(), lights.end(), toRemove) - lights.begin();
 	if(found < lights.size()) {
 	    lights.erase(lights.begin() + found);
 	}
@@ -195,7 +195,7 @@ QModelIndex Scene::identify(int id) {
     return createIndex(s->row(), 0, s);
 }
 
-QModelIndex Scene::addCube(SceneGraph *node, int tesselationLevel) {
+QModelIndex Scene::addCube(SceneGraph *node, int) {
     beginResetModel();
     Primitive *cube = new Cube();
     std::string name("Cube ");

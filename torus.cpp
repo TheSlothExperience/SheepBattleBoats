@@ -78,7 +78,6 @@ Torus::~Torus() {
 }
 
 void Torus::draw() {
-    int vertIdx = parts * idxPerPart;
     // //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glEnableVertexAttribArray(0);

@@ -30,7 +30,7 @@ QSize TfDisplay::minimumSizeHint() const
 }
 
 
-void TfDisplay::paintEvent(QPaintEvent *event) {
+void TfDisplay::paintEvent(QPaintEvent *) {
     QPainter painter(this);
     painter.setPen(QColor(200, 200, 200));
     for(int i = 0; i < 256; i ++) {

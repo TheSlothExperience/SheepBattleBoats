@@ -49,7 +49,7 @@ SceneGraph::SceneGraph(Primitive *p, std::string name) {
 
 SceneGraph::~SceneGraph() {
     delete primitive;
-    for(int i = 0; i < children.size(); i++) {
+    for(unsigned int i = 0; i < children.size(); i++) {
 	delete children.at(i);
     }
 }
@@ -97,7 +97,7 @@ int SceneGraph::row() {
 }
 
 bool SceneGraph::removeChildren(int position, int count) {
-    if (position < 0 || position + count > children.size()) {
+    if (position < 0 || (unsigned int)(position + count) > children.size()) {
 	return false;
     }
     
@@ -109,8 +109,8 @@ bool SceneGraph::removeChildren(int position, int count) {
     return true;
 }
 
-bool SceneGraph::insertChildren(int position, int count, int column) {
-    if (position < 0 || position + count > children.size()) {
+bool SceneGraph::insertChildren(int position, int count, int) {
+    if (position < 0 || (unsigned int) (position + count) > children.size()) {
 	return false;
     }
     

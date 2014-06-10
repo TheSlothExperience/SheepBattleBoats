@@ -516,7 +516,7 @@ void MainWindow::setTesselation(int t) {
     this->tesselationLevel = t;
 }
 
-void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &previous) {
+void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &) {
     this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
     changeActiveId(currentNode->getId());
     statusbar->showMessage(currentNode->getName().c_str(), 2000);
@@ -591,7 +591,12 @@ void MainWindow::loadVolumeData() {
 		prelude.pos();
 		
 		FILE* file = fdopen(f.handle(), "r");
-		fread((void *)raw, 2, x*y*z, file);
+		int readError = fread((void *)raw, 2, x*y*z, file);
+		if(readError < 0) {
+		    std::cout << "Error reading volume data from file!" << std::endl;
+		    fclose(file);
+		    return;
+		}
 		
 	        std::cout << "Loading tooth texture with: "
 			  << "(" << x << ", " << y << ", " << z << ")"
@@ -623,6 +628,7 @@ void MainWindow::loadVolumeData() {
 	        //Send the raw data to the texture
 	        this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
 	        tfeditor->updateHistogram(histogram);
+		fclose(file);
 	    
 	    } else {
 		unsigned char *raw = new unsigned char[x*y*z];
