@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include <QtWidgets>
+#include <QPoint>
 
 class TfDisplay : public QWidget
 {
@@ -24,6 +25,8 @@ public:
     unsigned char (&getTF())[256][4] {return transferFunction;}
     void setTF(unsigned char newTF[][4]);
 
+private:
+    QPoint lastPoint;
 signals:
     void tfChanged();
     

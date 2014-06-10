@@ -188,15 +188,8 @@ void TfDisplay::mousePressEvent(QMouseEvent *event)
 	int x = event->x();
 	int y = 255 - event->y();
 
-	if(x < 256 && y < 256 && x >= 0 && y >= 0) {
-	    if(red) transferFunction[x][0] = y;
-	    if(green) transferFunction[x][1] = y;
-	    if(blue) transferFunction[x][2] = y;
-	    if(alpha) transferFunction[x][3] = y;
-	    drawing = true;
-	    update();
-	    emit tfChanged();
-	}
+	lastPoint = QPoint(x, y);
+	drawing = true;
     }
 }
 
@@ -206,11 +199,31 @@ void TfDisplay::mouseMoveEvent(QMouseEvent *event)
 	int x = event->x();
 	int y = 255 - event->y();
 
+	int x_old = lastPoint.x();
+	int y_old = lastPoint.y();
+
+	//Use linear interpolation to assure a smooth function
 	if(x < 256 && y < 256 && x >= 0 && y >= 0) {
-	    if(red) transferFunction[x][0] = y;
-	    if(green) transferFunction[x][1] = y;
-	    if(blue) transferFunction[x][2] = y;
-	    if(alpha) transferFunction[x][3] = y;
+	    if(x > x_old) {
+		int dist = x - x_old;
+		for(int i = x_old; i < x; i++) {
+		    float lambda = (float) (i - x_old) / dist;
+		    if(red) transferFunction[i][0] = y_old + (unsigned char)lambda * y;
+		    if(green) transferFunction[i][1] = y_old + (unsigned char)lambda * y;
+		    if(blue) transferFunction[i][2] = y_old +(unsigned char) lambda * y;
+		    if(alpha) transferFunction[i][3] = y_old + (unsigned char)lambda * y;
+		}
+	    } else {
+		int dist = x_old - x;
+		for(int i = x_old; i > x; i--) {
+		    float lambda = (float) (i - x_old) / dist;
+		    if(red) transferFunction[i][0] = y_old + (unsigned char)lambda * y;
+		    if(green) transferFunction[i][1] = y_old + (unsigned char)lambda * y;
+		    if(blue) transferFunction[i][2] = y_old + (unsigned char)lambda * y;
+		    if(alpha) transferFunction[i][3] = y_old + (unsigned char)lambda * y;
+		}
+	    }
+	    lastPoint = QPoint(x, y);
 	    update();
 	    emit tfChanged();
 	}
