@@ -544,18 +544,24 @@ void MainWindow::rotateNode(QQuaternion *q) {
 }
 
 void MainWindow::showIsoSurface(bool show) {
+    if(scene->hasVolume()) {
     this->scene->volume()->setIso(show);
     emit updateGL();
+    }
 }
 
 void MainWindow::changeIsovalue(int value) {
+    if(scene->hasVolume()) {
     this->scene->volume()->setIsoValue(value);
     emit updateGL();
+    }
 }
 
 void MainWindow::changeIsoAlpha(int value) {
+    if(scene->hasVolume()) {
     this->scene->volume()->setIsoAlpha(value);
     emit updateGL();
+    }
 }
 
 void MainWindow::changedColor() {
@@ -564,9 +570,11 @@ void MainWindow::changedColor() {
 }
 
 void MainWindow::changeTF() {
+    if(scene->hasVolume()) {
     this->scene->volume()->changeTF(tfeditor->tfDisplay.getTF());
     this->scene->volume()->setMIP(tfeditor->getMIP());
     emit updateGL();
+    }
 }
 
 void MainWindow::loadVolumeData() {
@@ -577,6 +585,12 @@ void MainWindow::loadVolumeData() {
 	int x, y, z;
 	float ax, ay, az;
 	QFile f(fileName);
+
+    //If there is no volume, add a volume first
+    if(!scene->hasVolume()) {
+        QModelIndex idx = scene->addVolume();
+        sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
+    }
 	
 	if(f.open(QIODevice::ReadOnly)) {
 	    QTextStream prelude(&f);

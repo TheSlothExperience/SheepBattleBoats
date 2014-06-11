@@ -310,4 +310,8 @@ void Volume::drawBB() {
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
     
     glDrawArrays(GL_TRIANGLES, 0, 3*12);
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 }

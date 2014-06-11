@@ -31,10 +31,11 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
     this->rootDummy = new SceneGraph();
     this->rootNode = new SceneGraph();
     this->rootDummy->add(rootNode);
+
+    this->volumeNode = NULL;
     
     lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
-    addVolume();
     addLight();
     lights.at(0)->translate(0.5, 0.0, 2.0);
 }
@@ -169,9 +170,8 @@ bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
     //Check if light or volume node
     for(int i = 0; i < rows; i++) {
 	SceneGraph *toRemove = parentItem->child(position + i);
-	if(toRemove == volumeNode) {
-	    std::cout << "FOUND VOLUME NODE" << std::endl;
-	    return false;
+    if(toRemove == volumeNode) {
+        this->volumeNode = NULL;
 	}
 	unsigned int found = std::find(lights.begin(), lights.end(), toRemove) - lights.begin();
 	if(found < lights.size()) {

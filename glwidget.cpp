@@ -119,9 +119,13 @@ void GLWidget::paintGL()
     //If there is a volumetric dataset, render it
     //by raymarching.
     if(scene->hasVolume()) {
-	renderVolumetricData();
+    renderVolumetricData();
     } else {
-	std::cout << "No volume to draw!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        glDrawBuffers(2, DrawBuffers);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     //Render the whole Scene tree recurtively
@@ -243,7 +247,7 @@ void GLWidget::rayMarchVolume() {
  * of the FBO.
  * The second one will contain the picking information.
  */
-void GLWidget::renderScene() { 
+void GLWidget::renderScene() {
     //Load the phong shading program
     shaderProgram->bind();
     
@@ -314,6 +318,8 @@ void GLWidget::paintSceneToCanvas() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+    glDisableVertexAttribArray(0);
     
     canvasProgram->release();
 }

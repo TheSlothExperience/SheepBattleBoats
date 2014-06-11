@@ -46,6 +46,7 @@ HEADERS  += mainwindow.h\
         camera.h\
         perspectivecamera.h\
         orthocamera.h\
+        primitive.h\
         cube.h \
         cone.h \
         sphere.h \
