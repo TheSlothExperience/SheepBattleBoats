@@ -1,4 +1,4 @@
-q#define GL_GLEXT_PROTOTYPES
+#define GL_GLEXT_PROTOTYPES
 
 #include "volumenode.h"
 #include <GL/gl.h>
