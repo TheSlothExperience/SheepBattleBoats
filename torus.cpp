@@ -92,4 +92,7 @@ void Torus::draw() {
     for(int i = 0; i < parts; i++) {
 	glDrawElements(GL_TRIANGLE_STRIP, idxPerPart, GL_UNSIGNED_SHORT, (GLvoid*) (sizeof(GLshort)*i*idxPerPart));
     }
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
 }

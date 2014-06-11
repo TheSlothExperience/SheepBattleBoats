@@ -160,4 +160,7 @@ void Cylinder::draw() {
     //Draw the indexed vertices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, 0);
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
 }
