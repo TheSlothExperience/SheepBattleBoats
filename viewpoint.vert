@@ -1,4 +1,4 @@
-#version 330
+#version 440
 
 out vec3 V;
 out vec3 color;

@@ -1,4 +1,4 @@
-#version 330 core
+#version 440 core
 
 out vec3 color;
 out vec3 uv;
