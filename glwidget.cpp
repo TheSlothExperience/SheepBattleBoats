@@ -114,18 +114,17 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
+	//Clear the buffers
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, DrawBuffers);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//If there is a volumetric dataset, render it
 	//by raymarching.
 	if(scene->hasVolume()) {
 		renderVolumetricData();
-	} else {
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-		glDrawBuffers(2, DrawBuffers);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	//Render the whole Scene tree recurtively
@@ -160,7 +159,6 @@ void GLWidget::drawBackFace() {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(1, DrawBuffers);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Draw to the whole texture(the size of the texture, maybe change?)
 	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
@@ -192,7 +190,6 @@ void GLWidget::rayMarchVolume() {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GLenum VolumeBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	glDrawBuffers(2, VolumeBuffers);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//This time render the front face of the cube
 	glEnable(GL_CULL_FACE);
