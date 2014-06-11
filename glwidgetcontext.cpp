@@ -11,12 +11,12 @@
 #include <iostream>
 
 GLWidgetContext::GLWidgetContext(QWidget *parent)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+	: QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-    shaderProgram = new QOpenGLShaderProgram();
-    canvasProgram = new QOpenGLShaderProgram();
-    volumeProgram = new QOpenGLShaderProgram();
-    quadviewProgram = new QOpenGLShaderProgram();
+	shaderProgram = new QOpenGLShaderProgram();
+	canvasProgram = new QOpenGLShaderProgram();
+	volumeProgram = new QOpenGLShaderProgram();
+	quadviewProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -26,22 +26,22 @@ GLWidgetContext::~GLWidgetContext()
 
 void GLWidgetContext::initializeGL()
 {   
-    glEnable(GL_TEXTURE_3D);
-    loadShaders(":/phong.vert", ":/phong.frag", vphong, fphong, shaderProgram);
+	glEnable(GL_TEXTURE_3D);
+	loadShaders(":/phong.vert", ":/phong.frag", vphong, fphong, shaderProgram);
 
-    shaderProgram->bind();
+	shaderProgram->bind();
 
-    perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
-    normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
-    modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
-    lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
+	perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
+	normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
+	modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
+	lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
 
     
-    shaderProgram->release();
+	shaderProgram->release();
     
-    loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
-    loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
-    loadShaders(":/volumetric.vert", ":/volumetric.frag", vvolume, fvolume, volumeProgram);
+	loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
+	loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
+	loadShaders(":/volumetric.vert", ":/volumetric.frag", vvolume, fvolume, volumeProgram);
     
 }
 
@@ -59,30 +59,31 @@ void GLWidgetContext::resizeGL(int, int)
  * `fshader`, compiles them and links them to the shader program.
  * Outputs warnings and compilation errors should an error occur.
  */
-void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog) {
-    QFileInfo vsh(vstring);
-    if (vsh.exists()) {
-	vshader = new QOpenGLShader(QOpenGLShader::Vertex);
-	if (vshader->compileSourceFile(vstring)) {
-	    prog->addShader(vshader);
+void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog)
+{
+	QFileInfo vsh(vstring);
+	if (vsh.exists()) {
+		vshader = new QOpenGLShader(QOpenGLShader::Vertex);
+		if (vshader->compileSourceFile(vstring)) {
+			prog->addShader(vshader);
+		} else {
+			qWarning() << "Vertex shader error" << vshader->log();
+		}
 	} else {
-	    qWarning() << "Vertex shader error" << vshader->log();
+		qWarning() << "Vertex shader source file " << vstring << " not found.";
 	}
-    } else {
-	qWarning() << "Vertex shader source file " << vstring << " not found.";
-    }
     
-    QFileInfo fsh(fstring);
-    if (fsh.exists()) {
-	fshader = new QOpenGLShader(QOpenGLShader::Fragment);
-	if (fshader->compileSourceFile(fstring)) {
-	    prog->addShader(fshader);
+	QFileInfo fsh(fstring);
+	if (fsh.exists()) {
+		fshader = new QOpenGLShader(QOpenGLShader::Fragment);
+		if (fshader->compileSourceFile(fstring)) {
+			prog->addShader(fshader);
+		} else {
+			qWarning() << "Vertex shader error" << fshader->log();
+		}
 	} else {
-	    qWarning() << "Vertex shader error" << fshader->log();
+		qWarning() << "Vertex shader source file " << fstring << " not found.";
 	}
-    } else {
-	qWarning() << "Vertex shader source file " << fstring << " not found.";
-    }
 
-    prog->link();
+	prog->link();
 }

@@ -12,133 +12,133 @@
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	MainWindow(QWidget *parent = 0);
+	~MainWindow();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
+	void keyPressEvent(QKeyEvent *event);
+	void keyReleaseEvent(QKeyEvent *event);
 
 private:
-    QMenuBar *menuBar;
+	QMenuBar *menuBar;
 
-    QToolBar *toolbar;
-    QStatusBar *statusbar;
+	QToolBar *toolbar;
+	QStatusBar *statusbar;
     
-    QMenu *fileMenu;
-    QAction *exitAction;
+	QMenu *fileMenu;
+	QAction *exitAction;
 
-    QSlider *tesselationSlider;
-    int tesselationLevel = 1;
+	QSlider *tesselationSlider;
+	int tesselationLevel = 1;
 
-    QMenu *viewMenu;
-    QToolButton *viewDropButton;
-    QAction *singleViewAction;
-    QAction *dualViewAction;
-    QAction *quadViewAction;
-    QActionGroup *viewportGroup;
+	QMenu *viewMenu;
+	QToolButton *viewDropButton;
+	QAction *singleViewAction;
+	QAction *dualViewAction;
+	QAction *quadViewAction;
+	QActionGroup *viewportGroup;
 
-    QAction *cameraModeAction;
-    QAction *objectModeAction;
-    QActionGroup *interactionGroup;
-    QAction *resetCameraAction;
+	QAction *cameraModeAction;
+	QAction *objectModeAction;
+	QActionGroup *interactionGroup;
+	QAction *resetCameraAction;
 
-    QAction *addCubeAction;
-    QAction *addTorusAction;
-    QAction *addCylinderAction;
-    QAction *addConeAction;
-    QAction *addSphereAction;
+	QAction *addCubeAction;
+	QAction *addTorusAction;
+	QAction *addCylinderAction;
+	QAction *addConeAction;
+	QAction *addSphereAction;
 
-    QAction *addGroupAction;
+	QAction *addGroupAction;
 
-    QAction *addLightAction;
+	QAction *addLightAction;
 
-    QAction *loadVolumeDataAction;
-    TfEditor *tfeditor;
+	QAction *loadVolumeDataAction;
+	TfEditor *tfeditor;
     
-    QMenu *helpMenu;
-    QAction *aboutAction;
+	QMenu *helpMenu;
+	QAction *aboutAction;
 
-    Scene *scene;
-    SceneGraph *currentNode;
-    GLWidgetContext *glWidgetContext;
-    GLWidget *perspectiveGLWidget;
-    GLWidget *frontGLWidget;
-    GLWidget *topGLWidget;
-    GLWidget *rightGLWidget;
-    std::vector<GLWidget*> widgetList;
+	Scene *scene;
+	SceneGraph *currentNode;
+	GLWidgetContext *glWidgetContext;
+	GLWidget *perspectiveGLWidget;
+	GLWidget *frontGLWidget;
+	GLWidget *topGLWidget;
+	GLWidget *rightGLWidget;
+	std::vector<GLWidget*> widgetList;
 
-    QTreeView *sceneOutliner;
-    QDockWidget *outlinerDock;
+	QTreeView *sceneOutliner;
+	QDockWidget *outlinerDock;
 
-    QDockWidget *isoDock;
-    QSlider *isovalueSlider;
-    QCheckBox *isovalueCheckBox;
-    QSlider *isovalueAlpha;
-    QLabel *isovalueAlphaLabel;
+	QDockWidget *isoDock;
+	QSlider *isovalueSlider;
+	QCheckBox *isovalueCheckBox;
+	QSlider *isovalueAlpha;
+	QLabel *isovalueAlphaLabel;
 
-    QDockWidget *colorDock;
-    QSlider *redSlider;
-    QSlider *blueSlider;
-    QSlider *greenSlider;
+	QDockWidget *colorDock;
+	QSlider *redSlider;
+	QSlider *blueSlider;
+	QSlider *greenSlider;
     
-    QSplitter *topSplitter;
-    QSplitter *bottomSplitter;
-    QSplitter *sideSplitter;
+	QSplitter *topSplitter;
+	QSplitter *bottomSplitter;
+	QSplitter *sideSplitter;
 
-    template <class UnaryFunction >
-    void mapWidgets(UnaryFunction f);
+	template <class UnaryFunction >
+	void mapWidgets(UnaryFunction f);
     
-    void createActions();
-    void createMenus();
-    void createToolbar();
-    void createTfEditor();
-    void createIsoValuer();
-    void createColorDock();
-    void setupGL();
+	void createActions();
+	void createMenus();
+	void createToolbar();
+	void createTfEditor();
+	void createIsoValuer();
+	void createColorDock();
+	void setupGL();
 public slots:
-    void addCube();
-    void addCone();
-    void addCylinder();
-    void addSphere();
-    void addTorus();
+	void addCube();
+	void addCone();
+	void addCylinder();
+	void addSphere();
+	void addTorus();
 
-    void addGroup();
+	void addGroup();
 
-    void addLight();
+	void addLight();
 
-    void loadVolumeData();
-    void changeTF();
+	void loadVolumeData();
+	void changeTF();
 
-    void showIsoSurface(bool show);
-    void changeIsovalue(int value);
-    void changeIsoAlpha(int value);
+	void showIsoSurface(bool show);
+	void changeIsovalue(int value);
+	void changeIsoAlpha(int value);
     
-    void translateNode(double x, double y, double z);
-    void rotateNode(QQuaternion *q);
+	void translateNode(double x, double y, double z);
+	void rotateNode(QQuaternion *q);
 
-    void setObjectInteraction();
-    void setCameraInteraction();
-    void setActiveViewport(GLWidget *active);
+	void setObjectInteraction();
+	void setCameraInteraction();
+	void setActiveViewport(GLWidget *active);
 
-    void changeCurrent(QModelIndex q);
-    void changeActiveId(int id);
+	void changeCurrent(QModelIndex q);
+	void changeActiveId(int id);
 
-    void setTesselation(int t);
+	void setTesselation(int t);
 
-    void changedColor();
+	void changedColor();
     
-    void showAboutBox();
-    void setSingleView();
-    void setDualView();
-    void setQuadView();
-    void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
+	void showAboutBox();
+	void setSingleView();
+	void setDualView();
+	void setQuadView();
+	void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
 
 signals:
-    void updateGL();
+	void updateGL();
 };
 
 #endif // MAINWINDOW_H

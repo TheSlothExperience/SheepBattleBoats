@@ -8,14 +8,14 @@
 class Volume : public Primitive
 {
 private:
-    GLuint texcoordsBufferObject;
+	GLuint texcoordsBufferObject;
 public:
-    Volume();
-    Volume(float ax, float ay, float az);
-    ~Volume();
-    void drawVolume();
-    void drawBB();
-    void draw();
+	Volume();
+	Volume(float ax, float ay, float az);
+	~Volume();
+	void drawVolume();
+	void drawBB();
+	void draw();
 };
 
 

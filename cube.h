@@ -9,9 +9,9 @@ class Cube : public Primitive
 {
     
 public:
-    Cube();
-    ~Cube();
-    void draw();
+	Cube();
+	~Cube();
+	void draw();
 };
 
 #endif //CUBE_H

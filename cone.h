@@ -8,12 +8,12 @@
 class Cone : public Primitive
 {
 private:
-    GLuint indexBufferObject;
-    int count;
+	GLuint indexBufferObject;
+	int count;
 public:
-    Cone(int tesselationLevel);
-    ~Cone();
-    void draw();
+	Cone(int tesselationLevel);
+	~Cone();
+	void draw();
 };
 
 #endif

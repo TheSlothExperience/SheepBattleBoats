@@ -13,52 +13,52 @@
 class SceneGraph
 {
 protected:
-    std::string name;
-    bool leaf = false;
-    int id;
+	std::string name;
+	bool leaf = false;
+	int id;
     
-    QQuaternion rotation;
-    QVector3D translation;
+	QQuaternion rotation;
+	QVector3D translation;
 
-    Primitive *primitive;
-    SceneGraph *parentNode;
+	Primitive *primitive;
+	SceneGraph *parentNode;
 
-    std::vector<SceneGraph* > children;
-    GLfloat color[4];
+	std::vector<SceneGraph* > children;
+	GLfloat color[4];
 
 public:
-    SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
-    SceneGraph(Primitive *p, SceneGraph *parent = 0);
-    SceneGraph(Primitive *p, std::string name);
-    virtual ~SceneGraph();
+	SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
+	SceneGraph(Primitive *p, SceneGraph *parent = 0);
+	SceneGraph(Primitive *p, std::string name);
+	virtual ~SceneGraph();
     
-    SceneGraph* parent();
+	SceneGraph* parent();
 
-    SceneGraph* child(int row);
-    int childCount();
-    int columnCount();
-    QVariant data(int column);
-    bool setData(int column, const QVariant &value);
-    bool removeChildren(int position, int count);
-    bool insertChildren(int position, int count, int columns);
-    int row();
+	SceneGraph* child(int row);
+	int childCount();
+	int columnCount();
+	QVariant data(int column);
+	bool setData(int column, const QVariant &value);
+	bool removeChildren(int position, int count);
+	bool insertChildren(int position, int count, int columns);
+	int row();
 
-    void setParent(SceneGraph *s);
+	void setParent(SceneGraph *s);
 
-    void translate(double x, double y, double z);
-    void rotate(QQuaternion q);
+	void translate(double x, double y, double z);
+	void rotate(QQuaternion q);
 
-    virtual void changeColor(float, float, float, float) {}
-    GLfloat* getColor() {return this->color;}
+	virtual void changeColor(float, float, float, float) {}
+	GLfloat* getColor() {return this->color;}
 
-    void setId(int id) {this->id = id;}
-    int getId() {return this->id;}
-    std::string getName() {return name;};
-    void setName(std::string name);
-    bool isLeaf() {return leaf;};
-    SceneGraph* add(Primitive *p);
-    SceneGraph* add(SceneGraph *s);
-    virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
+	void setId(int id) {this->id = id;}
+	int getId() {return this->id;}
+	std::string getName() {return name;};
+	void setName(std::string name);
+	bool isLeaf() {return leaf;};
+	SceneGraph* add(Primitive *p);
+	SceneGraph* add(SceneGraph *s);
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
 };
 
 #endif //SCENE_H

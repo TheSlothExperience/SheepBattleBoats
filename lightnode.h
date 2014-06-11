@@ -16,17 +16,17 @@ class LightNode : public SceneGraph
 {
 private:
 
-    QVector4D lightColor;
+	QVector4D lightColor;
 
 public:
-    LightNode(Primitive *p, std::string name);
-    ~LightNode();
+	LightNode(Primitive *p, std::string name);
+	~LightNode();
 
-    QVector3D getPosition();
-    QVector4D getLightColor() {return lightColor;}
-    void setLightColor(QVector4D lc) {lightColor = lc;}
+	QVector3D getPosition();
+	QVector4D getLightColor() {return lightColor;}
+	void setLightColor(QVector4D lc) {lightColor = lc;}
     
-    void changeColor(float r, float g, float b, float a);
+	void changeColor(float r, float g, float b, float a);
 };
 
 #endif

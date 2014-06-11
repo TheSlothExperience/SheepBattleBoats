@@ -8,15 +8,15 @@
 class Torus : public Primitive
 {
 private:
-    GLuint indexBufferObject;
-    int count;
-    int numVerts;
-    int parts;
-    int idxPerPart;
+	GLuint indexBufferObject;
+	int count;
+	int numVerts;
+	int parts;
+	int idxPerPart;
 public:
-    Torus(int tesselationLevel);
-    ~Torus();
-    void draw();
+	Torus(int tesselationLevel);
+	~Torus();
+	void draw();
 };
 
 #endif

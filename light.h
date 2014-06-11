@@ -10,8 +10,8 @@ class Light : public Primitive
 {
     
 public:
-    Light();
-    void draw();
+	Light();
+	void draw();
 };
 
 #endif

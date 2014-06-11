@@ -8,12 +8,12 @@
 class Sphere : public Primitive
 {
 private:
-    GLuint indexBufferObject;
-    int count;
+	GLuint indexBufferObject;
+	int count;
 public:
-    Sphere(int tesselationLevel);
-    ~Sphere();
-    void draw();
+	Sphere(int tesselationLevel);
+	~Sphere();
+	void draw();
 };
 
 

@@ -8,12 +8,12 @@
 class Cylinder : public Primitive
 {
 private:
-    GLuint indexBufferObject;
-    int count;
+	GLuint indexBufferObject;
+	int count;
 public:
-    Cylinder(int tesselationLevel);
-    ~Cylinder();
-    void draw();
+	Cylinder(int tesselationLevel);
+	~Cylinder();
+	void draw();
 };
 
 

@@ -9,38 +9,38 @@
 class VolumeNode : public SceneGraph
 {
 private:
-    Volume* volume;
-    GLuint tex3DLocation;
-    GLuint tfLocation;
-    bool mip = false;
-    bool iso = false;
-    int isoValue = 100;
-    int isoAlpha = 255;
+	Volume* volume;
+	GLuint tex3DLocation;
+	GLuint tfLocation;
+	bool mip = false;
+	bool iso = false;
+	int isoValue = 100;
+	int isoAlpha = 255;
     
-    unsigned char transferFunction[256][4];
+	unsigned char transferFunction[256][4];
 public:
-    VolumeNode(Volume *p, std::string name);
-    ~VolumeNode();
-    void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
+	VolumeNode(Volume *p, std::string name);
+	~VolumeNode();
+	void drawBB(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
 
-    void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
-    void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
-    GLuint getTexLocation() {return tex3DLocation;}
-    GLuint getTFLocation() {return tfLocation;}
+	void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
+	void loadTexture(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
+	GLuint getTexLocation() {return tex3DLocation;}
+	GLuint getTFLocation() {return tfLocation;}
 
-    bool getMIP() {return mip;}
-    void setMIP(bool value) {mip = value;}
+	bool getMIP() {return mip;}
+	void setMIP(bool value) {mip = value;}
 
-    bool showIso() {return iso;}
-    void setIso(bool show) {iso = show;}
+	bool showIso() {return iso;}
+	void setIso(bool show) {iso = show;}
 
-    int getIsoValue() {return isoValue;}
-    void setIsoValue(int newVal) {isoValue = newVal;}
+	int getIsoValue() {return isoValue;}
+	void setIsoValue(int newVal) {isoValue = newVal;}
     
-    int getIsoAlpha() {return isoAlpha;}
-    void setIsoAlpha(int newVal) {isoAlpha = newVal;}
+	int getIsoAlpha() {return isoAlpha;}
+	void setIsoAlpha(int newVal) {isoAlpha = newVal;}
     
-    void changeTF(unsigned char tf[][4]);
+	void changeTF(unsigned char tf[][4]);
 };
 
 #endif

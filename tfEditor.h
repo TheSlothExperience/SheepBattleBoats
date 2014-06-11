@@ -8,47 +8,47 @@
 
 class TfEditor : public QDockWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    TfEditor(QWidget *parent = 0);
+	TfEditor(QWidget *parent = 0);
 
-    void updateHistogram(unsigned char histogram[]);
+	void updateHistogram(unsigned char histogram[]);
 
-    TfDisplay tfDisplay;
+	TfDisplay tfDisplay;
 
-    bool getMIP() {return mip;}
+	bool getMIP() {return mip;}
 private:
-    bool mip = false;
+	bool mip = false;
     
-    QCheckBox *redCheckBox;
-    QCheckBox *greenCheckBox;
-    QCheckBox *blueCheckBox;
-    QCheckBox *alphaCheckBox;
+	QCheckBox *redCheckBox;
+	QCheckBox *greenCheckBox;
+	QCheckBox *blueCheckBox;
+	QCheckBox *alphaCheckBox;
     
-    QCheckBox *mipCheckBox;
+	QCheckBox *mipCheckBox;
 
-    QPushButton *loadButton;
-    QPushButton *saveButton;
-    QPushButton *resetButton;
-    QPushButton *smoothButton;
-    QPushButton *closeButton;
+	QPushButton *loadButton;
+	QPushButton *saveButton;
+	QPushButton *resetButton;
+	QPushButton *smoothButton;
+	QPushButton *closeButton;
 
 signals:
-    void tfChanged();
+	void tfChanged();
 
 public slots:
-    void changeTF();
+	void changeTF();
 
-    void saveTF();
-    void loadTF();
+	void saveTF();
+	void loadTF();
 
-    void setMIP(bool checked);
+	void setMIP(bool checked);
     
-    void setRed(bool checked);
-    void setGreen(bool checked);
-    void setBlue(bool checked);
-    void setAlpha(bool checked);
+	void setRed(bool checked);
+	void setGreen(bool checked);
+	void setBlue(bool checked);
+	void setAlpha(bool checked);
 };
 
 #endif
