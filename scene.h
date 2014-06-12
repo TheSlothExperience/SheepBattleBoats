@@ -4,6 +4,7 @@
 #include "scenegraph.h"
 #include "lightnode.h"
 #include "volumenode.h"
+#include "heightmapnode.h"
 
 #include <stack>
 #include <map>
@@ -32,6 +33,7 @@ private:
 	std::vector<LightNode*> lights;
 
 	VolumeNode* volumeNode;
+	HeightMapNode* heightMapNode;
 
 	QVector4D lightPosition;
 	std::stack<QMatrix4x4> modelViewMatrixStack;
@@ -73,6 +75,7 @@ public:
     
 	QModelIndex addLight();
 	QModelIndex addVolume();
+	QModelIndex addHeightMap();
 
 	bool hasVolume() {return volumeNode != NULL;}
 	void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);

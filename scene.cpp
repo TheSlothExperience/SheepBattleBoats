@@ -36,6 +36,8 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
     
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
+	addHeightMap();
+	
 	addLight();
 	lights.at(0)->translate(0.5, 0.0, 2.0);
 }
@@ -314,6 +316,23 @@ QModelIndex Scene::addVolume() {
 
 	rootNode->add(s);
 	this->volumeNode = s;
+	endResetModel();
+
+	return createIndex(s->row(), 0, s);
+}
+
+QModelIndex Scene::addHeightMap() {
+	beginResetModel();
+	HeightMap *hm = new HeightMap();
+	std::string name("HeightMap ");
+	int id = nextId();
+	name += std::to_string(id);
+	HeightMapNode *s = new HeightMapNode(hm, name);
+	s->setId(id);
+	identifier[id] = s;
+
+	rootNode->add(s);
+	this->heightMapNode = s;
 	endResetModel();
 
 	return createIndex(s->row(), 0, s);
