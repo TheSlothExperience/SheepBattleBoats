@@ -78,6 +78,8 @@ public:
 	QModelIndex addHeightMap();
 
 	bool hasVolume() {return volumeNode != NULL;}
+	bool hasHeightMap() {return heightMapNode != NULL;}
+	
 	void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
 	void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
 
@@ -92,6 +94,7 @@ public:
 	void setLightLocation(GLuint lightPositionLocation);
 
 	void drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc);
+	void drawHeightMapGrid(QMatrix4x4 cameraMatrix, GLuint mvLoc);
     
 	void draw(QMatrix4x4 cameraMatrix);
 };

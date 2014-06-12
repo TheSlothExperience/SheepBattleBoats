@@ -62,6 +62,7 @@ private:
     void drawBackFace();
     void rayMarchVolume();
     void renderVolumetricData();
+    void renderHeightMap();
     void renderScene();
     void paintSceneToCanvas();
 

@@ -126,6 +126,10 @@ void GLWidget::paintGL()
 	if(scene->hasVolume()) {
 		renderVolumetricData();
 	}
+	
+	if(scene->hasHeightMap()) {
+		renderHeightMap();
+	}
 
 	//Render the whole Scene tree recurtively
 	renderScene();
@@ -133,6 +137,30 @@ void GLWidget::paintGL()
 	//Paint the scene into a quad covering the viewport
 	paintSceneToCanvas();
 }
+
+void GLWidget::renderHeightMap() {
+	
+	heightMapProgram->bind();
+    
+	glUniformMatrix4fv(heightMapProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
+	//Bind the fbo and the textures to draw to
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	glDrawBuffers(2, DrawBuffers);
+
+	//Draw to the whole texture(the size of the texture, maybe change?)
+	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
+	//and set tex 0 as active
+	glActiveTexture(GL_TEXTURE0);
+
+	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
+
+	//Release and relax, brah
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	heightMapProgram->release();
+}
+
+
 
 /* Draw the volumetric data by ray marching
  * into the containing cube.

@@ -33,6 +33,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
 	this->rootDummy->add(rootNode);
 
 	this->volumeNode = NULL;
+	this->heightMapNode = NULL;
     
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
@@ -348,6 +349,18 @@ void Scene::drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
     
 	modelViewMatrixStack.pop();
 }
+
+void Scene::drawHeightMapGrid(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
+	modelViewMatrixStack.push(modelViewMatrixStack.top());
+	modelViewMatrixStack.top() *= cameraMatrix;
+
+	if(heightMapNode != NULL) {	
+		this->heightMapNode->drawGrid(modelViewMatrixStack, mvLoc);
+	}
+    
+	modelViewMatrixStack.pop();
+}
+
 void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw) {
 	if(volumeNode == NULL) {
 		addVolume();
