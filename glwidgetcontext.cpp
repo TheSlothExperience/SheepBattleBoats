@@ -17,6 +17,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	canvasProgram = new QOpenGLShaderProgram();
 	volumeProgram = new QOpenGLShaderProgram();
 	quadviewProgram = new QOpenGLShaderProgram();
+	heightmapProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -42,6 +43,7 @@ void GLWidgetContext::initializeGL()
 	loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
 	loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
 	loadShaders(":/volumetric.vert", ":/volumetric.frag", vvolume, fvolume, volumeProgram);
+	loadShaders(":/heightmap.vert", ":/heightmap.frag", vheightmap, fheightmap, heightmapProgram);
     
 }
 

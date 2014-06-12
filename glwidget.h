@@ -29,6 +29,7 @@ public:
     void setCanvasProgram(QOpenGLShaderProgram *cp);
     void setVolumeProgram(QOpenGLShaderProgram *vp);
     void setQuadViewProgram(QOpenGLShaderProgram *qp);
+    void setHeightMapProgram(QOpenGLShaderProgram *hp);
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -56,6 +57,7 @@ private:
     QOpenGLShaderProgram *canvasProgram;
     QOpenGLShaderProgram *volumeProgram;
     QOpenGLShaderProgram *quadviewProgram;
+    QOpenGLShaderProgram *heightMapProgram;
 
     void drawBackFace();
     void rayMarchVolume();

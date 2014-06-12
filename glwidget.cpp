@@ -358,6 +358,9 @@ void GLWidget::setVolumeProgram(QOpenGLShaderProgram *vp) {
 void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
 	this->quadviewProgram = qp;
 }
+void GLWidget::setHeightMapProgram(QOpenGLShaderProgram *hp) {
+	this->heightMapProgram = hp;
+}
 
 void GLWidget::setActive(bool active) {
 	this->isActive = active;

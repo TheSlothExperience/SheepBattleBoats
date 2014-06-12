@@ -102,6 +102,7 @@ void MainWindow::setupGL() {
 	mapWidgets([=](GLWidget *w){w->setCanvasProgram(glWidgetContext->getCanvasProgram());});
 	mapWidgets([=](GLWidget *w){w->setVolumeProgram(glWidgetContext->getVolumeProgram());});
 	mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
+	mapWidgets([=](GLWidget *w){w->setHeightMapProgram(glWidgetContext->getHeightMapProgram());});
     
 	mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
     
