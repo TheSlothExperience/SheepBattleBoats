@@ -1,7 +1,5 @@
 #version 440 core
 
-in vec3 V;
-
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 

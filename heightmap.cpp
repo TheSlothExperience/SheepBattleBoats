@@ -6,8 +6,8 @@ HeightMap::HeightMap() {
 	static GLfloat vertices[] = {
 		-50, 0, -50,
 		-50, 0, 50,
-		50, 0, 50,
-		50, 0, -50
+		50, 0, -50,
+		50, 0, 50
 	};
 
 	static GLfloat normals[] = {
@@ -47,7 +47,8 @@ void HeightMap::drawGrid() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     
-	glDrawArrays(GL_LINE_LOOP, 0, 4);
+	glPatchParameteri(GL_PATCH_VERTICES, 4);
+	glDrawArrays(GL_PATCHES, 0, 4);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);

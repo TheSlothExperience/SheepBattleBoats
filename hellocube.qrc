@@ -26,5 +26,7 @@
         <file>volumetric.frag</file>
         <file>heightmap.vert</file>
         <file>heightmap.frag</file>
+        <file>heightmap.tesc</file>
+        <file>heightmap.tese</file>
     </qresource>
 </RCC>

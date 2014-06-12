@@ -43,7 +43,7 @@ void GLWidgetContext::initializeGL()
 	loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
 	loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
 	loadShaders(":/volumetric.vert", ":/volumetric.frag", vvolume, fvolume, volumeProgram);
-	loadShaders(":/heightmap.vert", ":/heightmap.frag", vheightmap, fheightmap, heightmapProgram);
+	loadShaders(":/heightmap.vert", ":/heightmap.frag",":/heightmap.tesc", ":/heightmap.tese", vheightmap, fheightmap, tcheightmap, teheightmap, heightmapProgram);
     
 }
 
@@ -81,10 +81,64 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShade
 		if (fshader->compileSourceFile(fstring)) {
 			prog->addShader(fshader);
 		} else {
-			qWarning() << "Vertex shader error" << fshader->log();
+			qWarning() << "Fragment shader error" << fshader->log();
 		}
 	} else {
-		qWarning() << "Vertex shader source file " << fstring << " not found.";
+		qWarning() << "Fragment shader source file " << fstring << " not found.";
+	}
+
+	prog->link();
+}
+
+
+void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog)
+{
+	QFileInfo vsh(vstring);
+	if (vsh.exists()) {
+		vshader = new QOpenGLShader(QOpenGLShader::Vertex);
+		if (vshader->compileSourceFile(vstring)) {
+			prog->addShader(vshader);
+		} else {
+			qWarning() << "Vertex shader error" << vshader->log();
+		}
+	} else {
+		qWarning() << "Vertex shader source file " << vstring << " not found.";
+	}
+    
+	QFileInfo fsh(fstring);
+	if (fsh.exists()) {
+		fshader = new QOpenGLShader(QOpenGLShader::Fragment);
+		if (fshader->compileSourceFile(fstring)) {
+			prog->addShader(fshader);
+		} else {
+			qWarning() << "Fragment shader error" << fshader->log();
+		}
+	} else {
+		qWarning() << "Fragment shader source file " << fstring << " not found.";
+	}
+    
+	QFileInfo tcsh(tcstring);
+	if (tcsh.exists()) {
+		tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl);
+		if (tcshader->compileSourceFile(tcstring)) {
+			prog->addShader(tcshader);
+		} else {
+			qWarning() << "Tessellation control shader error" << tcshader->log();
+		}
+	} else {
+		qWarning() << "Tesselation control source file " << tcstring << " not found.";
+	}
+    
+	QFileInfo tesh(testring);
+	if (tesh.exists()) {
+		teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation);
+		if (teshader->compileSourceFile(testring)) {
+			prog->addShader(teshader);
+		} else {
+			qWarning() << "Tessellation evaluation shader error" << teshader->log();
+		}
+	} else {
+		qWarning() << "Tesselation evaluation source file " << testring << " not found.";
 	}
 
 	prog->link();

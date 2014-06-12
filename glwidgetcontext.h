@@ -46,7 +46,10 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShader *fquadview;
 	QOpenGLShader *vheightmap;
 	QOpenGLShader *fheightmap;
+	QOpenGLShader *tcheightmap;
+	QOpenGLShader *teheightmap;
 	void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
+	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog);
 
 	GLuint perspectiveMatLocation;
 	GLuint modelViewMatLocation;

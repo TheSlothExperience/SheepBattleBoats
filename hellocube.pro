@@ -45,7 +45,7 @@ HEADERS  += mainwindow.h\
         scenegraph.h\
         lightnode.h\
         volumenode.h\
-        heightmapnobe.h\
+        heightmapnode.h\
         camera.h\
         perspectivecamera.h\
         orthocamera.h\
@@ -56,7 +56,7 @@ HEADERS  += mainwindow.h\
         torus.h \
         cylinder.h\
         volume.h\
-        heightmap.h\
+        heightmap.h\ 
         light.h	
 
 RESOURCES += \
