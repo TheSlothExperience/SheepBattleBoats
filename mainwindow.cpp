@@ -25,8 +25,12 @@ MainWindow::MainWindow(QWidget *parent)
 	createActions();
 	createMenus();
 	createToolbar();
+	
 	createIsoValuer();
 	createTfEditor();
+
+	createHeightMapDock();
+
 	createColorDock();
     
 	setStatusBar(statusbar);
@@ -149,7 +153,21 @@ void MainWindow::setupGL() {
 void MainWindow::createTfEditor() {
 	tfeditor = new TfEditor();
 	connect(tfeditor, SIGNAL(tfChanged()), this, SLOT(changeTF()));
-	addDockWidget(Qt::LeftDockWidgetArea, tfeditor);
+	addDockWidget(Qt::RightDockWidgetArea, tfeditor);
+}
+
+void MainWindow::createHeightMapDock() {
+	heightMapLoadButton = new QPushButton("Load heightmap");
+	connect(heightMapLoadButton, SIGNAL(clicked()), this, SLOT(loadHeightMap()));
+
+	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
+	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
+	                         Qt::BottomDockWidgetArea);
+	QWidget *contents = new QWidget;
+	QVBoxLayout *layout = new QVBoxLayout(contents);
+	layout->addWidget(heightMapLoadButton);
+	heightMapDock->setWidget(contents);
+	addDockWidget(Qt::RightDockWidgetArea, heightMapDock);
 }
 
 void MainWindow::createIsoValuer() {
@@ -687,4 +705,8 @@ void MainWindow::loadVolumeData() {
 			emit updateGL();
 		}
 	}
+}
+
+void MainWindow::loadHeightMap() {
+	
 }

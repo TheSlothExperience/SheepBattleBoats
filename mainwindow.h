@@ -80,6 +80,9 @@ private:
 	QSlider *isovalueAlpha;
 	QLabel *isovalueAlphaLabel;
 
+	QDockWidget *heightMapDock;
+	QPushButton *heightMapLoadButton;
+	
 	QDockWidget *colorDock;
 	QSlider *redSlider;
 	QSlider *blueSlider;
@@ -98,6 +101,7 @@ private:
 	void createTfEditor();
 	void createIsoValuer();
 	void createColorDock();
+	void createHeightMapDock();
 	void setupGL();
 public slots:
 	void addCube();
@@ -116,6 +120,8 @@ public slots:
 	void showIsoSurface(bool show);
 	void changeIsovalue(int value);
 	void changeIsoAlpha(int value);
+
+	void loadHeightMap();
     
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);
