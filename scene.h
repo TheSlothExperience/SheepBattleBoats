@@ -82,6 +82,8 @@ public:
 	
 	void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw);
 	void loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned short* raw);
+	
+	void loadHeightMapData(int width, int height, unsigned short* raw);
 
     
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);

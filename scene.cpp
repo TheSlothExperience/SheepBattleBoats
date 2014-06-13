@@ -374,6 +374,13 @@ void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, un
 	this->volumeNode->loadTexture(x, y, z, ax, ay, az, raw);
 }
 
+void Scene::loadHeightMapData(int width, int height, unsigned short* raw) {
+	if(heightMapNode == NULL) {
+		addHeightMap();
+	}
+	this->heightMapNode->loadHeightMap(width, height, raw);
+}
+
 void Scene::draw(QMatrix4x4 cameraMatrix) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;

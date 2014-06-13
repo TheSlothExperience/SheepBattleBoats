@@ -9,12 +9,15 @@ class HeightMapNode : public SceneGraph
 {
 private:
 	HeightMap *heightMap;
+	GLuint heightMapTexLocation;
 
 public:
 	HeightMapNode(HeightMap *h, std::string name);
 	~HeightMapNode();
 
 	void drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
+
+	void loadHeightMap(int width, int height, unsigned short* raw);
 };
 	
 

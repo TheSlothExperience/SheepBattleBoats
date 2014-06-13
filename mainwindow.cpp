@@ -708,5 +708,43 @@ void MainWindow::loadVolumeData() {
 }
 
 void MainWindow::loadHeightMap() {
-	
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Load height map"), ".", tr("Height Map (*.pgm)"));
+	QFileInfo info(fileName);
+	std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
+	if(!fileName.isEmpty()) {
+		FILE *fp;
+		fp = fopen(fileName.toLocal8Bit().data(), "r");
+		int height, width, valueRange;
+		int ferr = fscanf(fp, "P5\n");
+		if(ferr != 0) std::cout << "Problem reading file. File is evil." << std::endl;
+		ferr = fscanf(fp, "%d\n", &width);
+		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
+		ferr = fscanf(fp, "%d\n", &height);
+		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
+		ferr = fscanf(fp, "%d\n", &valueRange);
+		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
+
+		if(valueRange < 256) {
+			
+		} else if (valueRange < 65536) {
+			std::cout << "Loading height map texture with: "
+			          << "(" << width << ", " << height << ")"
+			          << " and maximum value of: "
+			          << valueRange << " `short`-wise ." << std::endl;
+
+			unsigned short* raw = new unsigned short[width * height];
+			ferr = fread((void*)raw, 2, width * height, fp);
+			if(ferr != width * height) {
+				std::cout << "Uh-oh. Could only read " << ferr
+				          << " wingamajings from the file, instead of "
+				          << width * height << ". "
+				          << "I recommend exorcising the file." << std::endl;
+				fclose(fp);
+				return;
+			}
+
+			scene->loadHeightMapData(width, height, raw);
+		}
+		fclose(fp);
+	}
 }
