@@ -152,6 +152,9 @@ void GLWidget::renderHeightMap() {
 	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
 	//and set tex 0 as active
 	glActiveTexture(GL_TEXTURE0);
+	//Push dat heightmap down, dawg
+	glUniform1i(heightMapProgram->uniformLocation("heightMapTexture"), 0);
+	glBindTexture(GL_TEXTURE_2D, scene->heightMap()->getHeightMapLocation());
 
 	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
 

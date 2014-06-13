@@ -6,6 +6,8 @@ in vec3 tcPosition[];
 out vec3 tePosition;
 out vec4 tePatchDistance;
 
+uniform sampler2D heightMapTexture;
+                 
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
 

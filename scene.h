@@ -92,6 +92,8 @@ public:
     
 	SceneGraph *root() {return rootNode;};
 	VolumeNode *volume() {return volumeNode;}
+	HeightMapNode *heightMap() {return heightMapNode;}
+	
 	QModelIndex identify(int i);
 	void setLightLocation(GLuint lightPositionLocation);
 

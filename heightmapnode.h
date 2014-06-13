@@ -18,6 +18,8 @@ public:
 	void drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
 
 	void loadHeightMap(int width, int height, unsigned short* raw);
+	
+	GLuint getHeightMapLocation() {return heightMapTexLocation;}
 };
 	
 
