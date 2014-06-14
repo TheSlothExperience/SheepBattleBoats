@@ -733,18 +733,30 @@ void MainWindow::loadHeightMap() {
 			          << valueRange << " `short`-wise ." << std::endl;
 
 			unsigned short* raw = new unsigned short[width * height];
-			ferr = fread((void*)raw, 2, width * height, fp);
-			if(ferr != width * height) {
-				std::cout << "Uh-oh. Could only read " << ferr
+			int read = 0;
+			unsigned char hi, lo;
+
+			//For some ungodly reason the endianness of PGM and
+			//x86 is not the same. That's the reason for these
+			//incantations.
+			while(true) {
+				hi = fgetc(fp);
+				lo = fgetc(fp);
+				raw[read] = (hi << 8) + lo;
+				if(feof(fp)) break;
+				read++;
+			}
+			if(read != width * height) {
+				std::cout << "Uh-oh. Could only read " << read
 				          << " wingamajings from the file, instead of "
 				          << width * height << ". "
 				          << "I recommend exorcising the file." << std::endl;
 				fclose(fp);
 				return;
 			}
-
 			scene->loadHeightMapData(width, height, raw);
 		}
 		fclose(fp);
+		emit updateGL();
 	}
 }
