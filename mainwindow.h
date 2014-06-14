@@ -69,6 +69,7 @@ private:
 	GLWidget *frontGLWidget;
 	GLWidget *topGLWidget;
 	GLWidget *rightGLWidget;
+	GLWidget *activeViewport;
 	std::vector<GLWidget*> widgetList;
 
 	QTreeView *sceneOutliner;

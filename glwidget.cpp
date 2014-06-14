@@ -465,6 +465,12 @@ QQuaternion M4toQuat(QMatrix4x4 mat) {
 	return QQuaternion(w, x, y, z);
 }
 
+void GLWidget::translateCamera(double x, double y, double z) {
+	QVector4D trans(x, y, z, 1.0);
+	trans = trans * camera->getCameraMatrix();
+	this->camera->translate(trans.x(), trans.y(), trans.z());
+}
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	if ((event->buttons() & Qt::RightButton) && dragging) {

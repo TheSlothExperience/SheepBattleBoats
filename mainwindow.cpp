@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     
 	setStatusBar(statusbar);
 	setMenuBar(menuBar);
+	setFocusPolicy(Qt::StrongFocus);
+	setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -146,6 +148,7 @@ void MainWindow::setupGL() {
 	frontGLWidget->hide();
 	bottomSplitter->hide();
 	perspectiveGLWidget->setActive();
+	activeViewport = perspectiveGLWidget;
     
 	setCentralWidget(sideSplitter);
 }
@@ -411,6 +414,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 			cameraModeAction->setChecked(true);
 			cameraModeAction->activate(QAction::Trigger);
 		}
+	} else if(event->key() == Qt::Key_W) {
+		activeViewport->translateCamera(0, 0, -0.1);
+		emit updateGL();
+	} else if(event->key() == Qt::Key_S) {
+		activeViewport->translateCamera(0, 0, 0.1);
+		emit updateGL();
 	}
 }
 
@@ -510,6 +519,7 @@ void MainWindow::setActiveViewport(GLWidget *active) {
 	frontGLWidget->setActive(false);
 	rightGLWidget->setActive(false);
 
+	activeViewport = active;
 	active->setActive(true);
 }
 	    
