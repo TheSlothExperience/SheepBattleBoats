@@ -468,7 +468,15 @@ QQuaternion M4toQuat(QMatrix4x4 mat) {
 void GLWidget::translateCamera(double x, double y, double z) {
 	QVector4D trans(x, y, z, 1.0);
 	trans = trans * camera->getCameraMatrix();
-	this->camera->translate(trans.x(), trans.y(), trans.z());
+
+	QVector3D cameraPos = camera->getWorldPosition();
+	QVector3D newPos = cameraPos + QVector3D(trans);
+	float terrainHeight = scene->heightMap()->getHeightAt(newPos.x(), newPos.z());
+	if(newPos.y() > terrainHeight + 0.4) {
+		this->camera->translate(trans.x(), trans.y(), trans.z());
+	} else {
+		this->camera->translate(trans.x() / 2.0, terrainHeight + 0.4 - newPos.y(), trans.z() / 2.0);
+	}
 }
 
 void GLWidget::rotateCamera(float angle) {
