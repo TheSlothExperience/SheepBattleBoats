@@ -12,6 +12,11 @@ private:
 	GLuint heightMapTexLocation;
 	unsigned short* heightMapData;
 
+	int terrainWidth;
+	int terrainHeight;
+	int gridWidth;
+	int gridHeight;
+
 public:
 	HeightMapNode(HeightMap *h, std::string name);
 	~HeightMapNode();
@@ -21,6 +26,8 @@ public:
 	void loadHeightMap(int width, int height, unsigned short* raw);
 
 	GLuint getHeightMapLocation() {return heightMapTexLocation;}
+
+	float getHeightAt(float x, float y);
 };
 
 

@@ -9,6 +9,7 @@ HeightMapNode::HeightMapNode(HeightMap *p, std::string name)
 	this->heightMap = p;
     this->heightMapData = NULL;
 
+
 	glEnable(GL_TEXTURE_2D);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 	glPixelStorei(GL_PACK_ALIGNMENT, 2);
@@ -26,9 +27,29 @@ HeightMapNode::~HeightMapNode() {
 	delete[] heightMapData;
 }
 
+float HeightMapNode::getHeightAt(float x, float y) {
+	if(fabs(x) < 25 && fabs(y) < 25 && heightMapData != NULL) {
+		float x_tc = x / 50.0;
+		float y_tc = y / 50.0;
+
+		x_tc += 0.5;
+		y_tc += 0.5; // Coords now in [0, 1)
+
+		int x_idx = x_tc * (float) terrainWidth;
+		int y_idx = y_tc * (float) terrainHeight; // In [0, terrain{W|H})
+
+		return (float)heightMapData[y_idx * terrainWidth + x_idx];
+	}
+	return 0;
+}
+
 void HeightMapNode::loadHeightMap(int width, int height, unsigned short* raw) {
 	if(heightMapData != NULL) delete[] heightMapData;
 	heightMapData = raw;
+
+	this->terrainWidth = width;
+	this->terrainHeight = height;
+
 	glBindTexture(GL_TEXTURE_2D, heightMapTexLocation);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 	glPixelStorei(GL_PACK_ALIGNMENT, 2);
