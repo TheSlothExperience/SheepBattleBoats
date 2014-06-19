@@ -52,34 +52,34 @@ void GLWidget::initializeGL()
 
 	//Create texture to render to
 	glGenTextures(1, &renderTex);
-    
+
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTex, 0);
-    
+
 	//Create picking buffer
 	glGenTextures(1, &pickingTex);
-    
+
 	glBindTexture(GL_TEXTURE_2D, pickingTex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
-    
+
 	//Create texture to render the volume quad to
 	glGenTextures(1, &volumeBuffer);
-    
+
 	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, volumeBuffer, 0);
-    
+
 
 	//Now setup the depth buffer
 	glGenRenderbuffers(1, &depthBuffer);
@@ -103,7 +103,7 @@ void GLWidget::initializeGL()
 		1.0f, -1.0f, 0.0f,
 		1.0f,  1.0f, 0.0f,
 	};
- 
+
 	glGenBuffers(1, &canvasQuad);
 	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
@@ -126,7 +126,7 @@ void GLWidget::paintGL()
 	if(scene->hasVolume()) {
 		renderVolumetricData();
 	}
-	
+
 	if(scene->hasHeightMap()) {
 		renderHeightMap();
 	}
@@ -139,9 +139,9 @@ void GLWidget::paintGL()
 }
 
 void GLWidget::renderHeightMap() {
-	
+
 	heightMapProgram->bind();
-    
+
 	glUniformMatrix4fv(heightMapProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
 	//Bind the fbo and the textures to draw to
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -184,7 +184,7 @@ void GLWidget::renderVolumetricData() {
  */
 void GLWidget::drawBackFace() {
 	quadviewProgram->bind();
-	
+
 	glUniformMatrix4fv(quadviewProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
 	//Bind the fbo and the textures to draw to
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -216,7 +216,7 @@ void GLWidget::drawBackFace() {
 void GLWidget::rayMarchVolume() {
 	//Now load program to draw to volumetric stuff
 	volumeProgram->bind();
-	
+
 	//Bind the fbo and the textures to draw to
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GLenum VolumeBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -225,7 +225,7 @@ void GLWidget::rayMarchVolume() {
 	//This time render the front face of the cube
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	
+
 	glUniformMatrix4fv(volumeProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
 
 	//Make sure the tex 0 is active for the rendered scene
@@ -255,17 +255,17 @@ void GLWidget::rayMarchVolume() {
 	glUniform1f(volumeProgram->uniformLocation("isovalue"), (float)scene->volume()->getIsoValue() / 256.0);
 	glUniform1f(volumeProgram->uniformLocation("isoAlpha"), (float)scene->volume()->getIsoAlpha() / 256.0);
 	glUniform1i(volumeProgram->uniformLocation("isop"), (int)scene->volume()->showIso());
-	
+
 
 	//Pass the light sources to the shader
 	scene->passLights(camera->getCameraMatrix(), volumeProgram);
 	scene->setMIP(volumeProgram);
-	
+
 	//Draw the cube
 	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), volumeProgram->uniformLocation("modelViewMatrix"));
-	
+
 	//Release and relax, brah
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);    
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	volumeProgram->release();
 }
 
@@ -278,7 +278,7 @@ void GLWidget::rayMarchVolume() {
 void GLWidget::renderScene() {
 	//Load the phong shading program
 	shaderProgram->bind();
-    
+
 	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
 	//Bind the fbo and the textures to draw to
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -289,10 +289,10 @@ void GLWidget::renderScene() {
 	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
 	//and set tex 0 as active
 	glActiveTexture(GL_TEXTURE0);
-    
+
 	if(scene != NULL) {
 		//Discombobulate!
-		scene->draw(camera->getCameraMatrix());	
+		scene->draw(camera->getCameraMatrix());
 	} else {
 		std::cout << "no scene yet" << std::endl;
 	}
@@ -307,7 +307,7 @@ void GLWidget::renderScene() {
  * Also mark the border of the active glwidget
  * and the border of the selected primitive.
  */
-void GLWidget::paintSceneToCanvas() {   
+void GLWidget::paintSceneToCanvas() {
 	//Now load program to draw to the magic quad
 	canvasProgram->bind();
 	//This time draw to the whole screen
@@ -320,7 +320,7 @@ void GLWidget::paintSceneToCanvas() {
 	//Send the rendered texture down the pipes
 	glUniform1i(textureLocation, 0);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
-    
+
 	//Make sure the tex 1 is active to send the other tex
 	glActiveTexture(GL_TEXTURE1);
 	textureLocation = canvasProgram->uniformLocation("pickingTexture");
@@ -348,7 +348,7 @@ void GLWidget::paintSceneToCanvas() {
 	glDrawArrays(GL_TRIANGLES, 0, 3*2);
 
 	glDisableVertexAttribArray(0);
-    
+
 	canvasProgram->release();
 }
 
@@ -448,7 +448,7 @@ double z(double x, double  y) {
 	} else {
 		return (1.0/2.0) / sqrt(length);
 	}
-    
+
 }
 
 double clampUnit(double x) {
@@ -471,6 +471,11 @@ void GLWidget::translateCamera(double x, double y, double z) {
 	this->camera->translate(trans.x(), trans.y(), trans.z());
 }
 
+void GLWidget::rotateCamera(float angle) {
+	QQuaternion rot = QQuaternion(cos(angle/2.0), sin(angle/2.0) * QVector3D(0.0, 1.0, 0.0));
+	camera->rotate(rot);
+}
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	if ((event->buttons() & Qt::RightButton) && dragging) {
@@ -485,15 +490,15 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 			emit translate(worldTrans.x(), worldTrans.y(), worldTrans.z());
 		}
 	}
-    
+
 	if ((event->buttons() & Qt::LeftButton) && dragging) {
 		//Here we implement the trackball. Sample two points on the sphere and
 		//calculate their angle to use as the rotation.
-	
+
 		//normalize to intervals [-1,1]
 		double lastx = clampUnit(lastPoint.x() / (this->size().width() / 2.0) - 1.0);
 		double lasty = clampUnit(-(lastPoint.y() / (this->size().height() / 2.0) - 1.0));
-	
+
 		double newx = clampUnit(event->pos().x() / (this->size().width() / 2.0) - 1.0);
 		double newy = clampUnit(-(event->pos().y() / (this->size().height() / 2.0) - 1.0));
 
@@ -502,11 +507,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 		v1.normalize();
 		QVector3D v2(newx, newy, z(newx, newy));
 		v2.normalize();
-	
+
 		//Determine the normal of the generated plane through the center of the sphere
 		QVector3D normal = QVector3D::crossProduct(v1, v2);
 		double theta = acos(QVector3D::dotProduct(v1, v2)) / 3.0;
-	
+
 		//angle/2.0, because the quats double cover SO(3)
 		QQuaternion newRot = QQuaternion(cos(theta/2.0), sin(theta/2.0) * normal.normalized());
 		QQuaternion cameraQuat = M4toQuat(camera->getCameraMatrix());
@@ -515,7 +520,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 			this->camera->rotate(newRot);
 			updateGL();
 		} else {
-			emit rotate(&worldQuat);	    
+			emit rotate(&worldQuat);
 		}
 	}
 }

@@ -9,6 +9,7 @@
 #include "glwidget.h"
 #include "glwidgetcontext.h"
 #include "tfEditor.h"
+#include "multislider.h"
 
 class MainWindow : public QMainWindow
 {
@@ -27,7 +28,7 @@ private:
 
 	QToolBar *toolbar;
 	QStatusBar *statusbar;
-    
+
 	QMenu *fileMenu;
 	QAction *exitAction;
 
@@ -58,7 +59,7 @@ private:
 
 	QAction *loadVolumeDataAction;
 	TfEditor *tfeditor;
-    
+
 	QMenu *helpMenu;
 	QAction *aboutAction;
 
@@ -83,19 +84,20 @@ private:
 
 	QDockWidget *heightMapDock;
 	QPushButton *heightMapLoadButton;
-	
+	MultiSlider *factureWeights;
+
 	QDockWidget *colorDock;
 	QSlider *redSlider;
 	QSlider *blueSlider;
 	QSlider *greenSlider;
-    
+
 	QSplitter *topSplitter;
 	QSplitter *bottomSplitter;
 	QSplitter *sideSplitter;
 
 	template <class UnaryFunction >
 	void mapWidgets(UnaryFunction f);
-    
+
 	void createActions();
 	void createMenus();
 	void createToolbar();
@@ -123,7 +125,7 @@ public slots:
 	void changeIsoAlpha(int value);
 
 	void loadHeightMap();
-    
+
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);
 
@@ -137,7 +139,7 @@ public slots:
 	void setTesselation(int t);
 
 	void changedColor();
-    
+
 	void showAboutBox();
 	void setSingleView();
 	void setDualView();

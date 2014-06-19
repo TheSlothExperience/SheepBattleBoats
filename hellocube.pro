@@ -15,6 +15,7 @@ QMAKE_CXXFLAGS += -std=c++11
 
 
 SOURCES += main.cpp\
+        multislider.cpp \
         mainwindow.cpp\
         tfEditor.cpp \
         tfDisplay.cpp \
@@ -37,6 +38,7 @@ SOURCES += main.cpp\
         light.cpp
 
 HEADERS  += mainwindow.h\
+        multislider.h \
         glwidget.h\
         glwidgetcontext.h\
         tfEditor.h \
@@ -56,8 +58,8 @@ HEADERS  += mainwindow.h\
         torus.h \
         cylinder.h\
         volume.h\
-        heightmap.h\ 
-        light.h	
+        heightmap.h\
+        light.h
 
 RESOURCES += \
     hellocube.qrc

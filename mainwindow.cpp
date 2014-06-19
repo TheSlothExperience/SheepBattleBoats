@@ -1,10 +1,10 @@
 #include "mainwindow.h"
 #include "glwidget.h"
-#include <qapplication.h>
 #include "scene.h"
 #include "camera.h"
 #include "perspectivecamera.h"
 #include "orthocamera.h"
+#include "multislider.h"
 
 #include <iostream>
 #include <QDataStream>
@@ -16,23 +16,23 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	setWindowTitle("Hello Cube!!");
 	setMinimumSize(1000,800);
-    
+
 	//Status bar
 	statusbar = new QStatusBar(this);
-    
+
 	setupGL();
 
 	createActions();
 	createMenus();
 	createToolbar();
-	
+
 	createIsoValuer();
 	createTfEditor();
 
 	createHeightMapDock();
 
 	createColorDock();
-    
+
 	setStatusBar(statusbar);
 	setMenuBar(menuBar);
 	setFocusPolicy(Qt::StrongFocus);
@@ -58,13 +58,13 @@ void MainWindow::setupGL() {
 	glWidgetContext = new GLWidgetContext();
 	glWidgetContext->makeCurrent();
 	glWidgetContext->initializeGL();
-    
+
 	//Set the scene and add a cube
 	GLuint idLocation = glWidgetContext->getShaderProgram()->uniformLocation("id");
 	scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation);
 	scene->setLightLocation(glWidgetContext->getLightPositionLocation());
 	scene->setShaderProgram(glWidgetContext->getShaderProgram());
-    
+
 
 	sceneOutliner = new QTreeView();
 	sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
@@ -73,30 +73,30 @@ void MainWindow::setupGL() {
 	sceneOutliner->setAcceptDrops(true);
 	sceneOutliner->setDragDropMode(QAbstractItemView::InternalMove);
 	sceneOutliner->setDropIndicatorShown(true);
-    
+
 	connect(sceneOutliner->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(changeCurrentNode(const QModelIndex&, const QModelIndex&)));
-    
+
 	outlinerDock = new QDockWidget(tr("Scene Outliner"), this);
 	outlinerDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 	outlinerDock->setWidget(sceneOutliner);
 	addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
-    
+
 	currentNode = scene->root();
-    
+
 
 	//Create the widgets
 	perspectiveGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(perspectiveGLWidget);
 	perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
-    
+
 	frontGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(frontGLWidget);
 	frontGLWidget->setOrthoCamera(0, 0, 3);
-    
+
 	topGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(topGLWidget);
 	topGLWidget->setOrthoCamera(0, 3, 0);
-    
+
 	rightGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(rightGLWidget);
 	rightGLWidget->setOrthoCamera(3, 0, 0);
@@ -109,9 +109,9 @@ void MainWindow::setupGL() {
 	mapWidgets([=](GLWidget *w){w->setVolumeProgram(glWidgetContext->getVolumeProgram());});
 	mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
 	mapWidgets([=](GLWidget *w){w->setHeightMapProgram(glWidgetContext->getHeightMapProgram());});
-    
+
 	mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
-    
+
 	mapWidgets([=](GLWidget *w){
 			connect(w, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
 		});
@@ -135,11 +135,11 @@ void MainWindow::setupGL() {
 	topSplitter = new QSplitter(this);
 	topSplitter->addWidget(perspectiveGLWidget);
 	topSplitter->addWidget(frontGLWidget);
-    
+
 	bottomSplitter = new QSplitter(this);
 	bottomSplitter->addWidget(topGLWidget);
 	bottomSplitter->addWidget(rightGLWidget);
-    
+
 	sideSplitter = new QSplitter(this);
 	sideSplitter->setOrientation(Qt::Vertical);
 	sideSplitter->addWidget(topSplitter);
@@ -149,7 +149,7 @@ void MainWindow::setupGL() {
 	bottomSplitter->hide();
 	perspectiveGLWidget->setActive();
 	activeViewport = perspectiveGLWidget;
-    
+
 	setCentralWidget(sideSplitter);
 }
 
@@ -166,6 +166,8 @@ void MainWindow::createHeightMapDock() {
 	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
 	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 	                         Qt::BottomDockWidgetArea);
+
+
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
 	layout->addWidget(heightMapLoadButton);
@@ -189,7 +191,7 @@ void MainWindow::createIsoValuer() {
 	connect(isovalueAlpha, SIGNAL(valueChanged(int)), this, SLOT(changeIsoAlpha(int)));
 
 	isovalueAlphaLabel = new QLabel("Opacity: ", this);
-    
+
 	isoDock = new QDockWidget(tr("IsoSurface Selector Quantizer"), this);
 	isoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 	                         Qt::BottomDockWidgetArea);
@@ -213,12 +215,12 @@ void MainWindow::createColorDock() {
 	redSlider->setRange(0,255);
 	redSlider->setValue(255);
 	connect(redSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
-    
+
 	greenSlider = new QSlider(Qt::Horizontal,this);
 	greenSlider->setRange(0,255);
 	greenSlider->setValue(255);
 	connect(greenSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
-    
+
 	blueSlider = new QSlider(Qt::Horizontal,this);
 	blueSlider->setRange(0,255);
 	blueSlider->setValue(255);
@@ -272,7 +274,7 @@ void MainWindow::createToolbar() {
 
 	toolbar->addSeparator();
 	toolbar->addAction(addLightAction);
-    
+
 	addToolBar(toolbar);
 }
 
@@ -285,7 +287,7 @@ void MainWindow::createActions() {
 	loadVolumeDataAction->setShortcut(Qt::CTRL + Qt::Key_L);
 	connect(loadVolumeDataAction, SIGNAL(triggered()), this, SLOT(loadVolumeData()));
 
-    
+
 	aboutAction = new QAction("&About", this);
 	connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
@@ -344,23 +346,23 @@ void MainWindow::createActions() {
 	addCylinderAction = new QAction(this);
 	addCylinderAction->setIcon(QIcon(":/img/cylinder.png"));
 	connect(addCylinderAction, SIGNAL(triggered()), this, SLOT(addCylinder()));
-    
+
 	addSphereAction = new QAction(this);
 	addSphereAction->setIcon(QIcon(":/img/sphere.png"));
 	connect(addSphereAction, SIGNAL(triggered()), this, SLOT(addSphere()));
-    
+
 	addTorusAction = new QAction(this);
 	addTorusAction->setIcon(QIcon(":/img/torus.png"));
 	connect(addTorusAction, SIGNAL(triggered()), this, SLOT(addTorus()));
-    
+
 	addConeAction = new QAction(this);
 	addConeAction->setIcon(QIcon(":/img/cone.png"));
 	connect(addConeAction, SIGNAL(triggered()), this, SLOT(addCone()));;
-    
+
 	addGroupAction = new QAction(this);
 	addGroupAction->setIcon(QIcon(":/img/group.png"));
 	connect(addGroupAction, SIGNAL(triggered()), this, SLOT(addGroup()));;
-    
+
 	addLightAction = new QAction(this);
 	addLightAction->setIcon(QIcon(":/img/light.png"));
 	connect(addLightAction, SIGNAL(triggered()), this, SLOT(addLight()));
@@ -381,7 +383,7 @@ void MainWindow::createMenus() {
 	viewMenu->addAction(dualViewAction);
 	viewMenu->addAction(quadViewAction);
 	menuBar->addMenu(viewMenu);
-    
+
 	//Help menu
 	helpMenu = new QMenu("&Help");
 	helpMenu->addAction(aboutAction);
@@ -419,6 +421,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 		emit updateGL();
 	} else if(event->key() == Qt::Key_S) {
 		activeViewport->translateCamera(0, 0, 0.1);
+		emit updateGL();
+	} else if(event->key() == Qt::Key_A) {
+		activeViewport->rotateCamera(-0.03);
+		emit updateGL();
+	} else if(event->key() == Qt::Key_D) {
+		activeViewport->rotateCamera(0.03);
 		emit updateGL();
 	}
 }
@@ -512,7 +520,7 @@ void MainWindow::setQuadView() {
 	bottomSplitter->show();
 	frontGLWidget->show();
 }
-	    
+
 void MainWindow::setActiveViewport(GLWidget *active) {
 	perspectiveGLWidget->setActive(false);
 	topGLWidget->setActive(false);
@@ -522,7 +530,7 @@ void MainWindow::setActiveViewport(GLWidget *active) {
 	activeViewport = active;
 	active->setActive(true);
 }
-	    
+
 void MainWindow::setCameraInteraction() {
 	perspectiveGLWidget->setCameraActive(true);
 	topGLWidget->setCameraActive(true);
@@ -531,13 +539,13 @@ void MainWindow::setCameraInteraction() {
 
 	statusbar->showMessage("Camera movement activate!", 2000);
 }
-	    
+
 void MainWindow::setObjectInteraction() {
 	perspectiveGLWidget->setCameraActive(false);
 	topGLWidget->setCameraActive(false);
 	frontGLWidget->setCameraActive(false);
 	rightGLWidget->setCameraActive(false);
-    
+
 	statusbar->showMessage("Moving dem objects.", 2000);
 }
 
@@ -620,19 +628,19 @@ void MainWindow::loadVolumeData() {
 			QModelIndex idx = scene->addVolume();
 			sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 		}
-	
+
 		if(f.open(QIODevice::ReadOnly)) {
 			QTextStream prelude(&f);
 			prelude >> x >> y >> z >> ax >> ay >> az;
 			prelude.readLine();
-	
+
 			if(info.baseName() == QString("Tooth")) {
 				unsigned short *raw = new unsigned short[x*y*z];
-		
+
 				//QTextStream is weird...don't delete this line.
 				f.pos(); //Reseek the position
 				prelude.pos();
-		
+
 				FILE* file = fdopen(f.handle(), "r");
 				int readError = fread((void *)raw, 2, x*y*z, file);
 				if(readError < 0) {
@@ -640,12 +648,12 @@ void MainWindow::loadVolumeData() {
 					fclose(file);
 					return;
 				}
-		
+
 				std::cout << "Loading tooth texture with: "
 				          << "(" << x << ", " << y << ", " << z << ")"
 				          << " and aspect ratios of: "
 				          << ax << " " << ay << " " << az << std::endl;
-	
+
 
 				//Calculate histogram
 				int histogram_acc[256];
@@ -672,7 +680,7 @@ void MainWindow::loadVolumeData() {
 				this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
 				tfeditor->updateHistogram(histogram);
 				fclose(file);
-	    
+
 			} else {
 				unsigned char *raw = new unsigned char[x*y*z];
 				QDataStream rawData(&f);
@@ -685,7 +693,7 @@ void MainWindow::loadVolumeData() {
 				          << "(" << x << ", " << y << ", " << z << ")"
 				          << " and aspect ratios of: "
 				          << ax << " " << ay << " " << az << std::endl;
-	
+
 
 				//Calculate histogram
 				int histogram_acc[256];
@@ -735,7 +743,7 @@ void MainWindow::loadHeightMap() {
 		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
 
 		if(valueRange < 256) {
-			
+
 		} else if (valueRange < 65536) {
 			std::cout << "Loading height map texture with: "
 			          << "(" << width << ", " << height << ")"
