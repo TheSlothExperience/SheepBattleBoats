@@ -22,9 +22,12 @@ HeightMapNode::HeightMapNode(HeightMap *p, std::string name)
 
 HeightMapNode::~HeightMapNode() {
 	glDeleteTextures(1, &heightMapTexLocation);
+	delete[] heightMapData;
 }
 
 void HeightMapNode::loadHeightMap(int width, int height, unsigned short* raw) {
+	delete[] heightMapData;
+	heightMapData = raw;
 	glBindTexture(GL_TEXTURE_2D, heightMapTexLocation);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 	glPixelStorei(GL_PACK_ALIGNMENT, 2);
@@ -32,22 +35,21 @@ void HeightMapNode::loadHeightMap(int width, int height, unsigned short* raw) {
 	             GL_UNSIGNED_SHORT, (void*) raw);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	delete[] raw;
 }
 
 void HeightMapNode::drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {
-    
-	MVStack.push(MVStack.top());  
+
+	MVStack.push(MVStack.top());
 	MVStack.top().translate(this->translation);
-    
+
 	//Convert the quat to a matrix, may be a performance leak.
 	QMatrix4x4 tempRot;
 	tempRot.rotate(this->rotation.normalized());
 	MVStack.top() *= tempRot;
-    
+
 	glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
-    
+
 	this->heightMap->drawGrid();
-    
+
 	MVStack.pop();
 }
