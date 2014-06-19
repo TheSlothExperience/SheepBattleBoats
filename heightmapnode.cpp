@@ -3,6 +3,9 @@
 #include "heightmapnode.h"
 #include <iostream>
 
+const float SHORT_MAX = 65535;
+const float heightScale = 100.0 / SHORT_MAX;
+
 HeightMapNode::HeightMapNode(HeightMap *p, std::string name)
 	: SceneGraph(p, name)
 {
@@ -38,7 +41,7 @@ float HeightMapNode::getHeightAt(float x, float y) {
 		int x_idx = x_tc * (float) terrainWidth;
 		int y_idx = y_tc * (float) terrainHeight; // In [0, terrain{W|H})
 
-		return (float)heightMapData[y_idx * terrainWidth + x_idx];
+		return heightScale * (float)heightMapData[y_idx * terrainWidth + x_idx];
 	}
 	return 0;
 }
