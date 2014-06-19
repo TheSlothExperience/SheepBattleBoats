@@ -12,7 +12,7 @@ protected:
 	QQuaternion orientation;
 
 	QVector3D poi;
-    
+
 	QMatrix4x4 cameraMatrix;
 	QMatrix4x4 projectionMatrix;
 
@@ -35,6 +35,11 @@ public:
 		cameraMatrix.translate(-position);
 		return cameraMatrix;
 	};
+
+    virtual QVector3D getWorldPosition() {
+        return initialPosition + position;
+	}
+
 	virtual QMatrix4x4 getProjectionMatrix() {return this->projectionMatrix;};
 
 	virtual void translate(double x, double y, double z) {
@@ -44,7 +49,7 @@ public:
 	virtual void rotate(QQuaternion q) {
 		this->orientation = q * orientation;
 	}
-    
+
 	virtual void reset() {
 		position = QVector3D();
 		orientation = QQuaternion();

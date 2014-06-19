@@ -7,6 +7,7 @@ HeightMapNode::HeightMapNode(HeightMap *p, std::string name)
 	: SceneGraph(p, name)
 {
 	this->heightMap = p;
+    this->heightMapData = NULL;
 
 	glEnable(GL_TEXTURE_2D);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
@@ -26,7 +27,7 @@ HeightMapNode::~HeightMapNode() {
 }
 
 void HeightMapNode::loadHeightMap(int width, int height, unsigned short* raw) {
-	delete[] heightMapData;
+	if(heightMapData != NULL) delete[] heightMapData;
 	heightMapData = raw;
 	glBindTexture(GL_TEXTURE_2D, heightMapTexLocation);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 2);

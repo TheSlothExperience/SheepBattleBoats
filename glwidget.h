@@ -36,6 +36,7 @@ public:
     void setOrthoCamera(double x, double y, double z);
     void setProjectionLocation(GLuint pL);
 
+	QVector3D getCameraWorldPosition() {return camera->getWorldPosition();}
     void initializeGL();
 
     void setActive(bool active = true);
@@ -52,7 +53,7 @@ private:
     bool isActive = false;
     bool cameraActive = false;
     int activeID = -1;
-    
+
     QPoint lastPoint;
 
     QOpenGLShaderProgram *shaderProgram;
@@ -78,7 +79,7 @@ private:
     GLuint textureLocation;
     GLuint activeLocation;
     GLuint activeColorLocation;
-    
+
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;
     GLuint normalMatLocation;
@@ -87,7 +88,7 @@ private:
     Camera *camera;
 
     Scene *scene;
-    
+
 protected:
     void paintGL();
     void resizeGL(int width, int height);
