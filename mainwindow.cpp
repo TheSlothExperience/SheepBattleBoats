@@ -163,6 +163,9 @@ void MainWindow::createHeightMapDock() {
 	heightMapLoadButton = new QPushButton("Load heightmap");
 	connect(heightMapLoadButton, SIGNAL(clicked()), this, SLOT(loadHeightMap()));
 
+	factureLoadButton = new QPushButton("Load facture");
+	connect(factureLoadButton, SIGNAL(clicked()), this, SLOT(loadFacture()));
+
 	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
 	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 	                         Qt::BottomDockWidgetArea);
@@ -170,7 +173,10 @@ void MainWindow::createHeightMapDock() {
 
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
+
 	layout->addWidget(heightMapLoadButton);
+	layout->addWidget(factureLoadButton);
+
 	heightMapDock->setWidget(contents);
 	addDockWidget(Qt::RightDockWidgetArea, heightMapDock);
 }
@@ -418,6 +424,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 		}
 	} else if(event->key() == Qt::Key_W) {
 		activeViewport->translateCamera(0, 0, -0.1);
+		QString msg = "Camera world position: ";
+		QVector3D cPos = activeViewport->getCameraWorldPosition();
+		msg += QString::number(cPos.x());
+		msg += ", ";
+		msg += QString::number(cPos.y());
+		msg += ", ";
+		msg += QString::number(cPos.z());
+		float height = scene->heightMap()->getHeightAt(cPos.x(), cPos.z());
+		msg += ". With height: " + QString::number(height);
+		statusbar->showMessage(msg, 5000);
 		emit updateGL();
 	} else if(event->key() == Qt::Key_S) {
 		activeViewport->translateCamera(0, 0, 0.1);
@@ -775,6 +791,15 @@ void MainWindow::loadHeightMap() {
 			scene->loadHeightMapData(width, height, raw);
 		}
 		fclose(fp);
+		emit updateGL();
+	}
+}
+
+void MainWindow::loadFacture() {
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Load facture"), ".", tr("Facture Texture (*.jpg)"));
+	QFileInfo info(fileName);
+	std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
+	if(!fileName.isEmpty()) {
 		emit updateGL();
 	}
 }

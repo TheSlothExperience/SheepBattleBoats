@@ -84,6 +84,7 @@ private:
 
 	QDockWidget *heightMapDock;
 	QPushButton *heightMapLoadButton;
+	QPushButton *factureLoadButton;
 	MultiSlider *factureWeights;
 
 	QDockWidget *colorDock;
@@ -125,6 +126,7 @@ public slots:
 	void changeIsoAlpha(int value);
 
 	void loadHeightMap();
+	void loadFacture();
 
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);
