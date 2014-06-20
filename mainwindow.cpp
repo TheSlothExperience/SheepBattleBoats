@@ -774,10 +774,14 @@ void MainWindow::loadHeightMap() {
 			//For some ungodly reason the endianness of PGM and
 			//x86 is not the same. That's the reason for these
 			//incantations.
+			unsigned short val = 0;
+			unsigned short max = 0;
 			while(true) {
 				hi = fgetc(fp);
 				lo = fgetc(fp);
-				raw[read] = (hi << 8) + lo;
+				val = (hi << 8) + lo;
+				raw[read] = val;
+				if(val > max) max = val;
 				if(feof(fp)) break;
 				read++;
 			}
@@ -790,6 +794,7 @@ void MainWindow::loadHeightMap() {
 				return;
 			}
 			scene->loadHeightMapData(width, height, raw);
+			scene->heightMap()->setMaximumValue(max);
 		}
 		fclose(fp);
 		emit updateGL();

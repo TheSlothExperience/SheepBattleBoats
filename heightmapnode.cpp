@@ -97,3 +97,11 @@ void HeightMapNode::drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {
 
 	MVStack.pop();
 }
+
+void HeightMapNode::setMaximumValue(unsigned short val) {
+	this->maxVal = val;
+}
+
+float HeightMapNode::getMaximumHeight() {
+	return heightScale * (float) maxVal;
+}

@@ -17,6 +17,7 @@ private:
 	int terrainHeight;
 	int gridWidth;
 	int gridHeight;
+	float maxVal;
 
 	std::vector<GLuint> factures;
 public:
@@ -33,6 +34,8 @@ public:
 	std::vector<GLuint> getFactureLocations() {return factures;}
 
 	float getHeightAt(float x, float y);
+	void setMaximumValue(unsigned short val);
+	float getMaximumHeight();
 };
 
 
