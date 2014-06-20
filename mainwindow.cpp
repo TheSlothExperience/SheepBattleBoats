@@ -6,9 +6,10 @@
 #include "orthocamera.h"
 #include "multislider.h"
 
-#include <iostream>
 #include <QDataStream>
 #include <QFile>
+#include <QImage>
+#include <iostream>
 #include <cstdio>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -800,6 +801,17 @@ void MainWindow::loadFacture() {
 	QFileInfo info(fileName);
 	std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
 	if(!fileName.isEmpty()) {
+		QImage facture;
+		facture.load(fileName);
+		std::cout << "Loading facture texture with: "
+		          << "(" << facture.width() << ", " << facture.height() << ")" <<  std::endl;
+
+		facture = QGLWidget::convertToGLFormat(facture);
+
+		if(scene->hasHeightMap()) {
+			scene->heightMap()->loadFacture(facture.width(), facture.height(), facture.bits());
+		}
+
 		emit updateGL();
 	}
 }

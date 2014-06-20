@@ -62,6 +62,26 @@ void HeightMapNode::loadHeightMap(int width, int height, unsigned short* raw) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void HeightMapNode::loadFacture(int width, int height, unsigned char* raw) {
+	GLuint loc;
+
+	glGenTextures(1, &loc);
+	glBindTexture(GL_TEXTURE_2D, loc);;
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	glPixelStorei(GL_PACK_ALIGNMENT, 4);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+	             GL_UNSIGNED_BYTE, (void*) raw);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	factures.push_back(loc);
+}
+
 void HeightMapNode::drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {
 
 	MVStack.push(MVStack.top());
