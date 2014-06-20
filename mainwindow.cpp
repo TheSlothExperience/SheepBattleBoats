@@ -781,7 +781,7 @@ void MainWindow::loadHeightMap() {
 				lo = fgetc(fp);
 				val = (hi << 8) + lo;
 				raw[read] = val;
-				if(val > max) max = val;
+				if(val > max && val < 65535) max = val;
 				if(feof(fp)) break;
 				read++;
 			}

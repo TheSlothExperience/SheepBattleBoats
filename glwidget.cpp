@@ -164,15 +164,18 @@ void GLWidget::renderHeightMap() {
 	GLuint *samplers = new GLuint[factureLocs.size()];
 	for(unsigned int i = 0; i < factureLocs.size(); i++) {
 		samplers[i] = i + 1;
+		//Start at GL_TEXTURE1
 		glActiveTexture(GL_TEXTURE1 + i);
 		glBindTexture(GL_TEXTURE_2D, factureLocs.at(i));
 	}
 
 	glUniform1iv(heightMapProgram->uniformLocation("factures"), factureLocs.size(), (GLint *)samplers);
 	delete[] samplers;
+
 	//Send number of factures
 	glUniform1i(heightMapProgram->uniformLocation("numFactures"), factureLocs.size());
-
+	//Send maximum height
+	glUniform1f(heightMapProgram->uniformLocation("maxHeight"), scene->heightMap()->getMaximumHeight());
 
 	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
 
