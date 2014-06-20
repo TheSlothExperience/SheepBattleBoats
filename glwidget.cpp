@@ -142,6 +142,8 @@ void GLWidget::renderHeightMap() {
 
 	heightMapProgram->bind();
 
+	glEnable(GL_TEXTURE_2D);
+
 	glUniformMatrix4fv(heightMapProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
 	//Bind the fbo and the textures to draw to
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -155,6 +157,22 @@ void GLWidget::renderHeightMap() {
 	//Push dat heightmap down, dawg
 	glUniform1i(heightMapProgram->uniformLocation("heightMapTexture"), 0);
 	glBindTexture(GL_TEXTURE_2D, scene->heightMap()->getHeightMapLocation());
+
+	//Also load the facture textures
+	std::vector<GLuint> factureLocs = scene->heightMap()->getFactureLocations();
+	//Send the uniform locations
+	GLuint *samplers = new GLuint[factureLocs.size()];
+	for(unsigned int i = 0; i < factureLocs.size(); i++) {
+		samplers[i] = i + 1;
+		glActiveTexture(GL_TEXTURE1 + i);
+		glBindTexture(GL_TEXTURE_2D, factureLocs.at(i));
+	}
+
+	glUniform1iv(heightMapProgram->uniformLocation("factures"), factureLocs.size(), (GLint *)samplers);
+	delete[] samplers;
+	//Send number of factures
+	glUniform1i(heightMapProgram->uniformLocation("numFactures"), factureLocs.size());
+
 
 	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
 

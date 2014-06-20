@@ -30,7 +30,7 @@ public:
 
 	GLuint getHeightMapLocation() {return heightMapTexLocation;}
 
-	std::vector<GLuint> getFactures() {return factures;}
+	std::vector<GLuint> getFactureLocations() {return factures;}
 
 	float getHeightAt(float x, float y);
 };

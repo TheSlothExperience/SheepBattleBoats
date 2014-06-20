@@ -26,7 +26,7 @@ GLWidgetContext::~GLWidgetContext()
 
 
 void GLWidgetContext::initializeGL()
-{   
+{
 	glEnable(GL_TEXTURE_3D);
 	loadShaders(":/phong.vert", ":/phong.frag", vphong, fphong, shaderProgram);
 
@@ -37,14 +37,14 @@ void GLWidgetContext::initializeGL()
 	modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
 	lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
 
-    
+
 	shaderProgram->release();
-    
+
 	loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
 	loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
 	loadShaders(":/volumetric.vert", ":/volumetric.frag", vvolume, fvolume, volumeProgram);
 	loadShaders(":/heightmap.vert", ":/heightmap.frag",":/heightmap.tesc", ":/heightmap.tese", vheightmap, fheightmap, tcheightmap, teheightmap, heightmapProgram);
-    
+
 }
 
 
@@ -74,7 +74,7 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShade
 	} else {
 		qWarning() << "Vertex shader source file " << vstring << " not found.";
 	}
-    
+
 	QFileInfo fsh(fstring);
 	if (fsh.exists()) {
 		fshader = new QOpenGLShader(QOpenGLShader::Fragment);
@@ -104,7 +104,7 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcst
 	} else {
 		qWarning() << "Vertex shader source file " << vstring << " not found.";
 	}
-    
+
 	QFileInfo fsh(fstring);
 	if (fsh.exists()) {
 		fshader = new QOpenGLShader(QOpenGLShader::Fragment);
@@ -116,7 +116,7 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcst
 	} else {
 		qWarning() << "Fragment shader source file " << fstring << " not found.";
 	}
-    
+
 	QFileInfo tcsh(tcstring);
 	if (tcsh.exists()) {
 		tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl);
@@ -128,7 +128,7 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcst
 	} else {
 		qWarning() << "Tesselation control source file " << tcstring << " not found.";
 	}
-    
+
 	QFileInfo tesh(testring);
 	if (tesh.exists()) {
 		teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation);

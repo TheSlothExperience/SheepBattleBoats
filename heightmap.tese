@@ -7,6 +7,7 @@ out vec3 tePosition;
 out vec4 tePatchDistance;
 
 out vec3 color;
+out vec3 position;
 
 uniform sampler2D heightMapTexture;
 
@@ -15,7 +16,6 @@ uniform mat4 modelViewMatrix;
 
 const float stepSize = 1.0 / 51.0;
 const float heightScale = 100.0;
-
 
 vec2 toCoords(vec2 pos)
 {
@@ -55,9 +55,9 @@ void main()
 	vec3 t = mix(tcPosition[2], tcPosition[3], u);
 
 	tePosition = mix(s, t, v);
-	vec3 position = samplePosition(tePosition.x, tePosition.z, 0);
+	position = samplePosition(tePosition.x, tePosition.z, 0);
 
-	color = normal(position, 0);
-	//color = vec3(position.y/5.0);
+	color = vec3(0.2, 1.0, 0.7);
+
 	gl_Position = perspectiveMatrix * modelViewMatrix * vec4(position, 1.0);
 }
