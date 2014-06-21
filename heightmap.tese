@@ -7,7 +7,7 @@ out vec3 tePosition;
 out vec4 tePatchDistance;
 
 out vec3 color;
-out vec3 position;
+out vec3 tc;
 
 uniform sampler2D heightMapTexture;
 
@@ -55,9 +55,11 @@ void main()
 	vec3 t = mix(tcPosition[2], tcPosition[3], u);
 
 	tePosition = mix(s, t, v);
-	position = samplePosition(tePosition.x, tePosition.z, 0);
+	tePosition = samplePosition(tePosition.x, tePosition.z, 0);
+	tePatchDistance = vec4(u, v, 1 - u, 1 - v);
+	tc = vec3(tePosition.x, tePosition.z, tePosition.y);
 
 	color = vec3(0.2, 1.0, 0.7);
 
-	gl_Position = perspectiveMatrix * modelViewMatrix * vec4(position, 1.0);
+	gl_Position = perspectiveMatrix * modelViewMatrix * vec4(tePosition, 1.0);
 }

@@ -28,5 +28,6 @@
         <file>heightmap.frag</file>
         <file>heightmap.tesc</file>
         <file>heightmap.tese</file>
+        <file>heightmap.geom</file>
     </qresource>
 </RCC>

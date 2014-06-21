@@ -27,7 +27,7 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShaderProgram* getVolumeProgram() {return this->volumeProgram;};
 	QOpenGLShaderProgram* getQuadViewProgram() {return this->quadviewProgram;};
 	QOpenGLShaderProgram* getHeightMapProgram() {return this->heightmapProgram;};
-    
+
 	void initializeGL();
 
 	private:
@@ -38,24 +38,31 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShaderProgram *heightmapProgram;
 	QOpenGLShader *vphong;
 	QOpenGLShader *fphong;
+
 	QOpenGLShader *vcanvas;
 	QOpenGLShader *fcanvas;
+
 	QOpenGLShader *vvolume;
 	QOpenGLShader *fvolume;
+
 	QOpenGLShader *vquadview;
 	QOpenGLShader *fquadview;
+
 	QOpenGLShader *vheightmap;
 	QOpenGLShader *fheightmap;
 	QOpenGLShader *tcheightmap;
 	QOpenGLShader *teheightmap;
+	QOpenGLShader *gheightmap;
+
 	void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog);
+	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QString gstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShader *gshader, QOpenGLShaderProgram *prog);
 
 	GLuint perspectiveMatLocation;
 	GLuint modelViewMatLocation;
 	GLuint normalMatLocation;
 	GLuint lightPositionLocation;
-    
+
 	protected:
 	void paintGL();
 	void resizeGL(int width, int height);
