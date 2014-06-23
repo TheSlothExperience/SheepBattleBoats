@@ -37,8 +37,8 @@ void main()
 		float lod2 = level(vecToMidpoint(v0.xyz, v2.xyz));
 		float lod3 = level(vecToMidpoint(v0.xyz, v1.xyz));
 
-		gl_TessLevelInner[0] = lod0;
-		gl_TessLevelInner[1] = lod0;
+		gl_TessLevelInner[1] = mix(lod0, lod2, 0.5);
+		gl_TessLevelInner[0] = mix(lod1, lod3, 0.5);
 
 		//CCW starting in the top
 		gl_TessLevelOuter[0] = lod2;
