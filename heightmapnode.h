@@ -13,6 +13,7 @@ private:
 	GLuint heightMapTexLocation;
 	unsigned short* heightMapData;
 
+	bool showMeshp = false;
 	int terrainWidth;
 	int terrainHeight;
 	int gridWidth;
@@ -36,6 +37,9 @@ public:
 	float getHeightAt(float x, float y);
 	void setMaximumValue(unsigned short val);
 	float getMaximumHeight();
+
+	bool showMesh() {return showMeshp;}
+	void setShowMesh(bool show) {showMeshp = show;}
 };
 
 

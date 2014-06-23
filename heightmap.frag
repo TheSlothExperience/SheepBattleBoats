@@ -13,6 +13,8 @@ uniform sampler2D factures[maxFactures];
 uniform int numFactures;
 uniform float maxHeight;
 
+uniform int showMeshp;
+
 const vec4 meshColor = vec4(0.0, 1.0, 0.0, 1.0);
 
 float amplify(float d, float scale, float offset)
@@ -36,7 +38,7 @@ void main()
 	}
 
 	//Draw the wireframe
-	if(true) {
+	if(showMeshp != 0) {
 		//Distance to the tessellated triangle border
         float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
         //Distance to patch border

@@ -167,6 +167,9 @@ void MainWindow::createHeightMapDock() {
 	factureLoadButton = new QPushButton("Load facture");
 	connect(factureLoadButton, SIGNAL(clicked()), this, SLOT(loadFacture()));
 
+	showMeshCheckBox = new QCheckBox("Show Mesh");
+	connect(showMeshCheckBox, SIGNAL(toggled(bool)), this, SLOT(showMesh(bool)));
+
 	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
 	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 	                         Qt::BottomDockWidgetArea);
@@ -175,6 +178,7 @@ void MainWindow::createHeightMapDock() {
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
 
+	layout->addWidget(showMeshCheckBox);
 	layout->addWidget(heightMapLoadButton);
 	layout->addWidget(factureLoadButton);
 
@@ -817,6 +821,13 @@ void MainWindow::loadFacture() {
 			scene->heightMap()->loadFacture(facture.width(), facture.height(), facture.bits());
 		}
 
+		emit updateGL();
+	}
+}
+
+void MainWindow::showMesh(bool show) {
+	if(scene->hasHeightMap()) {
+		this->scene->heightMap()->setShowMesh(show);
 		emit updateGL();
 	}
 }
