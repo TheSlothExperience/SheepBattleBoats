@@ -13,6 +13,9 @@ uniform sampler2D heightMapTexture;
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
 
+in float mipLevel[];
+
+const float maxMipLevel = log2(64);
 const float stepSize = 1.0 / 51.0;
 const float heightScale = 100.0;
 
@@ -48,13 +51,17 @@ void main()
 	float u = gl_TessCoord.x;
 	float v = gl_TessCoord.y;
 
+	float a = mix(mipLevel[0], mipLevel[1], u);
+	float b = mix(mipLevel[2], mipLevel[3], u);
+	float lod = maxMipLevel - mix(a, b, v);
+
 	//mix() does linear interpolation
 	//here we are just doing some lerping
 	vec3 s = mix(tcPosition[0], tcPosition[1], u);
 	vec3 t = mix(tcPosition[2], tcPosition[3], u);
 
 	tePosition = mix(s, t, v);
-	tePosition = samplePosition(tePosition.x, tePosition.z, 0);
+	tePosition = samplePosition(tePosition.x, tePosition.z, lod);
 	tePatchDistance = vec4(u, v, 1 - u, 1 - v);
 	teTc = vec3(tePosition);
 
