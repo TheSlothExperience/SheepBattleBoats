@@ -175,12 +175,12 @@ void MainWindow::createHeightMapDock() {
 	                              Qt::BottomDockWidgetArea);
 
 	heightScaleSlider = new QSlider(Qt::Horizontal, this);
-	heightScaleSlider->setRange(0,300);
+	heightScaleSlider->setRange(0,500);
 	heightScaleSlider->setValue(100);
 	connect(heightScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(changeHeightScale(int)));
 
 	terrainSizeSlider = new QSlider(Qt::Horizontal, this);
-	terrainSizeSlider->setRange(0,300);
+	terrainSizeSlider->setRange(100,500);
 	terrainSizeSlider->setValue(100);
 	connect(terrainSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeTerrainSize(int)));
 
@@ -852,5 +852,8 @@ void MainWindow::changeHeightScale(int value) {
 }
 
 void MainWindow::changeTerrainSize(int value) {
-
+	if(scene->hasHeightMap()) {
+		this->scene->heightMap()->setTerrainSize((float) value / 100.0);
+		emit updateGL();
+	}
 }

@@ -22,7 +22,8 @@ private:
 	int gridHeight;
 	float maxVal;
 
-	float heightScale = 100;
+	float heightScale = 100 / SHORT_MAX;
+	float terrainSize = 1.0;
 
 	std::vector<GLuint> factures;
 public:
@@ -44,6 +45,9 @@ public:
 
 	void setHeightScale(float scale) {this->heightScale = scale / SHORT_MAX;}
 	float getHeightScale() {return heightScale;}
+
+	void setTerrainSize(float size) {this->terrainSize = size;}
+	float getTerrainSize() {return terrainSize;}
 
 	bool showMesh() {return showMeshp;}
 	void setShowMesh(bool show) {showMeshp = show;}
