@@ -9,11 +9,12 @@ out float mipLevel[];
 
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
+uniform float heightScale;
 
 #define ID gl_InvocationID
 
 float level(vec3 vec) {
-	float d = length(vec);
+	float d = length(vec) * 100.0/heightScale;
 	float factor = 150.0 * (1.0/(d*d));
 	float lod = pow(2.0, floor(factor));
 	lod = clamp(lod, 2, 64);
