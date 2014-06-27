@@ -25,14 +25,22 @@ vec3 vecToMidpoint(vec3 a, vec3 b) {
 	return a + (b - a) / 2.0;
 }
 
+vec4 project(vec3 pos) {
+	vec4 p =  modelViewMatrix * vec4(pos, 0.0);
+	vec4 t = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 rt = vec4(vec3(transpose(modelViewMatrix) * t), 1.0);
+	p += vec4(vec3(0.0, rt.y, 0.0), 1.0);
+	return p;
+}
+
 void main()
 {
 	tcPosition[ID] = vPosition[ID];
 
-	vec4 v0 = modelViewMatrix * vec4(vPosition[0], 1.0);
-	vec4 v1 = modelViewMatrix * vec4(vPosition[1], 1.0);
-	vec4 v2 = modelViewMatrix * vec4(vPosition[2], 1.0);
-	vec4 v3 = modelViewMatrix * vec4(vPosition[3], 1.0);
+	vec4 v0 = project(vPosition[0].xyz);
+	vec4 v1 = project(vPosition[1].xyz);
+	vec4 v2 = project(vPosition[2].xyz);
+	vec4 v3 = project(vPosition[3].xyz);
 
 	float lod0 = level(vecToMidpoint(v0.xyz, v2.xyz));
 	float lod1 = level(vecToMidpoint(v0.xyz, v1.xyz));

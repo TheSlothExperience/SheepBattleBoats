@@ -47,6 +47,14 @@ vec3 normal(vec3 pos, float lod)
 	return normalize(N);
 }
 
+vec4 project(vec3 pos) {
+	vec4 p =  modelViewMatrix * vec4(pos, 0.0);
+	vec4 t = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 rt = vec4(vec3(transpose(modelViewMatrix) * t), 1.0);
+	p += vec4(vec3(0.0, rt.y, 0.0), 1.0);
+	return p;
+}
+
 void main()
 {
 	float u = gl_TessCoord.x;
@@ -66,5 +74,5 @@ void main()
 	tePatchDistance = vec4(u, v, 1 - u, 1 - v);
 	teTc = vec3(tePosition);
 
-	gl_Position = perspectiveMatrix * modelViewMatrix * vec4(tePosition, 1.0);
+	gl_Position = perspectiveMatrix * project(tePosition);
 }
