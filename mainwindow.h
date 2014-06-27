@@ -83,6 +83,8 @@ private:
 	QLabel *isovalueAlphaLabel;
 
 	QDockWidget *heightMapDock;
+	QSlider *heightScaleSlider;
+	QSlider *terrainSizeSlider;
 	QPushButton *heightMapLoadButton;
 	QPushButton *factureLoadButton;
 	QCheckBox *showMeshCheckBox;
@@ -129,6 +131,8 @@ public slots:
 	void showMesh(bool show);
 	void loadHeightMap();
 	void loadFacture();
+	void changeHeightScale(int value);
+	void changeTerrainSize(int value);
 
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);

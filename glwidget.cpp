@@ -177,8 +177,10 @@ void GLWidget::renderHeightMap() {
 	//Send maximum height
 	glUniform1f(heightMapProgram->uniformLocation("maxHeight"), scene->heightMap()->getMaximumHeight());
 
-	//Set fi we are going to show the mesh
+	//Set if we are going to show the mesh
 	glUniform1i(heightMapProgram->uniformLocation("showMeshp"), (int) scene->heightMap()->showMesh());
+	//Set height scale
+	glUniform1f(heightMapProgram->uniformLocation("heightScale"), scene->heightMap()->getHeightScale() * 65535.0);
 
 	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
 

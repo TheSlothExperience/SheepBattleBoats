@@ -3,9 +3,6 @@
 #include "heightmapnode.h"
 #include <iostream>
 
-const float SHORT_MAX = 65535;
-const float heightScale = 100.0 / SHORT_MAX;
-
 HeightMapNode::HeightMapNode(HeightMap *p, std::string name)
 	: SceneGraph(p, name)
 {

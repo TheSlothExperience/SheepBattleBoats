@@ -17,7 +17,7 @@ in float mipLevel[];
 
 const float maxMipLevel = log2(64);
 const float stepSize = 1.0 / 51.0;
-const float heightScale = 100.0;
+uniform float heightScale;
 
 vec2 toCoords(vec2 pos)
 {

@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#define SHORT_MAX 65535.0;
+
 class HeightMapNode : public SceneGraph
 {
 private:
@@ -19,6 +21,8 @@ private:
 	int gridWidth;
 	int gridHeight;
 	float maxVal;
+
+	float heightScale = 100;
 
 	std::vector<GLuint> factures;
 public:
@@ -37,6 +41,9 @@ public:
 	float getHeightAt(float x, float y);
 	void setMaximumValue(unsigned short val);
 	float getMaximumHeight();
+
+	void setHeightScale(float scale) {this->heightScale = scale / SHORT_MAX;}
+	float getHeightScale() {return heightScale;}
 
 	bool showMesh() {return showMeshp;}
 	void setShowMesh(bool show) {showMeshp = show;}

@@ -172,13 +172,25 @@ void MainWindow::createHeightMapDock() {
 
 	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
 	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
-	                         Qt::BottomDockWidgetArea);
+	                              Qt::BottomDockWidgetArea);
+
+	heightScaleSlider = new QSlider(Qt::Horizontal, this);
+	heightScaleSlider->setRange(0,300);
+	heightScaleSlider->setValue(100);
+	connect(heightScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(changeHeightScale(int)));
+
+	terrainSizeSlider = new QSlider(Qt::Horizontal, this);
+	terrainSizeSlider->setRange(0,300);
+	terrainSizeSlider->setValue(100);
+	connect(terrainSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeTerrainSize(int)));
 
 
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
 
 	layout->addWidget(showMeshCheckBox);
+	layout->addWidget(heightScaleSlider);
+	layout->addWidget(terrainSizeSlider);
 	layout->addWidget(heightMapLoadButton);
 	layout->addWidget(factureLoadButton);
 
@@ -830,4 +842,15 @@ void MainWindow::showMesh(bool show) {
 		this->scene->heightMap()->setShowMesh(show);
 		emit updateGL();
 	}
+}
+
+void MainWindow::changeHeightScale(int value) {
+	if(scene->hasHeightMap()) {
+		this->scene->heightMap()->setHeightScale(value);
+		emit updateGL();
+	}
+}
+
+void MainWindow::changeTerrainSize(int value) {
+
 }
