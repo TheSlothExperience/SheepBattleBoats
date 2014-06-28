@@ -22,7 +22,8 @@ uniform float terrainSize;
 
 vec2 toCoords(vec2 pos)
 {
-	return (pos/terrainSize + 25.0) / 51.0;
+	vec4 t = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+	return ((pos - t.xz)/terrainSize + 25.0) / 51.0;
 }
 
 float heightLod(vec2 pos, float lod)
