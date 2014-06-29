@@ -12,4 +12,4 @@ uniform mat4 modelViewMatrix;
 void main()
 {
     vPosition = position.xyz;
-} 
+}

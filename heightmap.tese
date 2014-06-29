@@ -16,14 +16,14 @@ uniform mat4 modelViewMatrix;
 in float mipLevel[];
 
 const float maxMipLevel = log2(64);
-const float stepSize = 1.0 / 51.0;
+const float stepSize = 1.0 / 50.0;
 uniform float heightScale;
 uniform float terrainSize;
 
 vec2 toCoords(vec2 pos)
 {
 	vec4 t = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-	return ((pos - t.xz)/terrainSize + 25.0) / 51.0;
+	return ((pos - floor(t.xz))/terrainSize + 25.0) / 51.0;
 }
 
 float heightLod(vec2 pos, float lod)
