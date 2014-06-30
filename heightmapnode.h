@@ -16,6 +16,7 @@ private:
 	unsigned short* heightMapData;
 
 	bool showMeshp = false;
+	bool slopeMixingp = false;
 	int terrainWidth;
 	int terrainHeight;
 	int gridWidth;
@@ -51,6 +52,9 @@ public:
 
 	bool showMesh() {return showMeshp;}
 	void setShowMesh(bool show) {showMeshp = show;}
+
+	bool slopeMixing() {return slopeMixingp;}
+	void setSlopeMixing(bool show) {slopeMixingp = show;}
 };
 
 

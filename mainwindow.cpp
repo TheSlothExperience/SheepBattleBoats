@@ -170,6 +170,10 @@ void MainWindow::createHeightMapDock() {
 	showMeshCheckBox = new QCheckBox("Show Mesh");
 	connect(showMeshCheckBox, SIGNAL(toggled(bool)), this, SLOT(showMesh(bool)));
 
+	slopeMixingCheckBox = new QCheckBox("Slope Mixing");
+	connect(slopeMixingCheckBox, SIGNAL(toggled(bool)), this, SLOT(slopeMixing(bool)));
+
+
 	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
 	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 	                              Qt::BottomDockWidgetArea);
@@ -191,6 +195,7 @@ void MainWindow::createHeightMapDock() {
 	QGridLayout *layout = new QGridLayout(contents);
 
 	layout->addWidget(showMeshCheckBox, 0, 0);
+	layout->addWidget(slopeMixingCheckBox, 0, 1);
 	layout->addWidget(heightLabel, 1, 0);
 	layout->addWidget(heightScaleSlider, 1, 1, 1, 2);
 	layout->addWidget(sizeLabel, 2, 0);
@@ -844,6 +849,13 @@ void MainWindow::loadFacture() {
 void MainWindow::showMesh(bool show) {
 	if(scene->hasHeightMap()) {
 		this->scene->heightMap()->setShowMesh(show);
+		emit updateGL();
+	}
+}
+
+void MainWindow::slopeMixing(bool show) {
+	if(scene->hasHeightMap()) {
+		this->scene->heightMap()->setSlopeMixing(show);
 		emit updateGL();
 	}
 }

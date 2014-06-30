@@ -88,6 +88,7 @@ private:
 	QPushButton *heightMapLoadButton;
 	QPushButton *factureLoadButton;
 	QCheckBox *showMeshCheckBox;
+	QCheckBox *slopeMixingCheckBox;
 	MultiSlider *factureWeights;
 
 	QDockWidget *colorDock;
@@ -129,6 +130,7 @@ public slots:
 	void changeIsoAlpha(int value);
 
 	void showMesh(bool show);
+	void slopeMixing(bool show);
 	void loadHeightMap();
 	void loadFacture();
 	void changeHeightScale(int value);
