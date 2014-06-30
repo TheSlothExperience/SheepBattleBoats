@@ -46,7 +46,7 @@ vec4 phong(vec4 color) {
 		vec4 k_diff = color * lightColor * max(0.0, dot(L, gNormal));
 		k_diff = clamp(k_diff, 0.0, 1.0);
 
-		vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);
+		vec4 k_spec = vec4(0.7, 0.7, 0.7, 0.7) * pow(max(dot(R,E),0.0), 0.3 * 10.0);
 		k_spec = clamp(k_spec, 0.0, 1.0);
 
 		outC += vec4(k_diff + k_spec);
@@ -60,9 +60,14 @@ void main()
 
 	float heightStep = maxHeight / numFactures;
 	for(int i = 0; i < numFactures; i++) {
+		//Sample two levels in order to smooth them
 		vec4 sampledColor = texture(factures[i], tc.xz);
+		vec4 sampledColorNext = texture(factures[min(numFactures - 1, i + 1)], tc.xz);
 		if(tc.y > i * heightStep) {
-			outputColor = phong(sampledColor);
+			//Calculate smooth interpolation between facture texes depending on height.
+			float lambda = smoothstep((i + 1) * heightStep, i * heightStep, tc.y);
+			vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
+			outputColor = phong(terrain);
 		}
 	}
 
