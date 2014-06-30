@@ -7,6 +7,7 @@ in vec3 tc;
 
 in vec3 gTriDistance;
 in vec4 gPatchDistance;
+in vec3 gNormal;
 
 const int maxFactures = 12;
 uniform sampler2D factures[maxFactures];
@@ -27,7 +28,7 @@ float amplify(float d, float scale, float offset)
 
 void main()
 {
-	outputColor = vec4(0.2, 1.0, 0.7, 1.0);
+	outputColor = vec4(gNormal, 1.0);
 
 	float heightStep = maxHeight / numFactures;
 	for(int i = 0; i < numFactures; i++) {

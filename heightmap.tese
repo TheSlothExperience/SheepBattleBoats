@@ -5,6 +5,7 @@ layout(quads) in;
 in vec3 tcPosition[];
 out vec3 tePosition;
 out vec4 tePatchDistance;
+out vec3 teNormal;
 
 out vec3 teTc;
 
@@ -74,6 +75,7 @@ void main()
 	tePosition = samplePosition(tePosition.x, tePosition.z, lod);
 	tePatchDistance = vec4(u, v, 1 - u, 1 - v);
 	teTc = vec3(tePosition);
+	teNormal = normal(tePosition, lod);
 
 	gl_Position = perspectiveMatrix * project(tePosition);
 }
