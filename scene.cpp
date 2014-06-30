@@ -34,15 +34,16 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
 
 	this->volumeNode = NULL;
 	this->heightMapNode = NULL;
-    
+
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
 	addHeightMap();
-	
+
 	addLight();
-	lights.at(0)->translate(0.5, 0.0, 2.0);
+	//Sun-like position
+	lights.at(0)->translate(10, 30.0, 15.0);
 }
- 
+
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
 	if(!hasIndex(row, column, parent)) {
@@ -122,7 +123,7 @@ Qt::ItemFlags Scene::flags(const QModelIndex &index) const {
 		if(static_cast<SceneGraph*>(index.internalPointer())->isLeaf()) {
 			return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable |
 				Qt::ItemIsDragEnabled;
-	    
+
 		} else {
 			return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable |
 				Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
@@ -144,14 +145,14 @@ bool Scene::setData(const QModelIndex &index, const QVariant &value, int role) {
 	if (role != Qt::EditRole) {
 		return false;
 	}
-    
+
 	SceneGraph *node = static_cast<SceneGraph*>(index.internalPointer());
 	bool result = node->setData(index.column(), value);
 
 	if (result) {
 		emit dataChanged(index, index);
 	}
-    
+
 	return result;
 }
 
@@ -207,7 +208,7 @@ QModelIndex Scene::addCube(SceneGraph *node, int) {
 	SceneGraph *s = new SceneGraph(cube, name);
 	s->setId(id);
 	identifier[id] = s;
-    
+
 	node->add(s);
 	endResetModel();
 	return createIndex(s->row(), 0, s);
@@ -343,10 +344,10 @@ void Scene::drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;
 
-	if(volumeNode != NULL) {	
+	if(volumeNode != NULL) {
 		this->volumeNode->drawBB(modelViewMatrixStack, mvLoc);
 	}
-    
+
 	modelViewMatrixStack.pop();
 }
 
@@ -354,10 +355,10 @@ void Scene::drawHeightMapGrid(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;
 
-	if(heightMapNode != NULL) {	
+	if(heightMapNode != NULL) {
 		this->heightMapNode->drawGrid(modelViewMatrixStack, mvLoc);
 	}
-    
+
 	modelViewMatrixStack.pop();
 }
 
@@ -416,7 +417,7 @@ void Scene::setMIP(QOpenGLShaderProgram *sp) {
 	glUniform1i(sp->uniformLocation("mip"), (int)volumeNode->getMIP());
 }
 
-void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {    
+void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	//Copy the lights positions into GL friendly arrays
 	GLfloat *lightsArray = new GLfloat[3 * lights.size()];
 	GLfloat *colorsArray = new GLfloat[4 * lights.size()];
