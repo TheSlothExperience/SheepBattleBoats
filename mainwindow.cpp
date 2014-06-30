@@ -184,15 +184,19 @@ void MainWindow::createHeightMapDock() {
 	terrainSizeSlider->setValue(100);
 	connect(terrainSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeTerrainSize(int)));
 
+	QLabel *heightLabel = new QLabel("Height: ", this);
+	QLabel *sizeLabel = new QLabel("Size: ", this);
 
 	QWidget *contents = new QWidget;
-	QVBoxLayout *layout = new QVBoxLayout(contents);
+	QGridLayout *layout = new QGridLayout(contents);
 
-	layout->addWidget(showMeshCheckBox);
-	layout->addWidget(heightScaleSlider);
-	layout->addWidget(terrainSizeSlider);
-	layout->addWidget(heightMapLoadButton);
-	layout->addWidget(factureLoadButton);
+	layout->addWidget(showMeshCheckBox, 0, 0);
+	layout->addWidget(heightLabel, 1, 0);
+	layout->addWidget(heightScaleSlider, 1, 1, 1, 2);
+	layout->addWidget(sizeLabel, 2, 0);
+	layout->addWidget(terrainSizeSlider, 2, 1, 1, 2);
+	layout->addWidget(heightMapLoadButton, 3, 0);
+	layout->addWidget(factureLoadButton, 3, 1);
 
 	heightMapDock->setWidget(contents);
 	addDockWidget(Qt::RightDockWidgetArea, heightMapDock);
