@@ -8,11 +8,17 @@ in vec3 tc;
 in vec3 gTriDistance;
 in vec4 gPatchDistance;
 in vec3 gNormal;
+in vec3 V;
 
 const int maxFactures = 12;
 uniform sampler2D factures[maxFactures];
 uniform int numFactures;
 uniform float maxHeight;
+
+const int maxLights = 12;
+uniform vec3 lightPositions[maxLights];
+uniform vec4 lightColors[maxLights];
+uniform int numLights;
 
 uniform int showMeshp;
 
@@ -26,6 +32,28 @@ float amplify(float d, float scale, float offset)
     return d;
 }
 
+vec4 phong(vec4 color) {
+	vec3 E = normalize(-V);
+
+	vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
+	vec4 outC = k_amb;
+	int i;
+	for(i = 0; i < numLights; i++) {
+		vec3 L = normalize(lightPositions[i] - V);
+		vec3 R = normalize(-reflect(L,gNormal));
+		vec4 lightColor = lightColors[i];
+
+		vec4 k_diff = color * lightColor * max(0.0, dot(L, gNormal));
+		k_diff = clamp(k_diff, 0.0, 1.0);
+
+		vec4 k_spec = vec4(1.0, 1.0, 1.0, 1.0) * pow(max(dot(R,E),0.0), 0.3 * 80.0);
+		k_spec = clamp(k_spec, 0.0, 1.0);
+
+		outC += vec4(k_diff + k_spec);
+	}
+	return outC;
+}
+
 void main()
 {
 	outputColor = vec4(gNormal, 1.0);
@@ -34,7 +62,7 @@ void main()
 	for(int i = 0; i < numFactures; i++) {
 		vec4 sampledColor = texture(factures[i], tc.xz);
 		if(tc.y > i * heightStep) {
-			outputColor = sampledColor;
+			outputColor = phong(sampledColor);
 		}
 	}
 

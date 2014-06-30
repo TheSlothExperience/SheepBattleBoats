@@ -14,6 +14,7 @@ out vec3 tc;
 out vec4 gPatchDistance;
 out vec3 gTriDistance;
 out vec3 gNormal;
+out vec3 V;
 
 void main()
 {
@@ -23,6 +24,7 @@ void main()
     tc = teTc[0];
     gNormal = teNormal[0];
     gTriDistance = vec3(1, 0, 0);
+    V = tePosition[0];
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
 
@@ -30,6 +32,7 @@ void main()
     tc = teTc[1];
     gNormal = teNormal[1];
     gTriDistance = vec3(0, 1, 0);
+    V = tePosition[1];
     gl_Position = gl_in[1].gl_Position;
     EmitVertex();
 
@@ -37,6 +40,7 @@ void main()
     tc = teTc[2];
     gNormal = teNormal[2];
     gTriDistance = vec3(0, 0, 1);
+    V = tePosition[2];
     gl_Position = gl_in[2].gl_Position;
     EmitVertex();
 

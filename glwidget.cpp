@@ -184,6 +184,9 @@ void GLWidget::renderHeightMap() {
 
 	glUniform1f(heightMapProgram->uniformLocation("terrainSize"), scene->heightMap()->getTerrainSize());
 
+
+	scene->passLights(camera->getCameraMatrix(), heightMapProgram);
+
 	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
 
 	//Release and relax, brah
