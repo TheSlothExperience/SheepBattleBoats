@@ -60,11 +60,20 @@ void main()
 	outputColor = vec4(gNormal, 1.0);
 
 	float heightStep = maxHeight / numFactures;
+	float slopeStep = 1.0 / numFactures;
 	for(int i = 0; i < numFactures; i++) {
 		//Sample two levels in order to smooth them
 		vec4 sampledColor = texture(factures[i], tc.xz);
 		vec4 sampledColorNext = texture(factures[min(numFactures - 1, i + 1)], tc.xz);
-		if(tc.y > i * heightStep) {
+		if(slopeMixingp != 0) {
+			float slope = gNormal.y;
+			if(slope > i * slopeStep) {
+				//Calculate smooth interpolation between facture texes depending on slope.
+				float lambda = smoothstep((i + 1) * slopeStep, i * slopeStep, tc.y);
+				vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
+				outputColor = phong(terrain);
+			}
+		} else if(tc.y > i * heightStep) {
 			//Calculate smooth interpolation between facture texes depending on height.
 			float lambda = smoothstep((i + 1) * heightStep, i * heightStep, tc.y);
 			vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
