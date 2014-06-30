@@ -21,6 +21,7 @@ uniform vec4 lightColors[maxLights];
 uniform int numLights;
 
 uniform int showMeshp;
+uniform int slopeMixingp;
 
 const vec4 meshColor = vec4(0.0, 1.0, 0.0, 1.0);
 

@@ -179,6 +179,7 @@ void GLWidget::renderHeightMap() {
 
 	//Set if we are going to show the mesh
 	glUniform1i(heightMapProgram->uniformLocation("showMeshp"), (int) scene->heightMap()->showMesh());
+	glUniform1i(heightMapProgram->uniformLocation("slopeMixingp"), (int) scene->heightMap()->slopeMixing());
 	//Set height scale
 	glUniform1f(heightMapProgram->uniformLocation("heightScale"), scene->heightMap()->getHeightScale() * 65535.0);
 
