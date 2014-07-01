@@ -69,8 +69,8 @@ void main()
 			vec4 sampledColorNext = texture(factures[min(numFactures - 1, slopeLevel + 1)], tc.xz);
 			// 	//Calculate smooth interpolation between facture texes depending on slope.
 			float lambda = (gNormal.y * (numFactures - 1)) - slopeLevel;
-			vec4 terrain = mix(sampledColor, sampledColorNext, lambda);
-			outputColor = phong(terrain, specularities[slopeLevel]);
+			vec4 terrain = mix(phong(sampledColor, specularities[slopeLevel]), phong(sampledColorNext, specularities[slopeLevel + 1]), lambda);
+			outputColor = terrain;
 		} else {
 			int heightLevel = int(floor((tc.y / maxHeight) * (numFactures - 1)));
 
@@ -81,8 +81,8 @@ void main()
 			//Calculate smooth interpolation between facture texes depending on height.
 			//float lambda = smoothstep(heightLevel * heightStep, (heightLevel + 1) * heightStep, tc.y);
 			float lambda = (tc.y * (numFactures - 1) / maxHeight) - heightLevel;
-			vec4 terrain = mix(sampledColor, sampledColorNext, lambda);
-			outputColor = phong(terrain, specularities[heightLevel]);
+			vec4 terrain = mix(phong(sampledColor, specularities[heightLevel]), phong(sampledColorNext, specularities[heightLevel + 1]), lambda);
+			outputColor = terrain;
 		}
 	}
 	//Draw the wireframe
