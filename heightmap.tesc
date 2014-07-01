@@ -26,11 +26,9 @@ vec3 vecToMidpoint(vec3 a, vec3 b) {
 }
 
 vec4 project(vec3 pos) {
-	vec4 p =  modelViewMatrix * vec4(pos, 0.0);
 	vec4 t = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-	vec4 rt = vec4(vec3(transpose(modelViewMatrix) * t), 1.0);
-	p += vec4(vec3(0.0, rt.y, 0.0), 1.0);
-	return p;
+	vec3 rt = vec3(transpose(modelViewMatrix) * vec4(t.xyz, 0.0));
+	return modelViewMatrix * (vec4(pos, 1.0) - vec4(rt.x, 0.0 , rt.z, 0.0));
 }
 
 void main()
