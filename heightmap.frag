@@ -60,28 +60,31 @@ void main()
 {
 	outputColor = vec4(gNormal, 1.0);
 
-	float heightStep = maxHeight / numFactures;
-	float slopeStep = 1.0 / numFactures;
-	for(int i = 0; i < numFactures; i++) {
-		//Sample two levels in order to smooth them
-		vec4 sampledColor = texture(factures[i], tc.xz);
-		vec4 sampledColorNext = texture(factures[min(numFactures - 1, i + 1)], tc.xz);
+	if(numFactures > 0) {
 		if(slopeMixingp != 0) {
-			float slope = gNormal.y;
-			if(slope > i * slopeStep) {
-				//Calculate smooth interpolation between facture texes depending on slope.
-				float lambda = smoothstep((i + 1) * slopeStep, i * slopeStep, tc.y);
-				vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
-				outputColor = phong(terrain, specularities[i]);
-			}
-		} else if(tc.y > i * heightStep) {
+			// float slope = gNormal.y;
+			int slopeLevel = int(floor(gNormal.y * (numFactures - 1)));
+
+			vec4 sampledColor = texture(factures[slopeLevel], tc.xz);
+			vec4 sampledColorNext = texture(factures[min(numFactures - 1, slopeLevel + 1)], tc.xz);
+			// 	//Calculate smooth interpolation between facture texes depending on slope.
+			float lambda = (gNormal.y * (numFactures - 1)) - slopeLevel;
+			vec4 terrain = mix(sampledColor, sampledColorNext, lambda);
+			outputColor = phong(terrain, specularities[slopeLevel]);
+		} else {
+			int heightLevel = int(floor((tc.y / maxHeight) * (numFactures - 1)));
+
+			//Sample two levels in order to smooth them
+			vec4 sampledColor = texture(factures[heightLevel], tc.xz);
+			vec4 sampledColorNext = texture(factures[min(numFactures - 1, heightLevel + 1)], tc.xz);
+
 			//Calculate smooth interpolation between facture texes depending on height.
-			float lambda = smoothstep((i + 1) * heightStep, i * heightStep, tc.y);
-			vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
-			outputColor = phong(terrain, specularities[i]);
+			//float lambda = smoothstep(heightLevel * heightStep, (heightLevel + 1) * heightStep, tc.y);
+			float lambda = (tc.y * (numFactures - 1) / maxHeight) - heightLevel;
+			vec4 terrain = mix(sampledColor, sampledColorNext, lambda);
+			outputColor = phong(terrain, specularities[heightLevel]);
 		}
 	}
-
 	//Draw the wireframe
 	if(showMeshp != 0) {
 		//Distance to the tessellated triangle border
