@@ -849,7 +849,7 @@ void MainWindow::loadFacture() {
 		facture = QGLWidget::convertToGLFormat(facture);
 
 		if(scene->hasHeightMap()) {
-			scene->heightMap()->loadFacture(facture.width(), facture.height(), facture.bits());
+			scene->heightMap()->loadFacture(facture.width(), facture.height(), facture.bits(), specularitySlider->value());
 		}
 
 		emit updateGL();

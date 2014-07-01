@@ -162,6 +162,7 @@ void GLWidget::renderHeightMap() {
 	std::vector<GLuint> factureLocs = scene->heightMap()->getFactureLocations();
 	//Send the uniform locations
 	GLuint *samplers = new GLuint[factureLocs.size()];
+	std::vector<int> specularities = scene->heightMap()->getSpecularities();
 	for(unsigned int i = 0; i < factureLocs.size(); i++) {
 		samplers[i] = i + 1;
 		//Start at GL_TEXTURE1
@@ -170,6 +171,7 @@ void GLWidget::renderHeightMap() {
 	}
 
 	glUniform1iv(heightMapProgram->uniformLocation("factures"), factureLocs.size(), (GLint *)samplers);
+	glUniform1iv(heightMapProgram->uniformLocation("specularities"), factureLocs.size(), (int *)specularities.data());
 	delete[] samplers;
 
 	//Send number of factures

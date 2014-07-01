@@ -59,7 +59,7 @@ void HeightMapNode::loadHeightMap(int width, int height, unsigned short* raw) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void HeightMapNode::loadFacture(int width, int height, unsigned char* raw) {
+void HeightMapNode::loadFacture(int width, int height, unsigned char* raw, int specularity) {
 	GLuint loc;
 
 	glGenTextures(1, &loc);
@@ -76,6 +76,7 @@ void HeightMapNode::loadFacture(int width, int height, unsigned char* raw) {
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	factures.push_back(loc);
+	specularities.push_back(specularity);
 }
 
 void HeightMapNode::drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc) {

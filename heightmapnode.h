@@ -27,6 +27,7 @@ private:
 	float terrainSize = 1.0;
 
 	std::vector<GLuint> factures;
+	std::vector<int> specularities;
 public:
 	HeightMapNode(HeightMap *h, std::string name);
 	~HeightMapNode();
@@ -34,11 +35,12 @@ public:
 	void drawGrid(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc);
 
 	void loadHeightMap(int width, int height, unsigned short* raw);
-	void loadFacture(int width, int height, unsigned char* raw);
+	void loadFacture(int width, int height, unsigned char* raw, int specularity);
 
 	GLuint getHeightMapLocation() {return heightMapTexLocation;}
 
 	std::vector<GLuint> getFactureLocations() {return factures;}
+	std::vector<int> getSpecularities() {return specularities;}
 
 	float getHeightAt(float x, float y);
 	void setMaximumValue(unsigned short val);

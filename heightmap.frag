@@ -12,6 +12,7 @@ in vec3 V;
 
 const int maxFactures = 12;
 uniform sampler2D factures[maxFactures];
+uniform int specularities[maxFactures];
 uniform int numFactures;
 uniform float maxHeight;
 
@@ -33,7 +34,7 @@ float amplify(float d, float scale, float offset)
     return d;
 }
 
-vec4 phong(vec4 color) {
+vec4 phong(vec4 color, int spec) {
 	vec3 E = normalize(-V);
 
 	vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
@@ -47,7 +48,7 @@ vec4 phong(vec4 color) {
 		vec4 k_diff = color * lightColor * max(0.0, dot(L, gNormal));
 		k_diff = clamp(k_diff, 0.0, 1.0);
 
-		vec4 k_spec = vec4(0.7, 0.7, 0.7, 0.7) * pow(max(dot(R,E),0.0), 0.3 * 10.0);
+		vec4 k_spec = vec4(spec / 100.0) * pow(max(dot(R,E),0.0), 0.3 * spec);
 		k_spec = clamp(k_spec, 0.0, 1.0);
 
 		outC += vec4(k_diff + k_spec);
@@ -71,13 +72,13 @@ void main()
 				//Calculate smooth interpolation between facture texes depending on slope.
 				float lambda = smoothstep((i + 1) * slopeStep, i * slopeStep, tc.y);
 				vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
-				outputColor = phong(terrain);
+				outputColor = phong(terrain, specularities[i]);
 			}
 		} else if(tc.y > i * heightStep) {
 			//Calculate smooth interpolation between facture texes depending on height.
 			float lambda = smoothstep((i + 1) * heightStep, i * heightStep, tc.y);
 			vec4 terrain = mix(sampledColorNext, sampledColor, lambda);
-			outputColor = phong(terrain);
+			outputColor = phong(terrain, specularities[i]);
 		}
 	}
 
