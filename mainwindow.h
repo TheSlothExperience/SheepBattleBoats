@@ -8,8 +8,6 @@
 
 #include "glwidget.h"
 #include "glwidgetcontext.h"
-#include "tfEditor.h"
-#include "multislider.h"
 
 class MainWindow : public QMainWindow
 {
@@ -57,9 +55,6 @@ private:
 
 	QAction *addLightAction;
 
-	QAction *loadVolumeDataAction;
-	TfEditor *tfeditor;
-
 	QMenu *helpMenu;
 	QAction *aboutAction;
 
@@ -76,22 +71,6 @@ private:
 	QTreeView *sceneOutliner;
 	QDockWidget *outlinerDock;
 
-	QDockWidget *isoDock;
-	QSlider *isovalueSlider;
-	QCheckBox *isovalueCheckBox;
-	QSlider *isovalueAlpha;
-	QLabel *isovalueAlphaLabel;
-
-	QDockWidget *heightMapDock;
-	QSlider *heightScaleSlider;
-	QSlider *terrainSizeSlider;
-	QSlider *specularitySlider;
-	QPushButton *heightMapLoadButton;
-	QPushButton *factureLoadButton;
-	QCheckBox *showMeshCheckBox;
-	QCheckBox *slopeMixingCheckBox;
-	MultiSlider *factureWeights;
-
 	QDockWidget *colorDock;
 	QSlider *redSlider;
 	QSlider *blueSlider;
@@ -107,10 +86,7 @@ private:
 	void createActions();
 	void createMenus();
 	void createToolbar();
-	void createTfEditor();
-	void createIsoValuer();
 	void createColorDock();
-	void createHeightMapDock();
 	void setupGL();
 public slots:
 	void addCube();
@@ -122,20 +98,6 @@ public slots:
 	void addGroup();
 
 	void addLight();
-
-	void loadVolumeData();
-	void changeTF();
-
-	void showIsoSurface(bool show);
-	void changeIsovalue(int value);
-	void changeIsoAlpha(int value);
-
-	void showMesh(bool show);
-	void slopeMixing(bool show);
-	void loadHeightMap();
-	void loadFacture();
-	void changeHeightScale(int value);
-	void changeTerrainSize(int value);
 
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);

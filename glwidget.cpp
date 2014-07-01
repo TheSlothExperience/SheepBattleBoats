@@ -70,17 +70,6 @@ void GLWidget::initializeGL()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
 
-	//Create texture to render the volume quad to
-	glGenTextures(1, &volumeBuffer);
-
-	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, volumeBuffer, 0);
-
-
 	//Now setup the depth buffer
 	glGenRenderbuffers(1, &depthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
@@ -121,188 +110,12 @@ void GLWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//If there is a volumetric dataset, render it
-	//by raymarching.
-	if(scene->hasVolume()) {
-		renderVolumetricData();
-	}
-
-	if(scene->hasHeightMap()) {
-		renderHeightMap();
-	}
-
 	//Render the whole Scene tree recurtively
 	renderScene();
 
 	//Paint the scene into a quad covering the viewport
 	paintSceneToCanvas();
 }
-
-void GLWidget::renderHeightMap() {
-
-	heightMapProgram->bind();
-
-	glEnable(GL_TEXTURE_2D);
-
-	glUniformMatrix4fv(heightMapProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
-	//Bind the fbo and the textures to draw to
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(2, DrawBuffers);
-
-	//Draw to the whole texture(the size of the texture, maybe change?)
-	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
-	//and set tex 0 as active
-	glActiveTexture(GL_TEXTURE0);
-	//Push dat heightmap down, dawg
-	glUniform1i(heightMapProgram->uniformLocation("heightMapTexture"), 0);
-	glBindTexture(GL_TEXTURE_2D, scene->heightMap()->getHeightMapLocation());
-
-	//Also load the facture textures
-	std::vector<GLuint> factureLocs = scene->heightMap()->getFactureLocations();
-	//Send the uniform locations
-	GLuint *samplers = new GLuint[factureLocs.size()];
-	std::vector<int> specularities = scene->heightMap()->getSpecularities();
-	for(unsigned int i = 0; i < factureLocs.size(); i++) {
-		samplers[i] = i + 1;
-		//Start at GL_TEXTURE1
-		glActiveTexture(GL_TEXTURE1 + i);
-		glBindTexture(GL_TEXTURE_2D, factureLocs.at(i));
-	}
-
-	glUniform1iv(heightMapProgram->uniformLocation("factures"), factureLocs.size(), (GLint *)samplers);
-	glUniform1iv(heightMapProgram->uniformLocation("specularities"), factureLocs.size(), (int *)specularities.data());
-	delete[] samplers;
-
-	//Send number of factures
-	glUniform1i(heightMapProgram->uniformLocation("numFactures"), factureLocs.size());
-	//Send maximum height
-	glUniform1f(heightMapProgram->uniformLocation("maxHeight"), scene->heightMap()->getMaximumHeight());
-
-	//Set if we are going to show the mesh
-	glUniform1i(heightMapProgram->uniformLocation("showMeshp"), (int) scene->heightMap()->showMesh());
-	glUniform1i(heightMapProgram->uniformLocation("slopeMixingp"), (int) scene->heightMap()->slopeMixing());
-	//Set height scale
-	glUniform1f(heightMapProgram->uniformLocation("heightScale"), scene->heightMap()->getHeightScale() * 65535.0);
-
-	glUniform1f(heightMapProgram->uniformLocation("terrainSize"), scene->heightMap()->getTerrainSize());
-
-
-	scene->passLights(camera->getCameraMatrix(), heightMapProgram);
-
-	scene->drawHeightMapGrid(camera->getCameraMatrix(), heightMapProgram->uniformLocation("modelViewMatrix"));
-
-	//Release and relax, brah
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	heightMapProgram->release();
-}
-
-
-
-/* Draw the volumetric data by ray marching
- * into the containing cube.
- * The result is painted into the first
- * color attachment of the FBO.
- */
-void GLWidget::renderVolumetricData() {
-	//Draw backface of volume cube
-	drawBackFace();
-
-	//Draw the frontface and raymarch
-	rayMarchVolume();
-}
-
-/*
- * Draw the back face of the volume cube
- * to the texture in GL_COLOR_ATTACHMENT2
- */
-void GLWidget::drawBackFace() {
-	quadviewProgram->bind();
-
-	glUniformMatrix4fv(quadviewProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
-	//Bind the fbo and the textures to draw to
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
-	glDrawBuffers(1, DrawBuffers);
-
-	//Draw to the whole texture(the size of the texture, maybe change?)
-	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
-	//and set tex 0 as active
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
-
-	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), quadviewProgram->uniformLocation("modelViewMatrix"));
-
-	//Release and relax, brah
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	quadviewProgram->release();
-}
-
-/*
- * Draws the 3D data stored in the volume node
- * by ray marching and aggregating the values
- * using a Transfer Function as a lookup for the
- * color and transparency.
- * Assumes that the backface of the cube has
- * already been rendered to the FBO.
- */
-void GLWidget::rayMarchVolume() {
-	//Now load program to draw to volumetric stuff
-	volumeProgram->bind();
-
-	//Bind the fbo and the textures to draw to
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GLenum VolumeBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(2, VolumeBuffers);
-
-	//This time render the front face of the cube
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
-	glUniformMatrix4fv(volumeProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
-
-	//Make sure the tex 0 is active for the rendered scene
-	glActiveTexture(GL_TEXTURE0);
-	textureLocation = volumeProgram->uniformLocation("backfaceTexture");
-	//Send the rendered texture down the pipes
-	glUniform1i(textureLocation, 0);
-	glBindTexture(GL_TEXTURE_2D, volumeBuffer);
-
-	glActiveTexture(GL_TEXTURE2);
-	//Send the 3D data down the pipes
-	glUniform1i(volumeProgram->uniformLocation("volumetricTexture"), 2);
-	glBindTexture(GL_TEXTURE_3D, scene->volume()->getTexLocation());
-
-	//Load the transfer function
-	glActiveTexture(GL_TEXTURE3);
-	glUniform1i(volumeProgram->uniformLocation("transferFunction"), 3);
-	glBindTexture(GL_TEXTURE_1D, scene->volume()->getTFLocation());
-
-	//Draw to the whole texture(the size of the texture, maybe change?)
-	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
-
-	static GLfloat resolution[] = {TEXTURE_WIDTH, TEXTURE_HEIGHT};
-	glUniform2fv(volumeProgram->uniformLocation("resolution"), 1, resolution);
-
-	//Pass the isosurface information
-	glUniform1f(volumeProgram->uniformLocation("isovalue"), (float)scene->volume()->getIsoValue() / 256.0);
-	glUniform1f(volumeProgram->uniformLocation("isoAlpha"), (float)scene->volume()->getIsoAlpha() / 256.0);
-	glUniform1i(volumeProgram->uniformLocation("isop"), (int)scene->volume()->showIso());
-
-
-	//Pass the light sources to the shader
-	scene->passLights(camera->getCameraMatrix(), volumeProgram);
-	scene->setMIP(volumeProgram);
-
-	//Draw the cube
-	scene->drawVolumeBoundingBox(camera->getCameraMatrix(), volumeProgram->uniformLocation("modelViewMatrix"));
-
-	//Release and relax, brah
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	volumeProgram->release();
-}
-
 /*
  * Render the SceneGraph with lighting and phong shading.
  * The result is painted into the first color attachment
@@ -348,6 +161,7 @@ void GLWidget::paintSceneToCanvas() {
 	glViewport(0,0,this->width(), this->height());
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	GLuint textureLocation;
 	//Make sure the tex 0 is active for the rendered scene
 	glActiveTexture(GL_TEXTURE0);
 	textureLocation = canvasProgram->uniformLocation("renderedTexture");
@@ -417,14 +231,8 @@ void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
 void GLWidget::setCanvasProgram(QOpenGLShaderProgram *cp) {
 	this->canvasProgram = cp;
 }
-void GLWidget::setVolumeProgram(QOpenGLShaderProgram *vp) {
-	this->volumeProgram = vp;
-}
 void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
 	this->quadviewProgram = qp;
-}
-void GLWidget::setHeightMapProgram(QOpenGLShaderProgram *hp) {
-	this->heightMapProgram = hp;
 }
 
 void GLWidget::setActive(bool active) {
@@ -505,12 +313,7 @@ void GLWidget::translateCamera(double x, double y, double z) {
 
 	QVector3D cameraPos = camera->getWorldPosition();
 	QVector3D newPos = cameraPos + QVector3D(trans);
-	float terrainHeight = scene->heightMap()->getHeightAt(newPos.x(), newPos.z());
-	if(newPos.y() > terrainHeight + 0.4) {
-		this->camera->translate(trans.x(), trans.y(), trans.z());
-	} else {
-		this->camera->translate(trans.x() / 2.0, terrainHeight + 0.4 - newPos.y(), trans.z() / 2.0);
-	}
+	this->camera->translate(trans.x(), trans.y(), trans.z());
 }
 
 void GLWidget::rotateCamera(float angle) {

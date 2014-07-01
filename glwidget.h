@@ -27,9 +27,7 @@ public:
 
     void setShaderProgram(QOpenGLShaderProgram *sp);
     void setCanvasProgram(QOpenGLShaderProgram *cp);
-    void setVolumeProgram(QOpenGLShaderProgram *vp);
     void setQuadViewProgram(QOpenGLShaderProgram *qp);
-    void setHeightMapProgram(QOpenGLShaderProgram *hp);
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -59,14 +57,8 @@ private:
 
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLShaderProgram *canvasProgram;
-    QOpenGLShaderProgram *volumeProgram;
     QOpenGLShaderProgram *quadviewProgram;
-    QOpenGLShaderProgram *heightMapProgram;
 
-    void drawBackFace();
-    void rayMarchVolume();
-    void renderVolumetricData();
-    void renderHeightMap();
     void renderScene();
     void paintSceneToCanvas();
 
@@ -74,10 +66,8 @@ private:
     GLuint renderTex;
     GLuint pickingTex;
     GLuint depthBuffer;
-    GLuint volumeBuffer;
 
     GLuint canvasQuad;
-    GLuint textureLocation;
     GLuint activeLocation;
     GLuint activeColorLocation;
 

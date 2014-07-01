@@ -8,7 +8,6 @@
 #include "sphere.h"
 #include "torus.h"
 #include "light.h"
-#include "volume.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -32,12 +31,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
 	this->rootNode = new SceneGraph();
 	this->rootDummy->add(rootNode);
 
-	this->volumeNode = NULL;
-	this->heightMapNode = NULL;
-
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
-
-	addHeightMap();
 
 	addLight();
 	//Sun-like position
@@ -171,12 +165,8 @@ bool Scene::removeRows(int position, int rows, const QModelIndex &parent) {
 	SceneGraph *parentItem = static_cast<SceneGraph*>(parent.internalPointer());
 	bool success = true;
 
-	//Check if light or volume node
 	for(int i = 0; i < rows; i++) {
 		SceneGraph *toRemove = parentItem->child(position + i);
-		if(toRemove == volumeNode) {
-			this->volumeNode = NULL;
-		}
 		unsigned int found = std::find(lights.begin(), lights.end(), toRemove) - lights.begin();
 		if(found < lights.size()) {
 			lights.erase(lights.begin() + found);
@@ -306,82 +296,6 @@ QModelIndex Scene::addLight() {
 	return createIndex(s->row(), 0, s);
 }
 
-QModelIndex Scene::addVolume() {
-	beginResetModel();
-	Volume *vol = new Volume();
-	std::string name("Volume ");
-	int id = nextId();
-	name += std::to_string(id);
-	VolumeNode *s = new VolumeNode(vol, name);
-	s->setId(id);
-	identifier[id] = s;
-
-	rootNode->add(s);
-	this->volumeNode = s;
-	endResetModel();
-
-	return createIndex(s->row(), 0, s);
-}
-
-QModelIndex Scene::addHeightMap() {
-	beginResetModel();
-	HeightMap *hm = new HeightMap();
-	std::string name("HeightMap ");
-	int id = nextId();
-	name += std::to_string(id);
-	HeightMapNode *s = new HeightMapNode(hm, name);
-	s->setId(id);
-	identifier[id] = s;
-
-	rootNode->add(s);
-	this->heightMapNode = s;
-	endResetModel();
-
-	return createIndex(s->row(), 0, s);
-}
-
-void Scene::drawVolumeBoundingBox(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
-	modelViewMatrixStack.push(modelViewMatrixStack.top());
-	modelViewMatrixStack.top() *= cameraMatrix;
-
-	if(volumeNode != NULL) {
-		this->volumeNode->drawBB(modelViewMatrixStack, mvLoc);
-	}
-
-	modelViewMatrixStack.pop();
-}
-
-void Scene::drawHeightMapGrid(QMatrix4x4 cameraMatrix, GLuint mvLoc) {
-	modelViewMatrixStack.push(modelViewMatrixStack.top());
-	modelViewMatrixStack.top() *= cameraMatrix;
-
-	if(heightMapNode != NULL) {
-		this->heightMapNode->drawGrid(modelViewMatrixStack, mvLoc);
-	}
-
-	modelViewMatrixStack.pop();
-}
-
-void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned char* raw) {
-	if(volumeNode == NULL) {
-		addVolume();
-	}
-	this->volumeNode->loadTexture(x, y, z, ax, ay, az, raw);
-}
-void Scene::loadVolumeData(int x, int y, int z, float ax, float ay, float az, unsigned short* raw) {
-	if(volumeNode == NULL) {
-		addVolume();
-	}
-	this->volumeNode->loadTexture(x, y, z, ax, ay, az, raw);
-}
-
-void Scene::loadHeightMapData(int width, int height, unsigned short* raw) {
-	if(heightMapNode == NULL) {
-		addHeightMap();
-	}
-	this->heightMapNode->loadHeightMap(width, height, raw);
-}
-
 void Scene::draw(QMatrix4x4 cameraMatrix) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;
@@ -411,10 +325,6 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
 
 	delete[] lightsArray;
 	delete[] colorsArray;
-}
-
-void Scene::setMIP(QOpenGLShaderProgram *sp) {
-	glUniform1i(sp->uniformLocation("mip"), (int)volumeNode->getMIP());
 }
 
 void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {

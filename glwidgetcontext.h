@@ -24,35 +24,22 @@ class GLWidgetContext : public QGLWidget
 	GLuint getLightPositionLocation() {return this->lightPositionLocation;};
 	QOpenGLShaderProgram* getShaderProgram() {return this->shaderProgram;};
 	QOpenGLShaderProgram* getCanvasProgram() {return this->canvasProgram;};
-	QOpenGLShaderProgram* getVolumeProgram() {return this->volumeProgram;};
 	QOpenGLShaderProgram* getQuadViewProgram() {return this->quadviewProgram;};
-	QOpenGLShaderProgram* getHeightMapProgram() {return this->heightmapProgram;};
 
 	void initializeGL();
 
 	private:
 	QOpenGLShaderProgram *shaderProgram;
 	QOpenGLShaderProgram *canvasProgram;
-	QOpenGLShaderProgram *volumeProgram;
 	QOpenGLShaderProgram *quadviewProgram;
-	QOpenGLShaderProgram *heightmapProgram;
 	QOpenGLShader *vphong;
 	QOpenGLShader *fphong;
 
 	QOpenGLShader *vcanvas;
 	QOpenGLShader *fcanvas;
 
-	QOpenGLShader *vvolume;
-	QOpenGLShader *fvolume;
-
 	QOpenGLShader *vquadview;
 	QOpenGLShader *fquadview;
-
-	QOpenGLShader *vheightmap;
-	QOpenGLShader *fheightmap;
-	QOpenGLShader *tcheightmap;
-	QOpenGLShader *teheightmap;
-	QOpenGLShader *gheightmap;
 
 	void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog);

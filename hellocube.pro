@@ -15,17 +15,12 @@ QMAKE_CXXFLAGS += -std=c++11
 
 
 SOURCES += main.cpp\
-        multislider.cpp \
         mainwindow.cpp\
-        tfEditor.cpp \
-        tfDisplay.cpp \
         glwidget.cpp\
         glwidgetcontext.cpp\
         scene.cpp\
         scenegraph.cpp\
         lightnode.cpp \
-        volumenode.cpp \
-        heightmapnode.cpp \
         perspectivecamera.cpp\
         orthocamera.cpp\
         cube.cpp \
@@ -33,21 +28,14 @@ SOURCES += main.cpp\
         sphere.cpp \
         torus.cpp \
         cylinder.cpp \
-        volume.cpp \
-        heightmap.cpp \
         light.cpp
 
 HEADERS  += mainwindow.h\
-        multislider.h \
         glwidget.h\
         glwidgetcontext.h\
-        tfEditor.h \
-        tfDisplay.h \
         scene.h\
         scenegraph.h\
         lightnode.h\
-        volumenode.h\
-        heightmapnode.h\
         camera.h\
         perspectivecamera.h\
         orthocamera.h\
@@ -57,8 +45,6 @@ HEADERS  += mainwindow.h\
         sphere.h \
         torus.h \
         cylinder.h\
-        volume.h\
-        heightmap.h\
         light.h
 
 RESOURCES += \

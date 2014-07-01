@@ -4,7 +4,6 @@
 #include "camera.h"
 #include "perspectivecamera.h"
 #include "orthocamera.h"
-#include "multislider.h"
 
 #include <QDataStream>
 #include <QFile>
@@ -26,11 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
 	createActions();
 	createMenus();
 	createToolbar();
-
-	createIsoValuer();
-	createTfEditor();
-
-	createHeightMapDock();
 
 	createColorDock();
 
@@ -107,9 +101,7 @@ void MainWindow::setupGL() {
 	mapWidgets([=](GLWidget *w){w->setScene(scene);});
 	mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
 	mapWidgets([=](GLWidget *w){w->setCanvasProgram(glWidgetContext->getCanvasProgram());});
-	mapWidgets([=](GLWidget *w){w->setVolumeProgram(glWidgetContext->getVolumeProgram());});
 	mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
-	mapWidgets([=](GLWidget *w){w->setHeightMapProgram(glWidgetContext->getHeightMapProgram());});
 
 	mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
 
@@ -152,100 +144,6 @@ void MainWindow::setupGL() {
 	activeViewport = perspectiveGLWidget;
 
 	setCentralWidget(sideSplitter);
-}
-
-void MainWindow::createTfEditor() {
-	tfeditor = new TfEditor();
-	connect(tfeditor, SIGNAL(tfChanged()), this, SLOT(changeTF()));
-	addDockWidget(Qt::RightDockWidgetArea, tfeditor);
-}
-
-void MainWindow::createHeightMapDock() {
-	heightMapLoadButton = new QPushButton("Load heightmap");
-	connect(heightMapLoadButton, SIGNAL(clicked()), this, SLOT(loadHeightMap()));
-
-	factureLoadButton = new QPushButton("Load facture");
-	connect(factureLoadButton, SIGNAL(clicked()), this, SLOT(loadFacture()));
-
-	showMeshCheckBox = new QCheckBox("Show Mesh");
-	connect(showMeshCheckBox, SIGNAL(toggled(bool)), this, SLOT(showMesh(bool)));
-
-	slopeMixingCheckBox = new QCheckBox("Slope Mixing");
-	connect(slopeMixingCheckBox, SIGNAL(toggled(bool)), this, SLOT(slopeMixing(bool)));
-
-
-	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra v1.2768"), this);
-	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
-	                              Qt::BottomDockWidgetArea);
-
-	heightScaleSlider = new QSlider(Qt::Horizontal, this);
-	heightScaleSlider->setRange(0,500);
-	heightScaleSlider->setValue(100);
-	connect(heightScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(changeHeightScale(int)));
-
-	terrainSizeSlider = new QSlider(Qt::Horizontal, this);
-	terrainSizeSlider->setRange(100,500);
-	terrainSizeSlider->setValue(100);
-	connect(terrainSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeTerrainSize(int)));
-
-	specularitySlider = new QSlider(Qt::Horizontal, this);
-	specularitySlider->setRange(0,100);
-	specularitySlider->setValue(0);
-
-	QLabel *heightLabel = new QLabel("Height: ", this);
-	QLabel *sizeLabel = new QLabel("Size: ", this);
-	QLabel *specularityLabel = new QLabel("Specularity: ", this);
-
-	QWidget *contents = new QWidget;
-	QGridLayout *layout = new QGridLayout(contents);
-
-	layout->addWidget(showMeshCheckBox, 0, 0);
-	layout->addWidget(slopeMixingCheckBox, 0, 1);
-
-	layout->addWidget(heightLabel, 1, 0);
-	layout->addWidget(heightScaleSlider, 1, 1, 1, 2);
-	layout->addWidget(sizeLabel, 2, 0);
-	layout->addWidget(terrainSizeSlider, 2, 1, 1, 2);
-
-	layout->addWidget(heightMapLoadButton, 3, 0);
-	layout->addWidget(factureLoadButton, 3, 1);
-
-	layout->addWidget(specularityLabel, 4, 0);
-	layout->addWidget(specularitySlider, 4, 1, 1, 3);
-
-	heightMapDock->setWidget(contents);
-	addDockWidget(Qt::RightDockWidgetArea, heightMapDock);
-}
-
-void MainWindow::createIsoValuer() {
-	isovalueSlider = new QSlider(Qt::Horizontal, this);
-	isovalueSlider->setRange(0, 255);
-	isovalueSlider->setValue(100);
-	connect(isovalueSlider, SIGNAL(valueChanged(int)), this, SLOT(changeIsovalue(int)));
-
-	isovalueCheckBox = new QCheckBox("IsoSurface");
-	isovalueCheckBox->setChecked(false);
-	connect(isovalueCheckBox, SIGNAL(toggled(bool)), this, SLOT(showIsoSurface(bool)));
-
-	isovalueAlpha = new QSlider(Qt::Horizontal, this);
-	isovalueAlpha->setRange(0, 255);
-	isovalueAlpha->setValue(255);
-	connect(isovalueAlpha, SIGNAL(valueChanged(int)), this, SLOT(changeIsoAlpha(int)));
-
-	isovalueAlphaLabel = new QLabel("Opacity: ", this);
-
-	isoDock = new QDockWidget(tr("IsoSurface Selector Quantizer"), this);
-	isoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
-	                         Qt::BottomDockWidgetArea);
-
-	QWidget *contents = new QWidget;
-	QGridLayout *layout = new QGridLayout(contents);
-	layout->addWidget(isovalueCheckBox, 0, 0);
-	layout->addWidget(isovalueSlider, 0, 1);
-	layout->addWidget(isovalueAlphaLabel, 1, 0);
-	layout->addWidget(isovalueAlpha, 1, 1);
-	isoDock->setWidget(contents);
-	addDockWidget(Qt::LeftDockWidgetArea, isoDock);
 }
 
 void MainWindow::createColorDock() {
@@ -312,9 +210,6 @@ void MainWindow::createToolbar() {
 	toolbar->addAction(addGroupAction);
 
 	toolbar->addSeparator();
-	toolbar->addAction(loadVolumeDataAction);
-
-	toolbar->addSeparator();
 	toolbar->addAction(addLightAction);
 
 	addToolBar(toolbar);
@@ -324,11 +219,6 @@ void MainWindow::createActions() {
 	exitAction = new QAction("E&xit", this);
 	exitAction->setShortcut(tr("Ctrl+5"));
 	connect(exitAction, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
-
-	loadVolumeDataAction = new QAction("&Load volumetric data", this);
-	loadVolumeDataAction->setShortcut(Qt::CTRL + Qt::Key_L);
-	connect(loadVolumeDataAction, SIGNAL(triggered()), this, SLOT(loadVolumeData()));
-
 
 	aboutAction = new QAction("&About", this);
 	connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
@@ -416,7 +306,6 @@ void MainWindow::createMenus() {
 	//Actions for the file menu
 	fileMenu = new QMenu("&File");
 	fileMenu->addAction(exitAction);
-	fileMenu->addAction(loadVolumeDataAction);
 	menuBar->addMenu(fileMenu);
 
 	//Viewports menu
@@ -467,8 +356,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 		msg += QString::number(cPos.y());
 		msg += ", ";
 		msg += QString::number(cPos.z());
-		float height = scene->heightMap()->getHeightAt(cPos.x(), cPos.z());
-		msg += ". With height: " + QString::number(height);
 		statusbar->showMessage(msg, 5000);
 		emit updateGL();
 	} else if(event->key() == Qt::Key_S) {
@@ -632,254 +519,7 @@ void MainWindow::rotateNode(QQuaternion *q) {
 	emit updateGL();
 }
 
-void MainWindow::showIsoSurface(bool show) {
-	if(scene->hasVolume()) {
-		this->scene->volume()->setIso(show);
-		emit updateGL();
-	}
-}
-
-void MainWindow::changeIsovalue(int value) {
-	if(scene->hasVolume()) {
-		this->scene->volume()->setIsoValue(value);
-		emit updateGL();
-	}
-}
-
-void MainWindow::changeIsoAlpha(int value) {
-	if(scene->hasVolume()) {
-		this->scene->volume()->setIsoAlpha(value);
-		emit updateGL();
-	}
-}
-
 void MainWindow::changedColor() {
 	this->currentNode->changeColor(redSlider->sliderPosition() / (float) 255, greenSlider->sliderPosition() / (float) 255, blueSlider->sliderPosition() / (float) 255, 1.0f);
 	emit updateGL();
-}
-
-void MainWindow::changeTF() {
-	if(scene->hasVolume()) {
-		this->scene->volume()->changeTF(tfeditor->tfDisplay.getTF());
-		this->scene->volume()->setMIP(tfeditor->getMIP());
-		emit updateGL();
-	}
-}
-
-void MainWindow::loadVolumeData() {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Load volumetric data"), ".", tr("Volume Data (*.raw)"));
-	QFileInfo info(fileName);
-	std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
-	if(!fileName.isEmpty()) {
-		int x, y, z;
-		float ax, ay, az;
-		QFile f(fileName);
-
-		//If there is no volume, add a volume first
-		if(!scene->hasVolume()) {
-			QModelIndex idx = scene->addVolume();
-			sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
-		}
-
-		if(f.open(QIODevice::ReadOnly)) {
-			QTextStream prelude(&f);
-			prelude >> x >> y >> z >> ax >> ay >> az;
-			prelude.readLine();
-
-			if(info.baseName() == QString("Tooth")) {
-				unsigned short *raw = new unsigned short[x*y*z];
-
-				//QTextStream is weird...don't delete this line.
-				f.pos(); //Reseek the position
-				prelude.pos();
-
-				FILE* file = fdopen(f.handle(), "r");
-				int readError = fread((void *)raw, 2, x*y*z, file);
-				if(readError < 0) {
-					std::cout << "Error reading volume data from file!" << std::endl;
-					fclose(file);
-					return;
-				}
-
-				std::cout << "Loading tooth texture with: "
-				          << "(" << x << ", " << y << ", " << z << ")"
-				          << " and aspect ratios of: "
-				          << ax << " " << ay << " " << az << std::endl;
-
-
-				//Calculate histogram
-				int histogram_acc[256];
-				for(int i = 0; i < 256; i++) {
-					histogram_acc[i] = 0;
-				}
-				for(int i = 1; i < x*y*z; i++) {
-					int idx = (float) raw[i] * (255.0 / 65536.0);
-					histogram_acc[idx] += 1;
-				}
-				int m = 0;
-				for(int i = 1; i < 256; i++) {
-					if(histogram_acc[i] > m) {
-						m = histogram_acc[i];
-					}
-				}
-				float scale = 255.0 / (float) m;
-				//Normalize histogram
-				unsigned char histogram[256];
-				for(int i = 0; i < 256; i++) {
-					histogram[i] = (unsigned char)((float)histogram_acc[i] * scale);
-				}
-				//Send the raw data to the texture
-				this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
-				tfeditor->updateHistogram(histogram);
-				fclose(file);
-
-			} else {
-				unsigned char *raw = new unsigned char[x*y*z];
-				QDataStream rawData(&f);
-				//QTextStream is weird...don't delete this line.
-				prelude.pos();
-
-				//Read into the char array
-				rawData.readRawData((char *)raw, x*y*z);
-				std::cout << "Loading texture with: "
-				          << "(" << x << ", " << y << ", " << z << ")"
-				          << " and aspect ratios of: "
-				          << ax << " " << ay << " " << az << std::endl;
-
-
-				//Calculate histogram
-				int histogram_acc[256];
-				for(int i = 0; i < 256; i++) {
-					histogram_acc[i] = 0;
-				}
-				for(int i = 0; i < x*y*z; i++) {
-					histogram_acc[(int)raw[i]] += 1;
-				}
-				int m = 0;
-				for(int i = 1; i < 256; i++) {
-					if(histogram_acc[i] > m) {
-						m = histogram_acc[i];
-					}
-				}
-				float scale = 255.0 / (float) m;
-				//Normalize histogram
-				unsigned char histogram[256];
-				for(int i = 1; i < 256; i++) {
-					histogram[i] = (unsigned char)((float)histogram_acc[i] * scale);
-				}
-				//Send the raw data to the texture
-				this->scene->loadVolumeData(x, y, z, ax, ay, az, raw);
-				tfeditor->updateHistogram(histogram);
-			}
-			f.close();
-			emit updateGL();
-		}
-	}
-}
-
-void MainWindow::loadHeightMap() {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Load height map"), ".", tr("Height Map (*.pgm)"));
-	QFileInfo info(fileName);
-	std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
-	if(!fileName.isEmpty()) {
-		FILE *fp;
-		fp = fopen(fileName.toLocal8Bit().data(), "r");
-		int height, width, valueRange;
-		int ferr = fscanf(fp, "P5\n");
-		if(ferr != 0) std::cout << "Problem reading file. File is evil." << std::endl;
-		ferr = fscanf(fp, "%d\n", &width);
-		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
-		ferr = fscanf(fp, "%d\n", &height);
-		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
-		ferr = fscanf(fp, "%d\n", &valueRange);
-		if(ferr != 1) std::cout << "Problem reading file. File is evil." << std::endl;
-
-		if(valueRange < 256) {
-
-		} else if (valueRange < 65536) {
-			std::cout << "Loading height map texture with: "
-			          << "(" << width << ", " << height << ")"
-			          << " and maximum value of: "
-			          << valueRange << " `short`-wise ." << std::endl;
-
-			unsigned short* raw = new unsigned short[width * height];
-			int read = 0;
-			unsigned char hi, lo;
-
-			//For some ungodly reason the endianness of PGM and
-			//x86 is not the same. That's the reason for these
-			//incantations.
-			unsigned short val = 0;
-			unsigned short max = 0;
-			while(true) {
-				hi = fgetc(fp);
-				lo = fgetc(fp);
-				val = (hi << 8) + lo;
-				raw[read] = val;
-				if(val > max && val < 65535) max = val;
-				if(feof(fp)) break;
-				read++;
-			}
-			if(read != width * height) {
-				std::cout << "Uh-oh. Could only read " << read
-				          << " wingamajings from the file, instead of "
-				          << width * height << ". "
-				          << "I recommend exorcising the file." << std::endl;
-				fclose(fp);
-				return;
-			}
-			scene->loadHeightMapData(width, height, raw);
-			scene->heightMap()->setMaximumValue(max);
-		}
-		fclose(fp);
-		emit updateGL();
-	}
-}
-
-void MainWindow::loadFacture() {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Load facture"), ".", tr("Facture Texture (*.jpg)"));
-	QFileInfo info(fileName);
-	std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
-	if(!fileName.isEmpty()) {
-		QImage facture;
-		facture.load(fileName);
-		std::cout << "Loading facture texture with: "
-		          << "(" << facture.width() << ", " << facture.height() << ")" <<  std::endl;
-
-		facture = QGLWidget::convertToGLFormat(facture);
-
-		if(scene->hasHeightMap()) {
-			scene->heightMap()->loadFacture(facture.width(), facture.height(), facture.bits(), specularitySlider->value());
-		}
-
-		emit updateGL();
-	}
-}
-
-void MainWindow::showMesh(bool show) {
-	if(scene->hasHeightMap()) {
-		this->scene->heightMap()->setShowMesh(show);
-		emit updateGL();
-	}
-}
-
-void MainWindow::slopeMixing(bool show) {
-	if(scene->hasHeightMap()) {
-		this->scene->heightMap()->setSlopeMixing(show);
-		emit updateGL();
-	}
-}
-
-void MainWindow::changeHeightScale(int value) {
-	if(scene->hasHeightMap()) {
-		this->scene->heightMap()->setHeightScale(value);
-		emit updateGL();
-	}
-}
-
-void MainWindow::changeTerrainSize(int value) {
-	if(scene->hasHeightMap()) {
-		this->scene->heightMap()->setTerrainSize((float) value / 100.0);
-		emit updateGL();
-	}
 }
