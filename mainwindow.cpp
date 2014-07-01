@@ -174,7 +174,7 @@ void MainWindow::createHeightMapDock() {
 	connect(slopeMixingCheckBox, SIGNAL(toggled(bool)), this, SLOT(slopeMixing(bool)));
 
 
-	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra"), this);
+	heightMapDock = new QDockWidget(tr("Terranizer Originator Ultra v1.2768"), this);
 	heightMapDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea |
 	                              Qt::BottomDockWidgetArea);
 
@@ -188,20 +188,30 @@ void MainWindow::createHeightMapDock() {
 	terrainSizeSlider->setValue(100);
 	connect(terrainSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeTerrainSize(int)));
 
+	specularitySlider = new QSlider(Qt::Horizontal, this);
+	specularitySlider->setRange(0,100);
+	specularitySlider->setValue(0);
+
 	QLabel *heightLabel = new QLabel("Height: ", this);
 	QLabel *sizeLabel = new QLabel("Size: ", this);
+	QLabel *specularityLabel = new QLabel("Specularity: ", this);
 
 	QWidget *contents = new QWidget;
 	QGridLayout *layout = new QGridLayout(contents);
 
 	layout->addWidget(showMeshCheckBox, 0, 0);
 	layout->addWidget(slopeMixingCheckBox, 0, 1);
+
 	layout->addWidget(heightLabel, 1, 0);
 	layout->addWidget(heightScaleSlider, 1, 1, 1, 2);
 	layout->addWidget(sizeLabel, 2, 0);
 	layout->addWidget(terrainSizeSlider, 2, 1, 1, 2);
+
 	layout->addWidget(heightMapLoadButton, 3, 0);
 	layout->addWidget(factureLoadButton, 3, 1);
+
+	layout->addWidget(specularityLabel, 4, 0);
+	layout->addWidget(specularitySlider, 4, 1, 1, 3);
 
 	heightMapDock->setWidget(contents);
 	addDockWidget(Qt::RightDockWidgetArea, heightMapDock);

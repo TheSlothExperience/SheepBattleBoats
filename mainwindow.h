@@ -85,6 +85,7 @@ private:
 	QDockWidget *heightMapDock;
 	QSlider *heightScaleSlider;
 	QSlider *terrainSizeSlider;
+	QSlider *specularitySlider;
 	QPushButton *heightMapLoadButton;
 	QPushButton *factureLoadButton;
 	QCheckBox *showMeshCheckBox;
