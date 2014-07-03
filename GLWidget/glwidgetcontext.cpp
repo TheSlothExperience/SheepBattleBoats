@@ -26,7 +26,7 @@ GLWidgetContext::~GLWidgetContext()
 void GLWidgetContext::initializeGL()
 {
 	glEnable(GL_TEXTURE_3D);
-	loadShaders(":/phong.vert", ":/phong.frag", vphong, fphong, shaderProgram);
+	loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", vphong, fphong, shaderProgram);
 
 	shaderProgram->bind();
 
@@ -38,8 +38,8 @@ void GLWidgetContext::initializeGL()
 
 	shaderProgram->release();
 
-	loadShaders(":/identity.vert", ":/canvas.frag", vcanvas, fcanvas, canvasProgram);
-	loadShaders(":/viewpoint.vert", ":/viewpoint.frag", vquadview, fquadview, quadviewProgram);
+	loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
+	loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
 
 }
 

@@ -16,11 +16,11 @@
         <file>img/viewports.png</file>
         <file>img/view-single.png</file>
         <file>img/group.png</file>
-        <file>phong.frag</file>
-        <file>phong.vert</file>
-        <file>canvas.frag</file>
-        <file>identity.vert</file>
-        <file>viewpoint.frag</file>
-        <file>viewpoint.vert</file>
+        <file>shaders/phong.frag</file>
+        <file>shaders/phong.vert</file>
+        <file>shaders/canvas.frag</file>
+        <file>shaders/identity.vert</file>
+        <file>shaders/viewpoint.frag</file>
+        <file>shaders/viewpoint.vert</file>
     </qresource>
 </RCC>

@@ -1,4 +1,6 @@
 /img/
+build/*
+*.user
 data/*
 \#*
 *.raw
