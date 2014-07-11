@@ -9,6 +9,10 @@ uniform vec3 lightPositions[maxLights];
 uniform vec4 lightColors[maxLights];
 uniform int numLights;
 
+uniform mat4 lightViews[maxLights];
+uniform mat4 lightPerspectives[maxLights];
+uniform sampler2D shadowMaps[maxLights];
+
 uniform vec4 color;
 
 layout(location = 0) out vec4 outputColor;
@@ -17,14 +21,14 @@ void main()
 {
 	vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
 	int i;
-	
+
 	vec4 k_amb = vec4(0.2, 0.2, 0.2, 1.0) * color;
 	outputColor = k_amb;
 	for(i = 0; i < numLights; i++) {
 		vec3 L = normalize(lightPositions[i] - V);
 		vec3 R = normalize(-reflect(L,N));
 		vec4 lightColor = lightColors[i];
-    
+
 		vec4 k_diff = color * lightColor * max(0.0, dot(L, N));
 		k_diff = clamp(k_diff, 0.0, 1.0);
 

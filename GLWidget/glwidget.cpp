@@ -155,6 +155,27 @@ void GLWidget::renderScene() {
 	glActiveTexture(GL_TEXTURE0);
 
 	if(scene != NULL) {
+
+		//Send all the lighting information and shadowmaps
+		std::vector<GLfloat> lightViews = scene->lightViews();
+		std::vector<GLfloat> lightPerspectives = scene->lightPerspectives();
+		std::vector<GLuint> shadowMapLocs = scene->shadowMapLocations();
+
+		glUniformMatrix4fv(shaderProgram->uniformLocation("lightViews"), lightViews.size() / 16, GL_FALSE, lightViews.data());
+		glUniformMatrix4fv(shaderProgram->uniformLocation("lightPerspectives"), lightPerspectives.size() / 16, GL_FALSE, lightPerspectives.data());
+
+		//Now the shadowmaps
+		GLint *shadowSamplers = new GLint[shadowMapLocs.size()];
+		unsigned int shadowsOffset = 3;
+		for(unsigned int i = 0; i < shadowMapLocs.size(); i++) {
+			shadowSamplers[i] = i + shadowsOffset;
+			//Start at GL_TEXTURE0 + shadowsOffset
+			glActiveTexture(GL_TEXTURE0 + shadowsOffset + i);
+			glBindTexture(GL_TEXTURE_2D, shadowMapLocs[i]);
+		}
+		glUniform1iv(shaderProgram->uniformLocation("shadowMaps"), shadowMapLocs.size(), shadowSamplers);
+		delete[] shadowSamplers;
+
 		//Discombobulate!
 		scene->draw(camera->getCameraMatrix());
 	} else {
