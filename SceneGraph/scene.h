@@ -74,6 +74,11 @@ public:
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
 	void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
 
+	std::vector<GLfloat> lightPerspectives();
+	std::vector<GLfloat> lightViews();
+	std::vector<GLuint> shadowMapLocations();
+
+
 	SceneGraph *root() {return rootNode;};
 
 	QModelIndex identify(int i);

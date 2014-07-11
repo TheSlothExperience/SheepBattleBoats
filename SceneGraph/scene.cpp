@@ -374,3 +374,49 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
+
+template <class COCiter, class Oiter>
+void flatten(COCiter start, COCiter end, Oiter dest) {
+    using namespace std;
+    while (start != end) {
+        dest = copy(start->begin(), start->end(), dest);
+        ++start;
+    }
+}
+
+template <typename U, typename T, class UnaryFunction>
+std::vector<U> fmap(std::vector<T> v, UnaryFunction f) {
+	std::vector<U> w;
+	std::transform(v.begin(), v.end(), std::back_inserter(w), f);
+	return w;
+}
+
+std::vector<GLfloat> Scene::lightPerspectives() {
+    using namespace std;
+	vector<vector<GLfloat> > views = fmap<vector<GLfloat> >(lights, [=](LightNode *l){
+			GLfloat* va = l->perspectiveMatrix().data();
+			vector<GLfloat> v;
+			v.assign(va, va + 16);
+			return v;
+		});
+	vector<GLfloat> vs;
+	flatten(views.begin(), views.end(), back_inserter(vs));
+	return vs;
+}
+
+std::vector<GLfloat> Scene::lightViews() {
+    using namespace std;
+	vector<vector<GLfloat> > views = fmap<vector<GLfloat> >(lights, [=](LightNode *l){
+			GLfloat* va = l->lightView().data();
+			vector<GLfloat> v;
+			v.assign(va, va + 16);
+			return v;
+		});
+	vector<GLfloat> vs;
+	flatten(views.begin(), views.end(), back_inserter(vs));
+	return vs;
+}
+
+std::vector<GLuint> Scene::shadowMapLocations() {
+	return fmap<GLuint>(lights, [=](LightNode *l){return l->getShadowMap();});
+}
