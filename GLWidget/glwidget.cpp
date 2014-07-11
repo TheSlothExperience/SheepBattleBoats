@@ -126,7 +126,7 @@ void GLWidget::lightsPass() {
 
 	if(scene != NULL) {
 		//Discombobulate!
-		scene->lightsPass(shaderProgram);
+		scene->lightsPass(shaderProgram, camera->getCameraMatrix());
 	} else {
 		std::cout << "no scene yet" << std::endl;
 	}

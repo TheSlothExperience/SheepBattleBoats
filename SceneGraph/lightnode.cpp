@@ -5,7 +5,7 @@
 #include <GL/gl.h>
 
 #define SHADOW_WIDTH 1024
-#define SHADOW_HEIGHT 1024
+#define SHADOW_HEIGHT 768
 
 LightNode::LightNode(Primitive *p, std::string name)
 	: SceneGraph(p, name)
@@ -16,6 +16,7 @@ LightNode::LightNode(Primitive *p, std::string name)
 	color[3] = 1.0;
 
 	//Create buffer for showmap
+	glEnable(GL_DEPTH_TEST);
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -35,6 +36,7 @@ LightNode::LightNode(Primitive *p, std::string name)
 		std::cout << "SOMETHING WENT WRONG IN THE SHADOWMAP FBO, CHIEF!!" << std::endl;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 LightNode::~LightNode() {

@@ -33,9 +33,8 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
 
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
-	addLight();
-	//Sun-like position
-	lights.at(0)->translate(1.0, 3.0, 1.50);
+	//addLight();
+	//lights.at(0)->translate(1.0, 3.0, 1.50);
 }
 
 
@@ -351,13 +350,16 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	delete[] colorsArray;
 }
 
-void Scene::lightsPass(QOpenGLShaderProgram *shader) {
+void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glViewport(0,0, 1024, 768);
+
+		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, l->perspectiveMatrix().constData());
 
 		modelViewMatrixStack.push(modelViewMatrixStack.top());
 		modelViewMatrixStack.top() *= l->lightView();

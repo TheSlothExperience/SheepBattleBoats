@@ -44,9 +44,9 @@ public:
 		return view;
 	}
 
-	QMatrix4x4 lightPerspective() {
+	QMatrix4x4 perspectiveMatrix() {
 		QMatrix4x4 persp = QMatrix4x4();
-		persp.perspective(45, 1024.0 / 768.0, -0.1, 100);
+		persp.perspective(45, 1024.0 / 768.0, 0.1, 100);
 		return persp;
 	}
 	void lightPass();
