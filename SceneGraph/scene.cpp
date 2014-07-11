@@ -375,6 +375,9 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 	}
 }
 
+/* Takes a nested functor `F (F A)` from `start` to
+ * `end` and gives the flatten functor `F A` in `dest`.
+ */
 template <class COCiter, class Oiter>
 void flatten(COCiter start, COCiter end, Oiter dest) {
     using namespace std;
@@ -384,6 +387,10 @@ void flatten(COCiter start, COCiter end, Oiter dest) {
     }
 }
 
+/*
+ * Takes a `v :: vector<T>` and a function `f :: T -> U` and
+ * returns a `vector<U>` of the result of `f` on every element.
+ */
 template <typename U, typename T, class UnaryFunction>
 std::vector<U> fmap(std::vector<T> v, UnaryFunction f) {
 	std::vector<U> w;
@@ -391,6 +398,9 @@ std::vector<U> fmap(std::vector<T> v, UnaryFunction f) {
 	return w;
 }
 
+/* Return a flattened vector with the entries on the matrices.
+ * Of size n * 16.
+ */
 std::vector<GLfloat> Scene::lightPerspectives() {
     using namespace std;
 	vector<vector<GLfloat> > views = fmap<vector<GLfloat> >(lights, [=](LightNode *l){
@@ -404,6 +414,9 @@ std::vector<GLfloat> Scene::lightPerspectives() {
 	return vs;
 }
 
+/* Return a flattened vector with the entries on the matrices.
+ * Of size n * 16.
+ */
 std::vector<GLfloat> Scene::lightViews() {
     using namespace std;
 	vector<vector<GLfloat> > views = fmap<vector<GLfloat> >(lights, [=](LightNode *l){
