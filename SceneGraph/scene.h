@@ -70,7 +70,7 @@ public:
 
 	QModelIndex addLight();
 
-	void lightsPass(QOpenGLShaderProgram shader);
+	void lightsPass(QOpenGLShaderProgram *shader);
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
 	void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
 

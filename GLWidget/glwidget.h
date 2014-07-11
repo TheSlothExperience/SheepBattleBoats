@@ -60,6 +60,7 @@ private:
     QOpenGLShaderProgram *quadviewProgram;
 
     void renderScene();
+    void lightsPass();
     void paintSceneToCanvas();
 
     GLuint fbo;

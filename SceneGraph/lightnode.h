@@ -29,7 +29,7 @@ public:
 	void setLightColor(QVector4D lc) {lightColor = lc;}
 
 	QMatrix4x4 lightView() {
-		QMatrix4x4 view();
+		QMatrix4x4 view = QMatrix4x4();
 		float x = translation.x();
 		float z = translation.z();
 		QVector3D up;
@@ -45,13 +45,13 @@ public:
 	}
 
 	QMatrix4x4 lightPerspective() {
-		QMatrix4x4 persp();
+		QMatrix4x4 persp = QMatrix4x4();
 		persp.perspective(45, 1024.0 / 768.0, -0.1, 100);
 		return persp;
 	}
 	void lightPass();
 	GLuint shadowFBO() {return fbo;}
-	GLuint shadowMap() {return shadowMap;}
+	GLuint getShadowMap() {return shadowMap;}
 
 	void changeColor(float r, float g, float b, float a);
 };
