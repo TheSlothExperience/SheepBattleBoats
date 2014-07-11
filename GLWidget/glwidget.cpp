@@ -110,11 +110,28 @@ void GLWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//Do a render pass for the shadowmaps
+	lightsPass();
+
 	//Render the whole Scene tree recurtively
 	renderScene();
 
 	//Paint the scene into a quad covering the viewport
 	paintSceneToCanvas();
+}
+
+void GLWidget::lightsPass() {
+	//Load the phong shading program
+	shaderProgram->bind();
+
+	if(scene != NULL) {
+		//Discombobulate!
+		scene->lightsPass(shaderProgram);
+	} else {
+		std::cout << "no scene yet" << std::endl;
+	}
+
+	shaderProgram->release();
 }
 /*
  * Render the SceneGraph with lighting and phong shading.
