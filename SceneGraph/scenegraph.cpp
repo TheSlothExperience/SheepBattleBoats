@@ -9,9 +9,9 @@
 #include <GL/glext.h>
 #include <iostream>
 
-#ifdef DEBUG 
+#ifdef DEBUG
 #define D(x) x
-#else 
+#else
 #define D(x)
 #endif
 
@@ -100,7 +100,7 @@ bool SceneGraph::removeChildren(int position, int count) {
 	if (position < 0 || (unsigned int)(position + count) > children.size()) {
 		return false;
 	}
-    
+
 	for (int row = 0; row < count; ++row) {
 		SceneGraph *toDelete = children.at(position + row);
 		delete toDelete;
@@ -113,12 +113,12 @@ bool SceneGraph::insertChildren(int position, int count, int) {
 	if (position < 0 || (unsigned int) (position + count) > children.size()) {
 		return false;
 	}
-    
+
 	for (int row = 0; row < count; ++row) {
 		SceneGraph *s = new SceneGraph(false, this);
 		children.insert(children.begin() + position + row, s);
 	}
-    
+
 	return true;
 }
 
@@ -151,12 +151,41 @@ void SceneGraph::setParent(SceneGraph *s) {
 	this->parentNode = s;
 }
 
-void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc) {
-    
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc) {
+
 	MVStack.push(MVStack.top());
-    
+
 	MVStack.top().translate(this->translation);
-    
+
+	//Convert the quat to a matrix, may be a performance leak.
+	QMatrix4x4 tempRot;
+	tempRot.rotate(this->rotation.normalized());
+	MVStack.top() *= tempRot;
+
+	//If the node is a leaf, draw its contents
+	if(leaf) {
+		glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
+		glUniformMatrix4fv(normalLoc, 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
+		int r = (id & 0x000000FF) >>  0;
+		int g = (id & 0x0000FF00) >>  8;
+		int b = (id & 0x00FF0000) >> 16;
+		glUniform4f(idLoc, r/255.0f, g/255.0f, b/255.0f, 1.0f);
+
+		this->primitive->draw();
+	} else {
+		//Else, recurse into its children
+		std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc);});
+	}
+
+	MVStack.pop();
+}
+
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc) {
+
+	MVStack.push(MVStack.top());
+
+	MVStack.top().translate(this->translation);
+
 	//Convert the quat to a matrix, may be a performance leak.
 	QMatrix4x4 tempRot;
 	tempRot.rotate(this->rotation.normalized());
@@ -172,7 +201,7 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
 		glUniform4f(idLoc, r/255.0f, g/255.0f, b/255.0f, 1.0f);
 
 		glUniform4fv(colorLoc, 1, color);
-	
+
 		this->primitive->draw();
 	} else {
 		//Else, recurse into its children

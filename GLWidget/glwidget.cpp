@@ -123,16 +123,16 @@ void GLWidget::paintGL()
 
 void GLWidget::lightsPass() {
 	//Load the phong shading program
-	storeDepthProgram->bind();
+	shaders.storeDepthProgram->bind();
 
 	if(scene != NULL) {
 		//Discombobulate!
-		scene->lightsPass(storeDepthProgram, camera->getCameraMatrix());
+		scene->lightsPass(shaders.storeDepthProgram, camera->getCameraMatrix());
 	} else {
 		std::cout << "no scene yet" << std::endl;
 	}
 
-	storeDepthProgram->release();
+	shaders.storeDepthProgram->release();
 }
 /*
  * Render the SceneGraph with lighting and phong shading.
@@ -142,9 +142,10 @@ void GLWidget::lightsPass() {
  */
 void GLWidget::renderScene() {
 	//Load the phong shading program
+	QOpenGLShaderProgram *shaderProgram = shaders.shaderProgram;
 	shaderProgram->bind();
 
-	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+	glUniformMatrix4fv(shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
 	//Bind the fbo and the textures to draw to
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -185,6 +186,7 @@ void GLWidget::renderScene() {
 		glUniformMatrix4fv(shaderProgram->uniformLocation("lightBias"), 1, GL_TRUE, bias);
 		glUniformMatrix4fv(shaderProgram->uniformLocation("inverseCameraMatrix"), 1, GL_FALSE, camera->getCameraMatrix().inverted().constData());
 
+		scene->passLights(camera->getCameraMatrix(), shaderProgram);
 
 		//Discombobulate!
 		scene->draw(camera->getCameraMatrix());
@@ -204,6 +206,7 @@ void GLWidget::renderScene() {
  */
 void GLWidget::paintSceneToCanvas() {
 	//Now load program to draw to the magic quad
+	QOpenGLShaderProgram *canvasProgram = shaders.canvasProgram;
 	canvasProgram->bind();
 	//This time draw to the whole screen
 	glViewport(0,0,this->width(), this->height());
@@ -271,16 +274,6 @@ void GLWidget::setOrthoCamera(double x, double y, double z) {
 
 void GLWidget::setScene(Scene *scene) {
 	this->scene = scene;
-}
-
-void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
-	this->shaderProgram = sp;
-}
-void GLWidget::setCanvasProgram(QOpenGLShaderProgram *cp) {
-	this->canvasProgram = cp;
-}
-void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
-	this->quadviewProgram = qp;
 }
 
 void GLWidget::setActive(bool active) {

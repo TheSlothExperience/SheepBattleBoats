@@ -55,11 +55,10 @@ void MainWindow::setupGL() {
 	glWidgetContext->initializeGL();
 
 	//Set the scene and add a cube
-	GLuint idLocation = glWidgetContext->getShaderProgram()->uniformLocation("id");
-	scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation);
+	GLuint idLocation = glWidgetContext->getShaders().shaderProgram->uniformLocation("id");
+	GLuint colorLocation = glWidgetContext->getShaders().shaderProgram->uniformLocation("color");
+	scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation, colorLocation);
 	scene->setLightLocation(glWidgetContext->getLightPositionLocation());
-	scene->setShaderProgram(glWidgetContext->getShaderProgram());
-
 
 	sceneOutliner = new QTreeView();
 	sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
@@ -99,12 +98,7 @@ void MainWindow::setupGL() {
 
 	//Map over the widgets setting the scene and connecting the signals
 	mapWidgets([=](GLWidget *w){w->setScene(scene);});
-	mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
-	mapWidgets([=](GLWidget *w){w->setCanvasProgram(glWidgetContext->getCanvasProgram());});
-	mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
-	mapWidgets([=](GLWidget *w){w->setStoreDepthProgram(glWidgetContext->getStoreDepthProgram());});
-
-	mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
+	mapWidgets([=](GLWidget *w){w->setShaders(glWidgetContext->getShaders());});
 
 	mapWidgets([=](GLWidget *w){
 			connect(w, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));

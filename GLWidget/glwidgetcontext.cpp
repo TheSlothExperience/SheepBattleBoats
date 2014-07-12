@@ -13,10 +13,10 @@
 GLWidgetContext::GLWidgetContext(QWidget *parent)
 	: QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-	shaderProgram = new QOpenGLShaderProgram();
-	canvasProgram = new QOpenGLShaderProgram();
-	quadviewProgram = new QOpenGLShaderProgram();
-	storeDepthProgram = new QOpenGLShaderProgram();
+	shaders.shaderProgram = new QOpenGLShaderProgram();
+	shaders.canvasProgram = new QOpenGLShaderProgram();
+	shaders.quadviewProgram = new QOpenGLShaderProgram();
+	shaders.storeDepthProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -28,22 +28,22 @@ void GLWidgetContext::initializeGL()
 {
 	glEnable(GL_TEXTURE_3D);
 	//loadShaders(":/shaders/xtoon.vert", ":/shaders/xtoon.frag", vphong, fphong, shaderProgram);
-	loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaderProgram);
+	loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.shaderProgram);
 
-	shaderProgram->bind();
+	shaders.shaderProgram->bind();
 
-	perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
-	normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
-	modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
-	lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
+	perspectiveMatLocation = shaders.shaderProgram->uniformLocation("perspectiveMatrix");
+	normalMatLocation = shaders.shaderProgram->uniformLocation("normalMatrix");
+	modelViewMatLocation = shaders.shaderProgram->uniformLocation("modelViewMatrix");
+	lightPositionLocation = shaders.shaderProgram->uniformLocation("lightPosition");
 
 
-	shaderProgram->release();
+	shaders.shaderProgram->release();
 
-    loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
-    loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
+    loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", shaders.canvasProgram);
+    loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", shaders.quadviewProgram);
 
-	loadShaders(":/shaders/storeDepth.vert", ":/shaders/storeDepth.frag", storeDepthProgram);
+	loadShaders(":/shaders/storeDepth.vert", ":/shaders/storeDepth.frag", shaders.storeDepthProgram);
 
 }
 

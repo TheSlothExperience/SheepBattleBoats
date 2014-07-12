@@ -48,7 +48,7 @@ public:
 
 	QMatrix4x4 perspectiveMatrix() {
 		QMatrix4x4 persp = QMatrix4x4();
-		float aspect = 1024.0 / 768.0;
+		//float aspect = 1024.0 / 768.0;
 		//persp.perspective(45, 1024.0 / 768.0, 0.1, 100);
 		//persp.ortho(-aspect, aspect, -1, 1, -100, 100);
 		persp.ortho(-10, 10, -10, 10, -100, 100);

@@ -12,6 +12,7 @@
 #include "cube.h"
 #include "primitive.h"
 #include "camera.h"
+#include "glwidgetcontext.h"
 
 class GLWidget : public QGLWidget
 {
@@ -25,10 +26,7 @@ public:
     QSize sizeHint() const;
     void setScene(Scene *scene);
 
-    void setShaderProgram(QOpenGLShaderProgram *sp);
-    void setCanvasProgram(QOpenGLShaderProgram *cp);
-    void setQuadViewProgram(QOpenGLShaderProgram *qp);
-	void setStoreDepthProgram(QOpenGLShaderProgram *sdp) {storeDepthProgram = sdp;}
+	void setShaders(Shaders s) {this->shaders = s;}
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -56,10 +54,7 @@ private:
 
     QPoint lastPoint;
 
-    QOpenGLShaderProgram *shaderProgram;
-    QOpenGLShaderProgram *canvasProgram;
-    QOpenGLShaderProgram *quadviewProgram;
-    QOpenGLShaderProgram *storeDepthProgram;
+	Shaders shaders;
 
     void renderScene();
     void lightsPass();

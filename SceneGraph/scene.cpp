@@ -19,12 +19,13 @@ Scene::Scene(QObject *parent)
 {
 	this->modelViewMatrixStack.push(QMatrix4x4());
 }
-Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
+Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObject *parent)
 	: QAbstractItemModel(parent)
 {
 	this->modelViewMatLocation = mvLoc;
 	this->normalMatLocation = normalLoc;
 	this->idLocation = idLoc;
+	this->colorLocation = colorLoc;
 	this->modelViewMatrixStack.push(QMatrix4x4());
 
 	this->rootDummy = new SceneGraph();
@@ -299,31 +300,8 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;
 
-	//Copy the lights positions into GL friendly arrays
-	GLfloat *lightsArray = new GLfloat[3 * lights.size()];
-	GLfloat *colorsArray = new GLfloat[4 * lights.size()];
-	for(unsigned int i = 0; i < lights.size(); i++) {
-		QVector3D lightDir = cameraMatrix * lights.at(i)->getPosition();
-		lightsArray[3 * i] = lightDir.x();
-		lightsArray[3 * i + 1] = lightDir.y();
-		lightsArray[3 * i + 2] = lightDir.z();
-
-		GLfloat *color = lights.at(i)->getColor();
-		colorsArray[4 * i] = color[0];
-		colorsArray[4 * i + 1] = color[1];
-		colorsArray[4 * i + 2] = color[2];
-		colorsArray[4 * i + 3] = color[3];
-	}
-	glUniform3fv(shaderProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
-	glUniform4fv(shaderProgram->uniformLocation("lightColors"), lights.size(), colorsArray);
-	glUniform1i(shaderProgram->uniformLocation("numLights"), lights.size());
-
-	GLuint colorLocation = shaderProgram->uniformLocation("color");
 	this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
 	modelViewMatrixStack.pop();
-
-	delete[] lightsArray;
-	delete[] colorsArray;
 }
 
 void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
