@@ -19,6 +19,25 @@ uniform vec4 color;
 
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
+
+float chebyshevUpperBound(float d, vec2 moments) {
+
+	//Surface is fully lit
+	if(d <= moments.x) {
+		return 1.0;
+	}
+
+	// The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
+	// How likely this pixel is to be lit (p_max)
+	float variance = moments.y - (moments.x * moments.x);
+	variance = max(variance, 0.00002);
+
+	float delta = d - moments.x;
+	float p_max = variance / (variance + delta*delta);
+
+	return p_max;
+}
+
 void main()
 {
 	vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
@@ -35,12 +54,9 @@ void main()
 		vec3 L = normalize(lightPositions[i] - V);
 		//float bias = 0.005 * tan(acos(clamp(dot(N, L), 0, 1)));
 
-		float shadowD = texture2D(shadowMaps[i], shCoordW.xy).r; //Distance to light
+		vec2 moments = texture2D(shadowMaps[i], shCoordW.xy).rg; //Distance to light
 		if (shCoord.w > 0.0) {
-			float visibility = 1.0;
-			if(shadowD < shCoordW.z) {
-				visibility = 0.0;
-			}
+			float visibility = chebyshevUpperBound(shCoordW.z, moments);
 
 			vec3 R = normalize(-reflect(L,N));
 			vec4 lightColor = lightColors[i];
