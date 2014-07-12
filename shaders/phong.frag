@@ -30,10 +30,12 @@ void main()
 		vec4 shCoord = shadowCoords[i];
 		vec4 shCoordW = shCoord / shCoord.w;
 
+		vec3 L = normalize(lightPositions[i] - V);
+		float bias = 0.005 * tan(acos(clamp(dot(N, L), 0, 1)));
+
 		float shadowD = texture2D(shadowMaps[i], shCoordW.xy).z; //Distance to light
 		if (shCoord.w > 0.0) {
-			if(shadowD > shCoordW.z - 0.00001) { //Distance to object is smalles than SM
-				vec3 L = normalize(lightPositions[i] - V);
+			if(shadowD > shCoordW.z - 0.001) { //Distance to object is smalles than SM
 				vec3 R = normalize(-reflect(L,N));
 				vec4 lightColor = lightColors[i];
 
