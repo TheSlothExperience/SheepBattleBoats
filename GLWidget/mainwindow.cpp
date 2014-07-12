@@ -183,8 +183,8 @@ void MainWindow::createToolbar() {
 	tesselationSlider->setRange(1,8);
 	tesselationSlider->setTickPosition(QSlider::TicksBothSides);
 	tesselationSlider->setTickInterval(1);
-	tesselationSlider->setValue(3);
-	tesselationLevel = 3;
+	tesselationSlider->setValue(8);
+	tesselationLevel = 8;
 	connect(tesselationSlider, SIGNAL(valueChanged(int)), this, SLOT(setTesselation(int)));
 	toolbar->addWidget(tesselationSlider);
 
