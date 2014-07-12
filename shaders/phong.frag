@@ -20,6 +20,10 @@ uniform vec4 color;
 layout(location = 0) out vec4 outputColor;
 layout(location = 1) out vec4 pickingColor;
 
+float linstep(float a, float b, float v) {
+	return clamp((v - a) / (b - a), 0, 1);
+}
+
 float chebyshevUpperBound(float d, vec2 moments) {
 
 	//Surface is fully lit
@@ -35,7 +39,8 @@ float chebyshevUpperBound(float d, vec2 moments) {
 	float delta = d - moments.x;
 	float p_max = variance / (variance + delta*delta);
 
-	return p_max;
+	//Reduce light bleeding
+	return linstep(0.1, 1.0, p_max);
 }
 
 void main()
