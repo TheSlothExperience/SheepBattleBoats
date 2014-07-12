@@ -1,9 +1,6 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/shaders">
         <file>img/cam_home.png</file>
-        <file>img/flat.png</file>
-        <file>img/gouraud.png</file>
-        <file>img/phong.png</file>
         <file>img/box.png</file>
         <file>img/camera.png</file>
         <file>img/cone.png</file>
@@ -22,5 +19,9 @@
         <file>shaders/identity.vert</file>
         <file>shaders/viewpoint.frag</file>
         <file>shaders/viewpoint.vert</file>
+        <file>shaders/comicborder.frag</file>
+        <file>shaders/comicborder.vert</file>
+        <file>shaders/xtoon.frag</file>
+        <file>shaders/xtoon.vert</file>
     </qresource>
 </RCC>

@@ -16,6 +16,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaderProgram = new QOpenGLShaderProgram();
 	canvasProgram = new QOpenGLShaderProgram();
 	quadviewProgram = new QOpenGLShaderProgram();
+    comicborderProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -38,6 +39,7 @@ void GLWidgetContext::initializeGL()
 
 	shaderProgram->release();
 
+    loadShaders(":/shaders/shaders/comicborder.vert",":/shaders/shaders/comicborder.frag", vcomicborder, fcomicborder, comicborderProgram);
     loadShaders(":/shaders/shaders/identity.vert", ":/shaders/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
     loadShaders(":/shaders/shaders/viewpoint.vert", ":/shaders/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
 
