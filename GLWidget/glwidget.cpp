@@ -176,6 +176,15 @@ void GLWidget::renderScene() {
 		glUniform1iv(shaderProgram->uniformLocation("shadowMaps"), shadowMapLocs.size(), shadowSamplers);
 		delete[] shadowSamplers;
 
+		//An additional bias matrix
+		GLfloat bias[16] = {0.5, 0.0, 0.0, 0.5,
+		                    0.0, 0.5, 0.0, 0.5,
+		                    0.0, 0.0, 0.5, 0.5,
+		                    0.0, 0.0, 0.0, 1.0};
+		glUniformMatrix4fv(shaderProgram->uniformLocation("lightBias"), 1, GL_TRUE, bias);
+		glUniformMatrix4fv(shaderProgram->uniformLocation("inverseCameraMatrix"), 1, GL_FALSE, camera->getCameraMatrix().inverted().constData());
+
+
 		//Discombobulate!
 		scene->draw(camera->getCameraMatrix());
 	} else {
