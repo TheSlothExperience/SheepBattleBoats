@@ -16,6 +16,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaderProgram = new QOpenGLShaderProgram();
 	canvasProgram = new QOpenGLShaderProgram();
 	quadviewProgram = new QOpenGLShaderProgram();
+	storeDepthProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -26,7 +27,8 @@ GLWidgetContext::~GLWidgetContext()
 void GLWidgetContext::initializeGL()
 {
 	glEnable(GL_TEXTURE_3D);
-    loadShaders(":/shaders/xtoon.vert", ":/shaders/xtoon.frag", vphong, fphong, shaderProgram);
+	//loadShaders(":/shaders/xtoon.vert", ":/shaders/xtoon.frag", vphong, fphong, shaderProgram);
+	loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaderProgram);
 
 	shaderProgram->bind();
 
@@ -41,6 +43,8 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
     loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
 
+	loadShaders(":/shaders/storeDepth.vert", ":/shaders/storeDepth.frag", storeDepthProgram);
+
 }
 
 
@@ -50,6 +54,13 @@ void GLWidgetContext::paintGL()
 
 void GLWidgetContext::resizeGL(int, int)
 {
+}
+
+void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShaderProgram *prog)
+{
+	QOpenGLShader *vshader;
+	QOpenGLShader *fshader;
+	loadShaders(vstring, fstring, vshader, fshader, prog);
 }
 
 /*

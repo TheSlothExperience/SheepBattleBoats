@@ -25,6 +25,7 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShaderProgram* getShaderProgram() {return this->shaderProgram;};
 	QOpenGLShaderProgram* getCanvasProgram() {return this->canvasProgram;};
 	QOpenGLShaderProgram* getQuadViewProgram() {return this->quadviewProgram;};
+	QOpenGLShaderProgram* getStoreDepthProgram() {return this->storeDepthProgram;};
 
 	void initializeGL();
 
@@ -32,6 +33,7 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShaderProgram *shaderProgram;
 	QOpenGLShaderProgram *canvasProgram;
 	QOpenGLShaderProgram *quadviewProgram;
+	QOpenGLShaderProgram *storeDepthProgram;
 	QOpenGLShader *vphong;
 	QOpenGLShader *fphong;
 
@@ -41,6 +43,7 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShader *vquadview;
 	QOpenGLShader *fquadview;
 
+	void loadShaders(QString vstring, QString fstring, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QString gstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShader *gshader, QOpenGLShaderProgram *prog);

@@ -19,6 +19,8 @@ private:
 	QVector4D lightColor;
 	GLuint fbo;
 	GLuint shadowMap;
+	GLuint moments;
+	GLuint depthBuffer;
 
 public:
 	LightNode(Primitive *p, std::string name);
@@ -54,6 +56,7 @@ public:
 	}
 	void lightPass();
 	GLuint shadowFBO() {return fbo;}
+	GLuint shadowMoments() {return moments;}
 	GLuint getShadowMap() {return shadowMap;}
 
 	void changeColor(float r, float g, float b, float a);

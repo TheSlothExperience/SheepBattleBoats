@@ -28,6 +28,7 @@ public:
     void setShaderProgram(QOpenGLShaderProgram *sp);
     void setCanvasProgram(QOpenGLShaderProgram *cp);
     void setQuadViewProgram(QOpenGLShaderProgram *qp);
+	void setStoreDepthProgram(QOpenGLShaderProgram *sdp) {storeDepthProgram = sdp;}
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -58,6 +59,7 @@ private:
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLShaderProgram *canvasProgram;
     QOpenGLShaderProgram *quadviewProgram;
+    QOpenGLShaderProgram *storeDepthProgram;
 
     void renderScene();
     void lightsPass();

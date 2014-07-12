@@ -354,9 +354,11 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+		glDrawBuffers(1, DrawBuffers);
+
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0,0, 1024, 768);
 
 		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, l->perspectiveMatrix().constData());
@@ -366,7 +368,11 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 
 		GLuint colorLocation = shader->uniformLocation("color");
 
-		this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
+		this->rootNode->draw(modelViewMatrixStack
+		                   , shader->uniformLocation("modelViewMatrix")
+		                   , shader->uniformLocation("normalMatrix")
+		                   , shader->uniformLocation("id")
+		                   , colorLocation);
 
 		modelViewMatrixStack.pop();
 

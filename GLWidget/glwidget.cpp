@@ -107,6 +107,7 @@ void GLWidget::paintGL()
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, DrawBuffers);
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -122,16 +123,16 @@ void GLWidget::paintGL()
 
 void GLWidget::lightsPass() {
 	//Load the phong shading program
-	shaderProgram->bind();
+	storeDepthProgram->bind();
 
 	if(scene != NULL) {
 		//Discombobulate!
-		scene->lightsPass(shaderProgram, camera->getCameraMatrix());
+		scene->lightsPass(storeDepthProgram, camera->getCameraMatrix());
 	} else {
 		std::cout << "no scene yet" << std::endl;
 	}
 
-	shaderProgram->release();
+	storeDepthProgram->release();
 }
 /*
  * Render the SceneGraph with lighting and phong shading.
