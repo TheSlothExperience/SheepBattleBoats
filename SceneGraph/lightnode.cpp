@@ -36,8 +36,9 @@ LightNode::LightNode(Primitive *p, std::string name)
 
 	glGenTextures(1, &moments);
 	glBindTexture(GL_TEXTURE_2D, moments);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -47,6 +48,21 @@ LightNode::LightNode(Primitive *p, std::string name)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, moments, 0);
+
+	glGenTextures(1, &momentsTemp);
+	glBindTexture(GL_TEXTURE_2D, momentsTemp);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, momentsTemp, 0);
 
 	glGenRenderbuffers(1, &depthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);

@@ -20,6 +20,7 @@ private:
 	GLuint fbo;
 	GLuint shadowMap;
 	GLuint moments;
+	GLuint momentsTemp;
 	GLuint depthBuffer;
 
 public:
@@ -51,12 +52,13 @@ public:
 		//float aspect = 1024.0 / 768.0;
 		//persp.perspective(45, 1024.0 / 768.0, 0.1, 100);
 		//persp.ortho(-aspect, aspect, -1, 1, -100, 100);
-		persp.ortho(-10, 10, -10, 10, -100, 100);
+		persp.ortho(-5, 5, -5, 5, -100, 100);
 		return persp;
 	}
 	void lightPass();
 	GLuint shadowFBO() {return fbo;}
 	GLuint shadowMoments() {return moments;}
+	GLuint shadowMomentsTemp() {return momentsTemp;}
 	GLuint getShadowMap() {return shadowMap;}
 
 	void changeColor(float r, float g, float b, float a);

@@ -122,18 +122,19 @@ void GLWidget::paintGL()
 }
 
 void GLWidget::lightsPass() {
-	//Load the phong shading program
-	shaders.storeDepthProgram->bind();
-
 	if(scene != NULL) {
-		//Discombobulate!
+		//Load the phong shading program
+		shaders.storeDepthProgram->bind();
 		scene->lightsPass(shaders.storeDepthProgram, camera->getCameraMatrix());
+		shaders.storeDepthProgram->release();
+
+		//Now blur the shadowmaps
+		scene->blurShadowMaps(shaders.gaussianBlurHProgram, shaders.gaussianBlurVProgram);
 	} else {
 		std::cout << "no scene yet" << std::endl;
 	}
-
-	shaders.storeDepthProgram->release();
 }
+
 /*
  * Render the SceneGraph with lighting and phong shading.
  * The result is painted into the first color attachment

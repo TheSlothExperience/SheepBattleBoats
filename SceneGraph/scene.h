@@ -70,6 +70,7 @@ public:
 	QModelIndex addLight();
 
 	void lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix);
+	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
 
 	std::vector<GLfloat> lightPerspectives();

@@ -17,6 +17,8 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaders.canvasProgram = new QOpenGLShaderProgram();
 	shaders.quadviewProgram = new QOpenGLShaderProgram();
 	shaders.storeDepthProgram = new QOpenGLShaderProgram();
+	shaders.gaussianBlurVProgram = new QOpenGLShaderProgram();
+	shaders.gaussianBlurHProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -44,6 +46,8 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", shaders.quadviewProgram);
 
 	loadShaders(":/shaders/storeDepth.vert", ":/shaders/storeDepth.frag", shaders.storeDepthProgram);
+	loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurV.frag", shaders.gaussianBlurVProgram);
+	loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurH.frag", shaders.gaussianBlurHProgram);
 
 }
 

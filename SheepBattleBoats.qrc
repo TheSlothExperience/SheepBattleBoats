@@ -24,6 +24,8 @@
         <file>shaders/viewpoint.vert</file>
         <file>shaders/storeDepth.frag</file>
         <file>shaders/storeDepth.vert</file>
+        <file>shaders/gaussianBlurH.frag</file>
+        <file>shaders/gaussianBlurV.frag</file>
         <file>shaders/xtoon.frag</file>
         <file>shaders/xtoon.vert</file>
     </qresource>

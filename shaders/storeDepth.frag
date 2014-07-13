@@ -18,5 +18,5 @@ void main()
 	moment2 += 0.25 * (dx*dx + dy*dy);
 
 
-	moments = vec4(moment1, moment2, 0.0, 0.0);
+	moments = vec4(moment1, moment2, 0.0, 1.0);
 }

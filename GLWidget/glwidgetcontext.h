@@ -16,6 +16,8 @@ struct Shaders {
 	QOpenGLShaderProgram *canvasProgram;
 	QOpenGLShaderProgram *quadviewProgram;
 	QOpenGLShaderProgram *storeDepthProgram;
+	QOpenGLShaderProgram *gaussianBlurHProgram;
+	QOpenGLShaderProgram *gaussianBlurVProgram;
 };
 
 class GLWidgetContext : public QGLWidget

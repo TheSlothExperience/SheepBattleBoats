@@ -40,7 +40,7 @@ float chebyshevUpperBound(float d, vec2 moments) {
 	float p_max = variance / (variance + delta*delta);
 
 	//Reduce light bleeding
-	return linstep(0.1, 1.0, p_max);
+	return linstep(0.4, 1.0, p_max);
 }
 
 void main()

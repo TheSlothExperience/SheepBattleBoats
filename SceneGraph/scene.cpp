@@ -332,7 +332,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 
-		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT1};
 		glDrawBuffers(1, DrawBuffers);
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -354,7 +354,93 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
 
 		modelViewMatrixStack.pop();
 
+		//Recreate the mipmaps
+		glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		//Release and relax, brah
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
+
+	GLuint canvasQuad;
+	static const GLfloat g_quad_vertex_buffer_data[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		1.0f,  1.0f, 0.0f,
+	};
+
+	glGenBuffers(1, &canvasQuad);
+	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	for(auto l : lights) {
+		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
+
+		//First pass, horizontal
+		{
+			hs->bind();
+			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
+			glDrawBuffers(1, DrawBuffers);
+
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glViewport(0,0, 1024, 768);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
+			glUniform1i(hs->uniformLocation("moments"), 0);
+
+			//Draw our nifty, pretty quad
+			glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+			glDisableVertexAttribArray(0);
+
+			//Recreate the mipmaps
+			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
+			glGenerateMipmap(GL_TEXTURE_2D);
+			hs->release();
+		}
+
+		//Second pass, vertical into the shadow map
+		{
+			vs->bind();
+			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+			glDrawBuffers(1, DrawBuffers);
+
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glViewport(0,0, 1024, 768);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
+			glUniform1i(vs->uniformLocation("moments"), 0);
+
+			//Draw our nifty, pretty quad
+			glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+			glDisableVertexAttribArray(0);
+
+			//Recreate the mipmaps
+			glBindTexture(GL_TEXTURE_2D, l->getShadowMap());
+			glGenerateMipmap(GL_TEXTURE_2D);
+			vs->release();
+		}
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
