@@ -48,6 +48,7 @@ private:
 	QAction *addCylinderAction;
 	QAction *addConeAction;
 	QAction *addSphereAction;
+    QAction *add3DModelAction;
 
 	QAction *addGroupAction;
 
@@ -86,12 +87,14 @@ private:
 	void createToolbar();
 	void createColorDock();
 	void setupGL();
+    void load3DModel();
 public slots:
 	void addCube();
 	void addCone();
 	void addCylinder();
 	void addSphere();
 	void addTorus();
+    void add3DModel();
 
 	void addGroup();
 

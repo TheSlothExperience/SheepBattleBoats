@@ -15,6 +15,14 @@ include(Geometry/Geometry.pri)
 include(SceneGraph/SceneGraph.pri)
 
 
-OTHER_FILES += shaders/*
+OTHER_FILES += shaders/* \
+    shaders/xtoon.vert \
+    shaders/xtoon.frag \
+    shaders/toonborder.vert \
+    shaders/toonborder.frag \
+    shaders/xtoon.vert \
+    shaders/xtoon.frag \
+    shaders/comicborder.vert \
+    shaders/comicborder.frag
 
 RESOURCES += SheepBattleBoats.qrc

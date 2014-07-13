@@ -70,6 +70,17 @@ void GLWidget::initializeGL()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
 
+    //Create comicborder
+
+    glGenTextures(1,&comicborderTex);
+
+    glBindTexture(GL_TEXTURE_2D, comicborderTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, comicborderTex, 0);
+
 	//Now setup the depth buffer
 	glGenRenderbuffers(1, &depthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
@@ -113,8 +124,15 @@ void GLWidget::paintGL()
 	//Render the whole Scene tree recurtively
 	renderScene();
 
+
+
 	//Paint the scene into a quad covering the viewport
 	paintSceneToCanvas();
+
+    //ComicBOARDER
+    renderComicborder();
+
+
 }
 /*
  * Render the SceneGraph with lighting and phong shading.
@@ -149,55 +167,100 @@ void GLWidget::renderScene() {
 	shaderProgram->release();
 }
 
+void GLWidget::renderComicborder(){
+
+    //comicborderProgram->bind();
+    //This time draw to the whole screen
+    //glViewport(0,0,this->width(), this->height());
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//    GLuint textureLocation;
+//    //Make sure the tex 0 is active for the rendered scene
+//    glActiveTexture(GL_TEXTURE0);
+//    textureLocation = comicborderProgram->uniformLocation("renderedTexture");
+//    //Send the rendered texture down the pipes
+//    glUniform1i(textureLocation, 0);
+//    glBindTexture(GL_TEXTURE_2D, renderTex);
+
+//    //Make sure the tex 1 is active to send the other tex
+//    glActiveTexture(GL_TEXTURE1);
+//    textureLocation = comicborderProgram->uniformLocation("pickingTexture");
+//    //Send the picking texture down the pipes
+//    glUniform1i(textureLocation, 1);
+//    glBindTexture(GL_TEXTURE_2D, comicborderTex);
+
+//    activeLocation = comicborderProgram->uniformLocation("selected");
+//    glUniform1f(activeLocation, (GLfloat)isActive);
+
+//    //Pack the color of the ID of selected object and send it
+//    activeColorLocation = comicborderProgram->uniformLocation("activeColor");
+//    if(activeID >= 0) {
+//        int r = (activeID & 0x000000FF) >>  0;
+//        int g = (activeID & 0x0000FF00) >>  8;
+//        int b = (activeID & 0x00FF0000) >> 16;
+//        glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
+//    }
+
+//    //Draw our nifty, pretty quad
+//    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+//    glEnableVertexAttribArray(0);
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+//    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+//    glDisableVertexAttribArray(0);
+    //comicborderProgram->release();
+}
+
 /* Paint the textures in the FBO onto a quad
  * canvas covering the viewport.
  * Also mark the border of the active glwidget
  * and the border of the selected primitive.
  */
 void GLWidget::paintSceneToCanvas() {
-	//Now load program to draw to the magic quad
-	canvasProgram->bind();
-	//This time draw to the whole screen
-	glViewport(0,0,this->width(), this->height());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //Now load program to draw to the magic quad
+    canvasProgram->bind();
+    //This time draw to the whole screen
+    glViewport(0,0,this->width(), this->height());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	GLuint textureLocation;
-	//Make sure the tex 0 is active for the rendered scene
-	glActiveTexture(GL_TEXTURE0);
-	textureLocation = canvasProgram->uniformLocation("renderedTexture");
-	//Send the rendered texture down the pipes
-	glUniform1i(textureLocation, 0);
-	glBindTexture(GL_TEXTURE_2D, renderTex);
+    GLuint textureLocation;
+    //Make sure the tex 0 is active for the rendered scene
+    glActiveTexture(GL_TEXTURE0);
+    textureLocation = canvasProgram->uniformLocation("renderedTexture");
+    //Send the rendered texture down the pipes
+    glUniform1i(textureLocation, 0);
+    glBindTexture(GL_TEXTURE_2D, renderTex);
 
-	//Make sure the tex 1 is active to send the other tex
-	glActiveTexture(GL_TEXTURE1);
-	textureLocation = canvasProgram->uniformLocation("pickingTexture");
-	//Send the picking texture down the pipes
-	glUniform1i(textureLocation, 1);
-	glBindTexture(GL_TEXTURE_2D, pickingTex);
+    //Make sure the tex 1 is active to send the other tex
+    glActiveTexture(GL_TEXTURE1);
+    textureLocation = canvasProgram->uniformLocation("pickingTexture");
+    //Send the picking texture down the pipes
+    glUniform1i(textureLocation, 1);
+    glBindTexture(GL_TEXTURE_2D, pickingTex);
 
-	activeLocation = canvasProgram->uniformLocation("selected");
-	glUniform1f(activeLocation, (GLfloat)isActive);
+    activeLocation = canvasProgram->uniformLocation("selected");
+    glUniform1f(activeLocation, (GLfloat)isActive);
 
-	//Pack the color of the ID of selected object and send it
-	activeColorLocation = canvasProgram->uniformLocation("activeColor");
-	if(activeID >= 0) {
-		int r = (activeID & 0x000000FF) >>  0;
-		int g = (activeID & 0x0000FF00) >>  8;
-		int b = (activeID & 0x00FF0000) >> 16;
-		glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
-	}
+    //Pack the color of the ID of selected object and send it
+    activeColorLocation = canvasProgram->uniformLocation("activeColor");
+    if(activeID >= 0) {
+        int r = (activeID & 0x000000FF) >>  0;
+        int g = (activeID & 0x0000FF00) >>  8;
+        int b = (activeID & 0x00FF0000) >> 16;
+        glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
+    }
 
-	//Draw our nifty, pretty quad
-	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3*2);
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
 
-	glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(0);
 
-	canvasProgram->release();
+    canvasProgram->release();
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -233,6 +296,10 @@ void GLWidget::setCanvasProgram(QOpenGLShaderProgram *cp) {
 }
 void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
 	this->quadviewProgram = qp;
+}
+
+void GLWidget::setComicborderProgram(QOpenGLShaderProgram *cbp){
+    this->comicborderProgram = cbp;
 }
 
 void GLWidget::setActive(bool active) {

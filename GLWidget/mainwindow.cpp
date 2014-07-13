@@ -200,6 +200,7 @@ void MainWindow::createToolbar() {
 	toolbar->addAction(addSphereAction);
 	toolbar->addAction(addTorusAction);
 	toolbar->addAction(addGroupAction);
+    toolbar->addAction(add3DModelAction);
 
 	toolbar->addSeparator();
 	toolbar->addAction(addLightAction);
@@ -290,6 +291,10 @@ void MainWindow::createActions() {
 	addLightAction = new QAction(this);
     addLightAction->setIcon(QIcon(":/shaders/img/light.png"));
 	connect(addLightAction, SIGNAL(triggered()), this, SLOT(addLight()));
+
+    add3DModelAction = new QAction(this);
+    add3DModelAction->setIcon(QIcon(":/shaders/img/add.png"));
+    connect(add3DModelAction, SIGNAL(triggered()),this,SLOT(add3DModel()));
 }
 
 void MainWindow::createMenus() {
@@ -416,6 +421,13 @@ void MainWindow::addLight(){
 	emit updateGL();
 }
 
+void MainWindow::add3DModel(){
+    load3DModel();
+    QModelIndex idx = scene->add3DModel(currentNode);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
+    emit updateGL();
+}
+
 void MainWindow::changeActiveId(int id){
 	mapWidgets([=](GLWidget *w){w->changeActiveId(id);});
 }
@@ -511,4 +523,21 @@ void MainWindow::rotateNode(QQuaternion *q) {
 void MainWindow::changedColor() {
 	this->currentNode->changeColor(redSlider->sliderPosition() / (float) 255, greenSlider->sliderPosition() / (float) 255, blueSlider->sliderPosition() / (float) 255, 1.0f);
 	emit updateGL();
+}
+
+void MainWindow::load3DModel(){
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load 3D Model"), ".", tr("test(*.obj)"));
+    QFileInfo info(fileName);
+    std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
+    if(!fileName.isEmpty()) {
+        FILE *fp;
+        fp = fopen(fileName.toLocal8Bit().data(), "r");
+
+
+
+        fclose(fp);
+        emit updateGL();
+    }
+
 }

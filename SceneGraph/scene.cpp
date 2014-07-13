@@ -8,6 +8,7 @@
 #include "sphere.h"
 #include "torus.h"
 #include "light.h"
+#include "object3d.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -294,6 +295,21 @@ QModelIndex Scene::addLight() {
 	endResetModel();
 
 	return createIndex(s->row(), 0, s);
+}
+
+QModelIndex Scene::add3DModel(SceneGraph *node){
+    beginResetModel();
+    Primitive *object3d = new Object3D();
+    std::string name("Object ");
+    int id = nextId();
+    name += std::to_string(id);
+    SceneGraph *s = new SceneGraph(object3d,name);
+    s->setId(id);
+    identifier[id] = s;
+
+    node->add(s);
+    endResetModel();
+    return createIndex(s->row(), 0, s);
 }
 
 void Scene::draw(QMatrix4x4 cameraMatrix) {
