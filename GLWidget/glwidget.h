@@ -12,6 +12,7 @@
 #include "cube.h"
 #include "primitive.h"
 #include "camera.h"
+#include <gbuffer.h>
 
 class GLWidget : public QGLWidget
 {
@@ -28,6 +29,10 @@ public:
     void setShaderProgram(QOpenGLShaderProgram *sp);
     void setCanvasProgram(QOpenGLShaderProgram *cp);
     void setQuadViewProgram(QOpenGLShaderProgram *qp);
+    //Deferred-Shading
+    void setGeometryPassProgram(QOpenGLShaderProgram *ds_geoPass);
+    void setLightPassProgram(QOpenGLShaderProgram *ds_lightPass);
+
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -38,8 +43,8 @@ public:
     void initializeGL();
 
     void setActive(bool active = true);
-    bool getActive() {return isActive;};
-    void setCameraActive(bool active = true) {this->cameraActive = active;};
+    bool getActive() {return isActive;}
+    void setCameraActive(bool active = true) {this->cameraActive = active;}
 
 	void translateCamera(double x, double y, double z);
 	void rotateCamera(float angle);
@@ -59,6 +64,8 @@ private:
     QOpenGLShaderProgram *canvasProgram;
     QOpenGLShaderProgram *quadviewProgram;
 
+
+
     void renderScene();
     void paintSceneToCanvas();
 
@@ -66,6 +73,12 @@ private:
     GLuint renderTex;
     GLuint pickingTex;
     GLuint depthBuffer;
+
+    //Diferred Shading
+    GLuint colorTexture;
+    GLuint normalTexture;
+    GLuint textureCoordTexture;
+
 
     GLuint canvasQuad;
     GLuint activeLocation;
@@ -76,9 +89,21 @@ private:
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
 
+    GBuffer gbuffer;
+
     Camera *camera;
 
     Scene *scene;
+
+    //Deferred Shading
+    QOpenGLShaderProgram *geometryPassProgram;
+    QOpenGLShaderProgram *lightPassProgram;
+
+
+
+    void DSGeometryPass();
+    void DSLightPass();
+    void RenderFPS();
 
 protected:
     void paintGL();

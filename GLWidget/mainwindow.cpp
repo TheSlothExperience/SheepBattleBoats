@@ -60,6 +60,9 @@ void MainWindow::setupGL() {
 	scene->setLightLocation(glWidgetContext->getLightPositionLocation());
 	scene->setShaderProgram(glWidgetContext->getShaderProgram());
 
+    scene->setGeomPassProgram(glWidgetContext->getGeometryPassProgram());
+    scene->setLightPassProgram(glWidgetContext->getLightPassProgram());
+
 
 	sceneOutliner = new QTreeView();
 	sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
@@ -102,6 +105,8 @@ void MainWindow::setupGL() {
 	mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
 	mapWidgets([=](GLWidget *w){w->setCanvasProgram(glWidgetContext->getCanvasProgram());});
 	mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
+    mapWidgets([=](GLWidget *w){w->setGeometryPassProgram(glWidgetContext->getGeometryPassProgram());});
+    mapWidgets([=](GLWidget *w){w->setLightPassProgram(glWidgetContext->getLightPassProgram());});
 
 	mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
 

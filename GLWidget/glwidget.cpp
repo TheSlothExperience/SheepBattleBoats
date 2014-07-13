@@ -45,43 +45,10 @@ void GLWidget::initializeGL()
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
-	//Create our fbo to hold the rendered scene
-	//and the pesky picking buffer
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	//Create texture to render to
-	glGenTextures(1, &renderTex);
-
-	glBindTexture(GL_TEXTURE_2D, renderTex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTex, 0);
-
-	//Create picking buffer
-	glGenTextures(1, &pickingTex);
-
-	glBindTexture(GL_TEXTURE_2D, pickingTex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pickingTex, 0);
-
-	//Now setup the depth buffer
-	glGenRenderbuffers(1, &depthBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
-
-
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "SOMETHING WENT WRONG IN THE FBO, CHIEF!!" << std::endl;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    //Ab hier, wenn Deferred Shading
+    gbuffer= GBuffer();
+    gbuffer.Init(TEXTURE_WIDTH,TEXTURE_HEIGHT);
 
 	//Create the drawing quad
 	static const GLfloat g_quad_vertex_buffer_data[] = {
@@ -97,6 +64,8 @@ void GLWidget::initializeGL()
 	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
 }
 
 
@@ -104,101 +73,73 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
 	//Clear the buffers
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GLenum DrawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-	glDrawBuffers(3, DrawBuffers);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//Render the whole Scene tree recurtively
-	renderScene();
-
-	//Paint the scene into a quad covering the viewport
-	paintSceneToCanvas();
+    gbuffer.startFrame();
+    //Render the Textures for DeferredShading
+    DSGeometryPass();
+    //Use of the Textures to Render to the Magic Quad
+    DSLightPass();
 }
+
+
 /*
- * Render the SceneGraph with lighting and phong shading.
- * The result is painted into the first color attachment
+ * Render the SceneGraph without lighting and phong shading.
+ * The result is painted into the the color attachments
  * of the FBO.
- * The second one will contain the picking information.
  */
-void GLWidget::renderScene() {
-	//Load the phong shading program
-	shaderProgram->bind();
+void GLWidget::DSGeometryPass() {
+    //Load the phong shading program
+    shaderProgram->bind();
 
-	glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
-	//Bind the fbo and the textures to draw to
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(2, DrawBuffers);
+    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    glViewport(0,0,1024,768);
+    gbuffer.bindGeometryPass();
 
-	//Draw to the whole texture(the size of the texture, maybe change?)
-	glViewport(0,0,TEXTURE_WIDTH,TEXTURE_HEIGHT);
-	//and set tex 0 as active
-	glActiveTexture(GL_TEXTURE0);
+    glDepthMask(GL_TRUE);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 
-	if(scene != NULL) {
-		//Discombobulate!
-		scene->draw(camera->getCameraMatrix());
-	} else {
-		std::cout << "no scene yet" << std::endl;
-	}
+    if(scene != NULL) {
+        //Discombobulate!
+        scene->draw(camera->getCameraMatrix());
+    } else {
+        std::cout << "no scene yet" << std::endl;
+    }
 
-	//Release and relax, brah
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	shaderProgram->release();
+    glDepthMask(GL_TRUE);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+    shaderProgram->release();
+
+
+
+
 }
 
-/* Paint the textures in the FBO onto a quad
- * canvas covering the viewport.
- * Also mark the border of the active glwidget
- * and the border of the selected primitive.
- */
-void GLWidget::paintSceneToCanvas() {
-	//Now load program to draw to the magic quad
-	canvasProgram->bind();
-	//This time draw to the whole screen
-	glViewport(0,0,this->width(), this->height());
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//Mix the textures and render the scene to the macigal quad
+void GLWidget::DSLightPass(){
 
-	GLuint textureLocation;
-	//Make sure the tex 0 is active for the rendered scene
-	glActiveTexture(GL_TEXTURE0);
-	textureLocation = canvasProgram->uniformLocation("renderedTexture");
-	//Send the rendered texture down the pipes
-	glUniform1i(textureLocation, 0);
-	glBindTexture(GL_TEXTURE_2D, renderTex);
+    lightPassProgram->bind();
 
-	//Make sure the tex 1 is active to send the other tex
-	glActiveTexture(GL_TEXTURE1);
-	textureLocation = canvasProgram->uniformLocation("pickingTexture");
-	//Send the picking texture down the pipes
-	glUniform1i(textureLocation, 1);
-	glBindTexture(GL_TEXTURE_2D, pickingTex);
+    glViewport(0,0,this->width(), this->height());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	activeLocation = canvasProgram->uniformLocation("selected");
-	glUniform1f(activeLocation, (GLfloat)isActive);
+    gbuffer.bindLightPass(lightPassProgram);
+    scene->passLights(camera->getProjectionMatrix(),lightPassProgram);
 
-	//Pack the color of the ID of selected object and send it
-	activeColorLocation = canvasProgram->uniformLocation("activeColor");
-	if(activeID >= 0) {
-		int r = (activeID & 0x000000FF) >>  0;
-		int g = (activeID & 0x0000FF00) >>  8;
-		int b = (activeID & 0x00FF0000) >> 16;
-		glUniform4f(activeColorLocation, r/255.0f, g/255.0f, b/255.0f, 1.0f);
-	}
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	//Draw our nifty, pretty quad
-	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3*2);
+    glDisableVertexAttribArray(0);
 
-	glDisableVertexAttribArray(0);
+//    glDisable(GL_BLEND);
 
-	canvasProgram->release();
+    lightPassProgram->release();
 }
+
+
 
 void GLWidget::resizeGL(int width, int height)
 {
@@ -233,6 +174,12 @@ void GLWidget::setCanvasProgram(QOpenGLShaderProgram *cp) {
 }
 void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
 	this->quadviewProgram = qp;
+}
+void GLWidget::setGeometryPassProgram(QOpenGLShaderProgram *ds_geoPass) {
+    this->geometryPassProgram= ds_geoPass;
+}
+void GLWidget::setLightPassProgram(QOpenGLShaderProgram *ds_lightPass) {
+    this->lightPassProgram= ds_lightPass;
 }
 
 void GLWidget::setActive(bool active) {

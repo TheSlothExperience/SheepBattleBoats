@@ -34,6 +34,8 @@ private:
 	std::stack<QMatrix4x4> modelViewMatrixStack;
 
 	QOpenGLShaderProgram *shaderProgram;
+    QOpenGLShaderProgram *geometryPassProgram;
+    QOpenGLShaderProgram *lightPassProgram;
 
 
 	int currentId = 0;
@@ -72,6 +74,8 @@ public:
 
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
 	void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
+    void setGeomPassProgram(QOpenGLShaderProgram *gpp) {this->geometryPassProgram = gpp;}
+    void setLightPassProgram(QOpenGLShaderProgram *lpp) {this->lightPassProgram = lpp;}
 
 	SceneGraph *root() {return rootNode;};
 
@@ -79,6 +83,7 @@ public:
 	void setLightLocation(GLuint lightPositionLocation);
 
 	void draw(QMatrix4x4 cameraMatrix);
+    void DS_geometryPass(QMatrix4x4 cameraMatrix);
 };
 
 #endif //SCENE_H

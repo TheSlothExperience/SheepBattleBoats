@@ -16,6 +16,8 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaderProgram = new QOpenGLShaderProgram();
 	canvasProgram = new QOpenGLShaderProgram();
 	quadviewProgram = new QOpenGLShaderProgram();
+    geometryPassProgram = new QOpenGLShaderProgram();
+    lightPassProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -26,7 +28,7 @@ GLWidgetContext::~GLWidgetContext()
 void GLWidgetContext::initializeGL()
 {
 	glEnable(GL_TEXTURE_3D);
-    loadShaders(":/shaders/xtoon.vert", ":/shaders/xtoon.frag", vphong, fphong, shaderProgram);
+    loadShaders(":/shaders/DS_geometryPass.vert", ":/shaders/DS_geometryPass.frag", vphong, fphong, shaderProgram);
 
 	shaderProgram->bind();
 
@@ -38,8 +40,10 @@ void GLWidgetContext::initializeGL()
 
 	shaderProgram->release();
 
-    loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
-    loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
+	loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
+	loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
+//    loadShaders(":/shaders/DS_geometryPass.vert", ":/shaders/DS_geometryPass.frag", vgeometryPass, fgeomertyPass, geometryPassProgram);
+    loadShaders(":/shaders/DS_lightPass.vert", ":/shaders/DS_lightPass.frag", vlightPass, flightPass, lightPassProgram);
 
 }
 

@@ -315,17 +315,37 @@ void Scene::draw(QMatrix4x4 cameraMatrix) {
 		colorsArray[4 * i + 2] = color[2];
 		colorsArray[4 * i + 3] = color[3];
 	}
-	glUniform3fv(shaderProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
-	glUniform4fv(shaderProgram->uniformLocation("lightColors"), lights.size(), colorsArray);
-	glUniform1i(shaderProgram->uniformLocation("numLights"), lights.size());
+    glUniform3fv(shaderProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
+    glUniform4fv(shaderProgram->uniformLocation("lightColors"), lights.size(), colorsArray);
+    glUniform1i(shaderProgram->uniformLocation("numLights"), lights.size());
 
-	GLuint colorLocation = shaderProgram->uniformLocation("color");
+    GLuint colorLocation = shaderProgram->uniformLocation("color");
+
+//    	glUniform3fv(geometryPassProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
+//    	glUniform4fv(geometryPassProgram->uniformLocation("lightColors"), lights.size(), colorsArray);
+//    	glUniform1i(geometryPassProgram->uniformLocation("numLights"), lights.size());
+
+//    	GLuint colorLocation = geometryPassProgram->uniformLocation("color");
 	this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
 	modelViewMatrixStack.pop();
 
 	delete[] lightsArray;
 	delete[] colorsArray;
 }
+
+void Scene::DS_geometryPass(QMatrix4x4 cameraMatrix){
+    modelViewMatrixStack.push(modelViewMatrixStack.top());
+    modelViewMatrixStack.top() *= cameraMatrix;
+
+    GLuint colorLocation = geometryPassProgram->uniformLocation("color");
+
+
+    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
+    modelViewMatrixStack.pop();
+
+
+}
+
 
 void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	//Copy the lights positions into GL friendly arrays

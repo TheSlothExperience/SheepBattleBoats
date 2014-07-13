@@ -22,7 +22,9 @@
         <file>shaders/identity.vert</file>
         <file>shaders/viewpoint.frag</file>
         <file>shaders/viewpoint.vert</file>
-        <file>shaders/xtoon.frag</file>
-        <file>shaders/xtoon.vert</file>
+        <file>shaders/DS_geometryPass.frag</file>
+        <file>shaders/DS_geometryPass.vert</file>
+        <file>shaders/DS_lightPass.vert</file>
+        <file>shaders/DS_lightPass.frag</file>
     </qresource>
 </RCC>
