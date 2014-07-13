@@ -98,7 +98,7 @@ void GLWidget::initializeGL()
 	glGenBuffers(1, &canvasQuad);
 	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);f
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
