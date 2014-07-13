@@ -148,7 +148,7 @@ void GLWidget::lightsPass() {
  */
 void GLWidget::renderScene() {
 	//Load the phong shading program
-	QOpenGLShaderProgram *shaderProgram = shaders.shaderProgram;
+	QOpenGLShadoutputColor;erProgram *shaderProgram = shaders.shaderProgram;
 	shaderProgram->bind();
 
 	glUniformMatrix4fv(shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());

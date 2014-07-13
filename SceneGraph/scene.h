@@ -25,6 +25,7 @@ private:
 	GLuint normalMatLocation;
 	GLuint lightPositionLocation;
 	GLuint idLocation;
+	GLuint colorLocation;
 
 	std::map<int, SceneGraph*> identifier;
 
@@ -33,15 +34,13 @@ private:
 	QVector4D lightPosition;
 	std::stack<QMatrix4x4> modelViewMatrixStack;
 
-	QOpenGLShaderProgram *shaderProgram;
-
 
 	int currentId = 0;
 	int nextId() {return currentId++;};
 
 public:
 	Scene(QObject *parent = 0);
-	Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent = 0);
+	Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObject *parent = 0);
 
 	QVariant data(const QModelIndex &index, int role) const;
 	Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -72,8 +71,15 @@ public:
 
     QModelIndex add3DModel(SceneGraph *node);
 
+	void lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix);
+	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
+
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
-	void setShaderProgram(QOpenGLShaderProgram *sp) {this->shaderProgram = sp;}
+
+	std::vector<GLfloat> lightPerspectives();
+	std::vector<GLfloat> lightViews();
+	std::vector<GLuint> shadowMapLocations();
+
 
 	SceneGraph *root() {return rootNode;};
 

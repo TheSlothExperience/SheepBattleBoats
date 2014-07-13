@@ -16,7 +16,7 @@ PerspectiveCamera::PerspectiveCamera(double x, double y, double z, double width,
 	this->width = width;
 	this->height = height;
 	this->fov = 45;
-	this->projectionMatrix.perspective(fov, width / height, -0.1, 100);
+	this->projectionMatrix.perspective(fov, width / height, 0.1, 100);
 	poi = QVector3D(0,0,0);
 }
 
