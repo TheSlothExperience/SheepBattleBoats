@@ -28,7 +28,6 @@ public:
     void setShaderProgram(QOpenGLShaderProgram *sp);
     void setCanvasProgram(QOpenGLShaderProgram *cp);
     void setQuadViewProgram(QOpenGLShaderProgram *qp);
-    void setComicborderProgram(QOpenGLShaderProgram *cbp);
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -59,17 +58,16 @@ private:
     QOpenGLShaderProgram *shaderProgram;
     QOpenGLShaderProgram *canvasProgram;
     QOpenGLShaderProgram *quadviewProgram;
-    QOpenGLShaderProgram *comicborderProgram;
+
 
     void renderScene();
     void paintSceneToCanvas();
-    void renderComicborder();
 
     GLuint fbo;
     GLuint renderTex;
     GLuint pickingTex;
     GLuint depthBuffer;
-    GLuint comicborderTex;
+
 
     GLuint canvasQuad;
     GLuint activeLocation;

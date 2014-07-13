@@ -32,7 +32,6 @@ class GLWidgetContext : public QGLWidget
 	QOpenGLShaderProgram *shaderProgram;
 	QOpenGLShaderProgram *canvasProgram;
 	QOpenGLShaderProgram *quadviewProgram;
-    QOpenGLShaderProgram *comicborderProgram;
 
 	QOpenGLShader *vphong;
 	QOpenGLShader *fphong;
@@ -42,9 +41,6 @@ class GLWidgetContext : public QGLWidget
 
 	QOpenGLShader *vquadview;
     QOpenGLShader *fquadview;
-
-    QOpenGLShader *vcomicborder;
-    QOpenGLShader *fcomicborder;
 
 	void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog);

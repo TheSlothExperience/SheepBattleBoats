@@ -21,6 +21,9 @@ float stepmix(float edge0, float edge1, float E, float x){
 
 void main()
 {
+
+    //TODO: Include Sobel Operator to detect edges on normal tex and depth tex
+    //then finished
         vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
         int i;
         const float A = 0.1;
