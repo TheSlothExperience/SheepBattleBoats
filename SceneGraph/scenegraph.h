@@ -16,7 +16,7 @@ protected:
 	std::string name;
 	bool leaf = false;
 	int id;
-    
+
 	QQuaternion rotation;
 	QVector3D translation;
 
@@ -31,7 +31,7 @@ public:
 	SceneGraph(Primitive *p, SceneGraph *parent = 0);
 	SceneGraph(Primitive *p, std::string name);
 	virtual ~SceneGraph();
-    
+
 	SceneGraph* parent();
 
 	SceneGraph* child(int row);
@@ -57,7 +57,8 @@ public:
 	void setName(std::string name);
 	bool isLeaf() {return leaf;};
 	SceneGraph* add(Primitive *p);
-	SceneGraph* add(SceneGraph *s);
+	SceneGraph* add(SceneGraph *s);;
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
 };
 

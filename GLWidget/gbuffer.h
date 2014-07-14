@@ -29,7 +29,7 @@ public:
 
 private:
     GLuint m_fbo;
-    GLuint m_textures[4];
+    GLuint m_textures[5];
     GLuint m_depthTexture;
     GLuint m_finalTexture;
 

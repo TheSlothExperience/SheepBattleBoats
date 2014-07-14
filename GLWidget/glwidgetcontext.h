@@ -11,47 +11,35 @@
 #include "cube.h"
 #include "primitive.h"
 
+struct Shaders {
+	QOpenGLShaderProgram *shaderProgram;
+	QOpenGLShaderProgram *canvasProgram;
+	QOpenGLShaderProgram *quadviewProgram;
+	QOpenGLShaderProgram *storeDepthProgram;
+	QOpenGLShaderProgram *gaussianBlurHProgram;
+	QOpenGLShaderProgram *gaussianBlurVProgram;
+	QOpenGLShaderProgram *geometryPassProgram;
+	QOpenGLShaderProgram *lightPassProgram;
+};
+
 class GLWidgetContext : public QGLWidget
 {
 	Q_OBJECT
 
-	public:
+public:
 	GLWidgetContext(QWidget *parent = 0);
 	~GLWidgetContext();
-    GLuint getPerspectiveMatLocation() {return this->perspectiveMatLocation;}
-    GLuint getModelViewMatLocation() {return this->modelViewMatLocation;}
-    GLuint getNormalMatLocation() {return this->normalMatLocation;}
-    GLuint getLightPositionLocation() {return this->lightPositionLocation;}
-    QOpenGLShaderProgram* getShaderProgram() {return this->shaderProgram;}
-    QOpenGLShaderProgram* getCanvasProgram() {return this->canvasProgram;}
-    QOpenGLShaderProgram* getQuadViewProgram() {return this->quadviewProgram;}
-    QOpenGLShaderProgram* getGeometryPassProgram() {return this->geometryPassProgram;}
-    QOpenGLShaderProgram* getLightPassProgram() {return this->lightPassProgram;}
+	GLuint getPerspectiveMatLocation() {return this->perspectiveMatLocation;};
+	GLuint getModelViewMatLocation() {return this->modelViewMatLocation;};
+	GLuint getNormalMatLocation() {return this->normalMatLocation;};
+	GLuint getLightPositionLocation() {return this->lightPositionLocation;};
+	Shaders getShaders() {return this->shaders;};
 
 	void initializeGL();
 
-	private:
-	QOpenGLShaderProgram *shaderProgram;
-	QOpenGLShaderProgram *canvasProgram;
-	QOpenGLShaderProgram *quadviewProgram;
-    QOpenGLShaderProgram *geometryPassProgram;
-    QOpenGLShaderProgram *lightPassProgram;
-	QOpenGLShader *vphong;
-	QOpenGLShader *fphong;
-
-	QOpenGLShader *vcanvas;
-	QOpenGLShader *fcanvas;
-
-	QOpenGLShader *vquadview;
-	QOpenGLShader *fquadview;
-
-    QOpenGLShader *vgeometryPass;
-    QOpenGLShader *fgeomertyPass;
-
-    QOpenGLShader *vlightPass;
-    QOpenGLShader *flightPass;
-
-
+private:
+	Shaders shaders;
+	void loadShaders(QString vstring, QString fstring, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShaderProgram *prog);
 	void loadShaders(QString vstring, QString fstring, QString tcstring, QString testring, QString gstring, QOpenGLShader *vshader, QOpenGLShader *fshader, QOpenGLShader *tcshader, QOpenGLShader *teshader, QOpenGLShader *gshader, QOpenGLShaderProgram *prog);

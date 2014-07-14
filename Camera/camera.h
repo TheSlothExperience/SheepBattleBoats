@@ -30,8 +30,8 @@ public:
 	virtual QMatrix4x4 getCameraMatrix() {
 		cameraMatrix.setToIdentity();
 		cameraMatrix.rotate(initialOrientation);
-		cameraMatrix.rotate(orientation);
 		cameraMatrix.translate(-initialPosition);
+		cameraMatrix.rotate(orientation);
 		cameraMatrix.translate(-position);
 		return cameraMatrix;
 	};

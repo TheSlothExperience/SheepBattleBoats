@@ -13,11 +13,14 @@
 GLWidgetContext::GLWidgetContext(QWidget *parent)
 	: QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-	shaderProgram = new QOpenGLShaderProgram();
-	canvasProgram = new QOpenGLShaderProgram();
-	quadviewProgram = new QOpenGLShaderProgram();
-    geometryPassProgram = new QOpenGLShaderProgram();
-    lightPassProgram = new QOpenGLShaderProgram();
+    shaders.geometryPassProgram = new QOpenGLShaderProgram();
+    shaders.lightPassProgram = new QOpenGLShaderProgram();
+	shaders.shaderProgram = new QOpenGLShaderProgram();
+	shaders.canvasProgram = new QOpenGLShaderProgram();
+	shaders.quadviewProgram = new QOpenGLShaderProgram();
+	shaders.storeDepthProgram = new QOpenGLShaderProgram();
+	shaders.gaussianBlurVProgram = new QOpenGLShaderProgram();
+	shaders.gaussianBlurHProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -28,22 +31,27 @@ GLWidgetContext::~GLWidgetContext()
 void GLWidgetContext::initializeGL()
 {
 	glEnable(GL_TEXTURE_3D);
-    loadShaders(":/shaders/DS_geometryPass.vert", ":/shaders/DS_geometryPass.frag", vphong, fphong, shaderProgram);
+    loadShaders(":/shaders/DS_geometryPass.vert", ":/shaders/DS_geometryPass.frag", shaders.shaderProgram);
+    //loadShaders(":/shaders/xtoon.vert", ":/shaders/xtoon.frag", shaders.shaderProgram);
+    //loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.shaderProgram);
 
-	shaderProgram->bind();
+	shaders.shaderProgram->bind();
 
-	perspectiveMatLocation = shaderProgram->uniformLocation("perspectiveMatrix");
-	normalMatLocation = shaderProgram->uniformLocation("normalMatrix");
-	modelViewMatLocation = shaderProgram->uniformLocation("modelViewMatrix");
-	lightPositionLocation = shaderProgram->uniformLocation("lightPosition");
+	perspectiveMatLocation = shaders.shaderProgram->uniformLocation("perspectiveMatrix");
+	normalMatLocation = shaders.shaderProgram->uniformLocation("normalMatrix");
+	modelViewMatLocation = shaders.shaderProgram->uniformLocation("modelViewMatrix");
+	lightPositionLocation = shaders.shaderProgram->uniformLocation("lightPosition");
 
 
-	shaderProgram->release();
+	shaders.shaderProgram->release();
 
-	loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", vcanvas, fcanvas, canvasProgram);
-	loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", vquadview, fquadview, quadviewProgram);
-//    loadShaders(":/shaders/DS_geometryPass.vert", ":/shaders/DS_geometryPass.frag", vgeometryPass, fgeomertyPass, geometryPassProgram);
-    loadShaders(":/shaders/DS_lightPass.vert", ":/shaders/DS_lightPass.frag", vlightPass, flightPass, lightPassProgram);
+    loadShaders(":/shaders/DS_lightPass.vert", ":/shaders/DS_lightPass.frag", shaders.lightPassProgram);
+    loadShaders(":/shaders/identity.vert", ":/shaders/canvas.frag", shaders.canvasProgram);
+    loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", shaders.quadviewProgram);
+
+    loadShaders(":/shaders/storeDepth.vert", ":/shaders/storeDepth.frag", shaders.storeDepthProgram);
+    loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurV.frag", shaders.gaussianBlurVProgram);
+    loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurH.frag", shaders.gaussianBlurHProgram);
 
 }
 
@@ -54,6 +62,13 @@ void GLWidgetContext::paintGL()
 
 void GLWidgetContext::resizeGL(int, int)
 {
+}
+
+void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShaderProgram *prog)
+{
+	QOpenGLShader *vshader;
+	QOpenGLShader *fshader;
+	loadShaders(vstring, fstring, vshader, fshader, prog);
 }
 
 /*

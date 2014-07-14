@@ -13,6 +13,7 @@
 #include "primitive.h"
 #include "camera.h"
 #include <gbuffer.h>
+#include "glwidgetcontext.h"
 
 class GLWidget : public QGLWidget
 {
@@ -26,13 +27,7 @@ public:
     QSize sizeHint() const;
     void setScene(Scene *scene);
 
-    void setShaderProgram(QOpenGLShaderProgram *sp);
-    void setCanvasProgram(QOpenGLShaderProgram *cp);
-    void setQuadViewProgram(QOpenGLShaderProgram *qp);
-    //Deferred-Shading
-    void setGeometryPassProgram(QOpenGLShaderProgram *ds_geoPass);
-    void setLightPassProgram(QOpenGLShaderProgram *ds_lightPass);
-
+	void setShaders(Shaders s) {this->shaders = s;}
 
     void setCamera(Camera *camera);
     void setPerspectiveCamera(double x, double y, double z);
@@ -60,13 +55,13 @@ private:
 
     QPoint lastPoint;
 
-    QOpenGLShaderProgram *shaderProgram;
-    QOpenGLShaderProgram *canvasProgram;
-    QOpenGLShaderProgram *quadviewProgram;
+	Shaders shaders;
+
 
 
 
     void renderScene();
+    void lightsPass();
     void paintSceneToCanvas();
 
     GLuint fbo;
@@ -94,12 +89,6 @@ private:
     Camera *camera;
 
     Scene *scene;
-
-    //Deferred Shading
-    QOpenGLShaderProgram *geometryPassProgram;
-    QOpenGLShaderProgram *lightPassProgram;
-
-
 
     void DSGeometryPass();
     void DSLightPass();

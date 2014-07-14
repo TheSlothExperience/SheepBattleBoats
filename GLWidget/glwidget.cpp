@@ -45,9 +45,8 @@ void GLWidget::initializeGL()
 
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
-
     //Ab hier, wenn Deferred Shading
-    gbuffer= GBuffer();
+    gbuffer = GBuffer();
     gbuffer.Init(TEXTURE_WIDTH,TEXTURE_HEIGHT);
 
 	//Create the drawing quad
@@ -63,9 +62,8 @@ void GLWidget::initializeGL()
 	glGenBuffers(1, &canvasQuad);
 	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
 }
 
 
@@ -80,7 +78,6 @@ void GLWidget::paintGL()
     DSLightPass();
 }
 
-
 /*
  * Render the SceneGraph without lighting and phong shading.
  * The result is painted into the the color attachments
@@ -88,7 +85,7 @@ void GLWidget::paintGL()
  */
 void GLWidget::DSGeometryPass() {
     //Load the phong shading program
-    shaderProgram->bind();
+    shaders.shaderProgram->bind();
 
     glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
     glViewport(0,0,1024,768);
@@ -107,23 +104,19 @@ void GLWidget::DSGeometryPass() {
 
     glDepthMask(GL_TRUE);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
-    shaderProgram->release();
-
-
-
-
+    shaders.shaderProgram->release();
 }
 
 //Mix the textures and render the scene to the macigal quad
 void GLWidget::DSLightPass(){
 
-    lightPassProgram->bind();
+    shaders.lightPassProgram->bind();
 
     glViewport(0,0,this->width(), this->height());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    gbuffer.bindLightPass(lightPassProgram);
-    scene->passLights(camera->getProjectionMatrix(),lightPassProgram);
+    gbuffer.bindLightPass(shaders.lightPassProgram);
+    scene->passLights(camera->getProjectionMatrix(), shaders.lightPassProgram);
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
@@ -136,7 +129,7 @@ void GLWidget::DSLightPass(){
 
 //    glDisable(GL_BLEND);
 
-    lightPassProgram->release();
+    shaders.lightPassProgram->release();
 }
 
 
@@ -164,22 +157,6 @@ void GLWidget::setOrthoCamera(double x, double y, double z) {
 
 void GLWidget::setScene(Scene *scene) {
 	this->scene = scene;
-}
-
-void GLWidget::setShaderProgram(QOpenGLShaderProgram *sp) {
-	this->shaderProgram = sp;
-}
-void GLWidget::setCanvasProgram(QOpenGLShaderProgram *cp) {
-	this->canvasProgram = cp;
-}
-void GLWidget::setQuadViewProgram(QOpenGLShaderProgram *qp) {
-	this->quadviewProgram = qp;
-}
-void GLWidget::setGeometryPassProgram(QOpenGLShaderProgram *ds_geoPass) {
-    this->geometryPassProgram= ds_geoPass;
-}
-void GLWidget::setLightPassProgram(QOpenGLShaderProgram *ds_lightPass) {
-    this->lightPassProgram= ds_lightPass;
 }
 
 void GLWidget::setActive(bool active) {

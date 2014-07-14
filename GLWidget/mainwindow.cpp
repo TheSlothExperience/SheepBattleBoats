@@ -55,14 +55,10 @@ void MainWindow::setupGL() {
 	glWidgetContext->initializeGL();
 
 	//Set the scene and add a cube
-	GLuint idLocation = glWidgetContext->getShaderProgram()->uniformLocation("id");
-	scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation);
+	GLuint idLocation = glWidgetContext->getShaders().shaderProgram->uniformLocation("id");
+	GLuint colorLocation = glWidgetContext->getShaders().shaderProgram->uniformLocation("color");
+	scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation, colorLocation);
 	scene->setLightLocation(glWidgetContext->getLightPositionLocation());
-	scene->setShaderProgram(glWidgetContext->getShaderProgram());
-
-    scene->setGeomPassProgram(glWidgetContext->getGeometryPassProgram());
-    scene->setLightPassProgram(glWidgetContext->getLightPassProgram());
-
 
 	sceneOutliner = new QTreeView();
 	sceneOutliner->setWindowTitle(QObject::tr("Outliner"));
@@ -102,13 +98,7 @@ void MainWindow::setupGL() {
 
 	//Map over the widgets setting the scene and connecting the signals
 	mapWidgets([=](GLWidget *w){w->setScene(scene);});
-	mapWidgets([=](GLWidget *w){w->setShaderProgram(glWidgetContext->getShaderProgram());});
-	mapWidgets([=](GLWidget *w){w->setCanvasProgram(glWidgetContext->getCanvasProgram());});
-	mapWidgets([=](GLWidget *w){w->setQuadViewProgram(glWidgetContext->getQuadViewProgram());});
-    mapWidgets([=](GLWidget *w){w->setGeometryPassProgram(glWidgetContext->getGeometryPassProgram());});
-    mapWidgets([=](GLWidget *w){w->setLightPassProgram(glWidgetContext->getLightPassProgram());});
-
-	mapWidgets([=](GLWidget *w){w->setProjectionLocation(glWidgetContext->getPerspectiveMatLocation());});
+	mapWidgets([=](GLWidget *w){w->setShaders(glWidgetContext->getShaders());});
 
 	mapWidgets([=](GLWidget *w){
 			connect(w, SIGNAL(translate(double, double, double)), this, SLOT(translateNode(double, double, double)));
@@ -184,15 +174,6 @@ void MainWindow::createToolbar() {
 	//Toolbar
 	toolbar = new QToolBar(this);
 
-	tesselationSlider = new QSlider(Qt::Horizontal);
-	tesselationSlider->setRange(1,8);
-	tesselationSlider->setTickPosition(QSlider::TicksBothSides);
-	tesselationSlider->setTickInterval(1);
-	tesselationSlider->setValue(3);
-	tesselationLevel = 3;
-	connect(tesselationSlider, SIGNAL(valueChanged(int)), this, SLOT(setTesselation(int)));
-	toolbar->addWidget(tesselationSlider);
-
 	toolbar->addAction(cameraModeAction);
 	toolbar->addAction(objectModeAction);
 	toolbar->addAction(resetCameraAction);
@@ -202,7 +183,7 @@ void MainWindow::createToolbar() {
 	viewDropButton = new QToolButton(this);
 	viewDropButton->setMenu(viewMenu);
 	viewDropButton->setPopupMode(QToolButton::InstantPopup);
-	viewDropButton->setIcon(QIcon(":/img/viewports.png"));
+    viewDropButton->setIcon(QIcon(":/img/viewports.png"));
 	toolbar->addWidget(viewDropButton);
 
 	toolbar->addSeparator();
@@ -213,6 +194,7 @@ void MainWindow::createToolbar() {
 	toolbar->addAction(addSphereAction);
 	toolbar->addAction(addTorusAction);
 	toolbar->addAction(addGroupAction);
+    toolbar->addAction(add3DModelAction);
 
 	toolbar->addSeparator();
 	toolbar->addAction(addLightAction);
@@ -229,7 +211,7 @@ void MainWindow::createActions() {
 	connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
 
 	resetCameraAction = new QAction("&Reset", this);
-	resetCameraAction->setIcon(QIcon(":/img/cam_home.png"));
+    resetCameraAction->setIcon(QIcon(":/img/cam_home.png"));
 	connect(resetCameraAction, SIGNAL(triggered()), perspectiveGLWidget, SLOT(resetCamera()));
 	connect(resetCameraAction, SIGNAL(triggered()), topGLWidget, SLOT(resetCamera()));
 	connect(resetCameraAction, SIGNAL(triggered()), frontGLWidget, SLOT(resetCamera()));
@@ -237,19 +219,19 @@ void MainWindow::createActions() {
 
 	singleViewAction = new QAction("&Single Viewport", this);
 	singleViewAction->setShortcut(tr("Ctrl+1"));
-	singleViewAction->setIcon(QIcon(":/img/view-single.png"));
+    singleViewAction->setIcon(QIcon(":/img/view-single.png"));
 	singleViewAction->setCheckable(true);
 	connect(singleViewAction, SIGNAL(triggered()), this, SLOT(setSingleView()));
 
 	dualViewAction = new QAction("&Dual Viewport", this);
 	dualViewAction->setShortcut(tr("Ctrl+2"));
-	dualViewAction->setIcon(QIcon(":/img/view-dual.png"));
+    dualViewAction->setIcon(QIcon(":/img/view-dual.png"));
 	dualViewAction->setCheckable(true);
 	connect(dualViewAction, SIGNAL(triggered()), this, SLOT(setDualView()));
 
 	quadViewAction = new QAction("&Quad Viewports", this);
 	quadViewAction->setShortcut(tr("Ctrl+4"));
-	quadViewAction->setIcon(QIcon(":/img/viewports.png"));
+    quadViewAction->setIcon(QIcon(":/img/viewports.png"));
 	quadViewAction->setCheckable(true);
 	connect(quadViewAction, SIGNAL(triggered()), this, SLOT(setQuadView()));
 
@@ -261,12 +243,12 @@ void MainWindow::createActions() {
 
 
 	cameraModeAction = new QAction("Camera Mode", this);
-	cameraModeAction->setIcon(QIcon(":/img/camera.png"));
+    cameraModeAction->setIcon(QIcon(":/img/camera.png"));
 	cameraModeAction->setCheckable(true);
 	connect(cameraModeAction, SIGNAL(triggered()), this, SLOT(setCameraInteraction()));
 
 	objectModeAction = new QAction("Object Mode", this);
-	objectModeAction->setIcon(QIcon(":/img/select.png"));
+    objectModeAction->setIcon(QIcon(":/img/select.png"));
 	objectModeAction->setCheckable(true);
 	connect(objectModeAction, SIGNAL(triggered()), this, SLOT(setObjectInteraction()));
 
@@ -277,32 +259,36 @@ void MainWindow::createActions() {
 
 
 	addCubeAction = new QAction(this);
-	addCubeAction->setIcon(QIcon(":/img/box.png"));
+    addCubeAction->setIcon(QIcon(":/img/box.png"));
 	connect(addCubeAction, SIGNAL(triggered()), this, SLOT(addCube()));
 
 	addCylinderAction = new QAction(this);
-	addCylinderAction->setIcon(QIcon(":/img/cylinder.png"));
+    addCylinderAction->setIcon(QIcon(":/img/cylinder.png"));
 	connect(addCylinderAction, SIGNAL(triggered()), this, SLOT(addCylinder()));
 
 	addSphereAction = new QAction(this);
-	addSphereAction->setIcon(QIcon(":/img/sphere.png"));
+    addSphereAction->setIcon(QIcon(":/img/sphere.png"));
 	connect(addSphereAction, SIGNAL(triggered()), this, SLOT(addSphere()));
 
 	addTorusAction = new QAction(this);
-	addTorusAction->setIcon(QIcon(":/img/torus.png"));
+    addTorusAction->setIcon(QIcon(":/img/torus.png"));
 	connect(addTorusAction, SIGNAL(triggered()), this, SLOT(addTorus()));
 
 	addConeAction = new QAction(this);
-	addConeAction->setIcon(QIcon(":/img/cone.png"));
+    addConeAction->setIcon(QIcon(":/img/cone.png"));
 	connect(addConeAction, SIGNAL(triggered()), this, SLOT(addCone()));;
 
 	addGroupAction = new QAction(this);
-	addGroupAction->setIcon(QIcon(":/img/group.png"));
+    addGroupAction->setIcon(QIcon(":/img/group.png"));
 	connect(addGroupAction, SIGNAL(triggered()), this, SLOT(addGroup()));;
 
 	addLightAction = new QAction(this);
-	addLightAction->setIcon(QIcon(":/img/light.png"));
+    addLightAction->setIcon(QIcon(":/img/light.png"));
 	connect(addLightAction, SIGNAL(triggered()), this, SLOT(addLight()));
+
+    add3DModelAction = new QAction(this);
+    add3DModelAction->setIcon(QIcon(":/img/add.png"));
+    connect(add3DModelAction, SIGNAL(triggered()),this,SLOT(add3DModel()));
 }
 
 void MainWindow::createMenus() {
@@ -397,22 +383,22 @@ void MainWindow::addCube() {
 }
 
 void MainWindow::addCone(){
-	QModelIndex idx = scene->addCone(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addCone(currentNode, 10);
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
 }
 void MainWindow::addCylinder(){
-	QModelIndex idx = scene->addCylinder(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addCylinder(currentNode, 10);
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
 }
 void MainWindow::addSphere(){
-	QModelIndex idx = scene->addSphere(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addSphere(currentNode, 6);
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
 }
 void MainWindow::addTorus(){
-	QModelIndex idx = scene->addTorus(currentNode, tesselationLevel);
+    QModelIndex idx = scene->addTorus(currentNode, 6);
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
 }
@@ -427,6 +413,13 @@ void MainWindow::addLight(){
 	QModelIndex idx = scene->addLight();
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
+}
+
+void MainWindow::add3DModel(){
+    load3DModel();
+    QModelIndex idx = scene->add3DModel(currentNode);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
+    emit updateGL();
 }
 
 void MainWindow::changeActiveId(int id){
@@ -493,9 +486,6 @@ void MainWindow::setObjectInteraction() {
 	statusbar->showMessage("Moving dem objects.", 2000);
 }
 
-void MainWindow::setTesselation(int t) {
-	this->tesselationLevel = t;
-}
 
 void MainWindow::changeCurrentNode(const QModelIndex &current, const QModelIndex &) {
 	this->currentNode = static_cast<SceneGraph*>(current.internalPointer());
@@ -527,4 +517,21 @@ void MainWindow::rotateNode(QQuaternion *q) {
 void MainWindow::changedColor() {
 	this->currentNode->changeColor(redSlider->sliderPosition() / (float) 255, greenSlider->sliderPosition() / (float) 255, blueSlider->sliderPosition() / (float) 255, 1.0f);
 	emit updateGL();
+}
+
+void MainWindow::load3DModel(){
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load 3D Model"), ".", tr("test(*.obj)"));
+    QFileInfo info(fileName);
+    std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
+    if(!fileName.isEmpty()) {
+        FILE *fp;
+        fp = fopen(fileName.toLocal8Bit().data(), "r");
+
+
+
+        fclose(fp);
+        emit updateGL();
+    }
+
 }

@@ -8,6 +8,7 @@
 #include "sphere.h"
 #include "torus.h"
 #include "light.h"
+#include "object3d.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -19,12 +20,13 @@ Scene::Scene(QObject *parent)
 {
 	this->modelViewMatrixStack.push(QMatrix4x4());
 }
-Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
+Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObject *parent)
 	: QAbstractItemModel(parent)
 {
 	this->modelViewMatLocation = mvLoc;
 	this->normalMatLocation = normalLoc;
 	this->idLocation = idLoc;
+	this->colorLocation = colorLoc;
 	this->modelViewMatrixStack.push(QMatrix4x4());
 
 	this->rootDummy = new SceneGraph();
@@ -33,9 +35,8 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, QObject *parent)
 
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
-	addLight();
-	//Sun-like position
-	lights.at(0)->translate(10, 30.0, 15.0);
+	//addLight();
+	//lights.at(0)->translate(1.0, 3.0, 1.50);
 }
 
 
@@ -296,54 +297,35 @@ QModelIndex Scene::addLight() {
 	return createIndex(s->row(), 0, s);
 }
 
+QModelIndex Scene::add3DModel(SceneGraph *node){
+    beginResetModel();
+    Primitive *object3d = new Object3D();
+    std::string name("Object ");
+    int id = nextId();
+    name += std::to_string(id);
+    SceneGraph *s = new SceneGraph(object3d,name);
+    s->setId(id);
+    identifier[id] = s;
+
+    node->add(s);
+    endResetModel();
+    return createIndex(s->row(), 0, s);
+}
+
 void Scene::draw(QMatrix4x4 cameraMatrix) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;
 
-	//Copy the lights positions into GL friendly arrays
-	GLfloat *lightsArray = new GLfloat[3 * lights.size()];
-	GLfloat *colorsArray = new GLfloat[4 * lights.size()];
-	for(unsigned int i = 0; i < lights.size(); i++) {
-		QVector3D lightDir = cameraMatrix * lights.at(i)->getPosition();
-		lightsArray[3 * i] = lightDir.x();
-		lightsArray[3 * i + 1] = lightDir.y();
-		lightsArray[3 * i + 2] = lightDir.z();
-
-		GLfloat *color = lights.at(i)->getColor();
-		colorsArray[4 * i] = color[0];
-		colorsArray[4 * i + 1] = color[1];
-		colorsArray[4 * i + 2] = color[2];
-		colorsArray[4 * i + 3] = color[3];
-	}
-    glUniform3fv(shaderProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
-    glUniform4fv(shaderProgram->uniformLocation("lightColors"), lights.size(), colorsArray);
-    glUniform1i(shaderProgram->uniformLocation("numLights"), lights.size());
-
-    GLuint colorLocation = shaderProgram->uniformLocation("color");
-
-//    	glUniform3fv(geometryPassProgram->uniformLocation("lightPositions"), lights.size(), lightsArray);
-//    	glUniform4fv(geometryPassProgram->uniformLocation("lightColors"), lights.size(), colorsArray);
-//    	glUniform1i(geometryPassProgram->uniformLocation("numLights"), lights.size());
-
-//    	GLuint colorLocation = geometryPassProgram->uniformLocation("color");
 	this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
 	modelViewMatrixStack.pop();
-
-	delete[] lightsArray;
-	delete[] colorsArray;
 }
 
 void Scene::DS_geometryPass(QMatrix4x4 cameraMatrix){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= cameraMatrix;
 
-    GLuint colorLocation = geometryPassProgram->uniformLocation("color");
-
-
     this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
     modelViewMatrixStack.pop();
-
-
 }
 
 
@@ -369,4 +351,180 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 
 	delete[] lightsArray;
 	delete[] colorsArray;
+}
+
+void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
+	for(auto l : lights) {
+		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
+
+		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT1};
+		glDrawBuffers(1, DrawBuffers);
+
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0,0, 1024, 768);
+
+		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, l->perspectiveMatrix().constData());
+
+		modelViewMatrixStack.push(modelViewMatrixStack.top());
+		modelViewMatrixStack.top() *= l->lightView();
+
+		GLuint colorLocation = shader->uniformLocation("color");
+
+		this->rootNode->draw(modelViewMatrixStack
+		                   , shader->uniformLocation("modelViewMatrix")
+		                   , shader->uniformLocation("normalMatrix")
+		                   , shader->uniformLocation("id")
+		                   , colorLocation);
+
+		modelViewMatrixStack.pop();
+
+		//Recreate the mipmaps
+		glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		//Release and relax, brah
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
+
+	GLuint canvasQuad;
+	static const GLfloat g_quad_vertex_buffer_data[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		1.0f,  1.0f, 0.0f,
+	};
+
+	glGenBuffers(1, &canvasQuad);
+	glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	for(auto l : lights) {
+		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
+
+		//First pass, horizontal
+		{
+			hs->bind();
+			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
+			glDrawBuffers(1, DrawBuffers);
+
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glViewport(0,0, 1024, 768);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
+			glUniform1i(hs->uniformLocation("moments"), 0);
+
+			//Draw our nifty, pretty quad
+			glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+			glDisableVertexAttribArray(0);
+
+			//Recreate the mipmaps
+			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
+			glGenerateMipmap(GL_TEXTURE_2D);
+			hs->release();
+		}
+
+		//Second pass, vertical into the shadow map
+		{
+			vs->bind();
+			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+			glDrawBuffers(1, DrawBuffers);
+
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glViewport(0,0, 1024, 768);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
+			glUniform1i(vs->uniformLocation("moments"), 0);
+
+			//Draw our nifty, pretty quad
+			glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+			glDisableVertexAttribArray(0);
+
+			//Recreate the mipmaps
+			glBindTexture(GL_TEXTURE_2D, l->getShadowMap());
+			glGenerateMipmap(GL_TEXTURE_2D);
+			vs->release();
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+/* Takes a nested functor `F (F A)` from `start` to
+ * `end` and gives the flatten functor `F A` in `dest`.
+ */
+template <class COCiter, class Oiter>
+void flatten(COCiter start, COCiter end, Oiter dest) {
+    using namespace std;
+    while (start != end) {
+        dest = copy(start->begin(), start->end(), dest);
+        ++start;
+    }
+}
+
+/*
+ * Takes a `v :: vector<T>` and a function `f :: T -> U` and
+ * returns a `vector<U>` of the result of `f` on every element.
+ */
+template <typename U, typename T, class UnaryFunction>
+std::vector<U> fmap(std::vector<T> v, UnaryFunction f) {
+	std::vector<U> w;
+	std::transform(v.begin(), v.end(), std::back_inserter(w), f);
+	return w;
+}
+
+/* Return a flattened vector with the entries on the matrices.
+ * Of size n * 16.
+ */
+std::vector<GLfloat> Scene::lightPerspectives() {
+    using namespace std;
+	vector<vector<GLfloat> > views = fmap<vector<GLfloat> >(lights, [=](LightNode *l){
+			GLfloat* va = l->perspectiveMatrix().data();
+			vector<GLfloat> v;
+			v.assign(va, va + 16);
+			return v;
+		});
+	vector<GLfloat> vs;
+	flatten(views.begin(), views.end(), back_inserter(vs));
+	return vs;
+}
+
+/* Return a flattened vector with the entries on the matrices.
+ * Of size n * 16.
+ */
+std::vector<GLfloat> Scene::lightViews() {
+    using namespace std;
+	vector<vector<GLfloat> > views = fmap<vector<GLfloat> >(lights, [=](LightNode *l){
+			GLfloat* va = l->lightView().data();
+			vector<GLfloat> v;
+			v.assign(va, va + 16);
+			return v;
+		});
+	vector<GLfloat> vs;
+	flatten(views.begin(), views.end(), back_inserter(vs));
+	return vs;
+}
+
+std::vector<GLuint> Scene::shadowMapLocations() {
+	return fmap<GLuint>(lights, [=](LightNode *l){return l->getShadowMap();});
 }
