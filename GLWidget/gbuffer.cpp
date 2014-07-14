@@ -16,7 +16,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
        glGenFramebuffers(1, &m_fbo);
        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
 
-       // Erzeuge 4 Texturen
+       // Erzeuge 5 Texturen
        glGenTextures(5, m_textures);
 
        //Erzeuge die Tiefen Textur
@@ -71,8 +71,8 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 void GBuffer::startFrame(){
     glBindBuffer(GL_DRAW_FRAMEBUFFER,m_fbo);
-    GLenum DrawBuffers[4]={GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT4};
-    glDrawBuffers(4,DrawBuffers);
+    GLenum DrawBuffers[5]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4};
+    glDrawBuffers(5,DrawBuffers);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
@@ -152,5 +152,3 @@ void GBuffer::bindFinalPass(){
 //void GBuffer::setReadBuffer(GBUFFER_TEXTURE_TYPE texType){
 //    glReadBuffer(GL_COLOR_ATTACHMENT0+texType);
 //}
-
-
