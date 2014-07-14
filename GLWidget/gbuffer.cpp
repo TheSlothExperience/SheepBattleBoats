@@ -30,7 +30,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
           // Dummy-Aufruf, damit OpenGL weiß welches Texturformat wir
           // anlegen möchten (alternativ auch GL_RGBA16F)
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, windowWidth, windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
           glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
           glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
           //Bind FBO
@@ -70,14 +70,14 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 
 void GBuffer::startFrame(){
-    glBindBuffer(GL_DRAW_FRAMEBUFFER,m_fbo);
+    glBindBuffer(GL_FRAMEBUFFER,m_fbo);
     GLenum DrawBuffers[5]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4};
     glDrawBuffers(5,DrawBuffers);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void GBuffer::bindGeometryPass(){
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER,m_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
 
     GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0,
                           GL_COLOR_ATTACHMENT1,
@@ -86,15 +86,6 @@ void GBuffer::bindGeometryPass(){
                          GL_COLOR_ATTACHMENT4};
 
     glDrawBuffers(5,drawBuffers);
-
-//    //Hier wird Z-Buffer geupdatet
-//    glDepthMask(GL_TRUE);
-
-//    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-//    glEnable(GL_DEPTH_TEST);
-
-
 }
 
 void GBuffer::bindStencilPass(){
@@ -137,7 +128,7 @@ void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
 void GBuffer::bindFinalPass(){
 
     //Fertig mit schreiben
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
     //Lese aus dem geschriebenen Inhalt im FBO
     glBindFramebuffer(GL_READ_FRAMEBUFFER,m_fbo);
     glReadBuffer(GL_COLOR_ATTACHMENT4);

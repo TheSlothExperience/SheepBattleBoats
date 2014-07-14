@@ -35,6 +35,7 @@ void main(){
 	const float B = 0.33;
 	const float C = 0.66;
 	const float D = 1.0;
+	outputColor = vec4(0.0);
 
 	for(i = 0; i < numLights; i++) {
 
@@ -69,6 +70,5 @@ void main(){
 		//HERE: insert materials for diffuse and specular, if finished
 		vec4 color = diffuse*color*lightColor+specular*vec4(1.0,1.0,1.0,1.0);
 		outputColor += color;
-
 	}
 }

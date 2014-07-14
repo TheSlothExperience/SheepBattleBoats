@@ -87,7 +87,7 @@ void GLWidget::DSGeometryPass() {
     //Load the phong shading program
     shaders.shaderProgram->bind();
 
-    glUniformMatrix4fv(perspectiveMatLocation, 1, GL_FALSE, camera->getProjectionMatrix().constData());
+    glUniformMatrix4fv(shaders.shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
     glViewport(0,0,1024,768);
     gbuffer.bindGeometryPass();
 
@@ -103,20 +103,21 @@ void GLWidget::DSGeometryPass() {
     }
 
     glDepthMask(GL_TRUE);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     shaders.shaderProgram->release();
 }
 
-//Mix the textures and render the scene to the macigal quad
+//Mix the textures and render the scene to the magical quad
 void GLWidget::DSLightPass(){
 
     shaders.lightPassProgram->bind();
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0,this->width(), this->height());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gbuffer.bindLightPass(shaders.lightPassProgram);
-    scene->passLights(camera->getProjectionMatrix(), shaders.lightPassProgram);
+    scene->passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
@@ -126,8 +127,6 @@ void GLWidget::DSLightPass(){
     glDrawArrays(GL_TRIANGLES, 0, 3*2);
 
     glDisableVertexAttribArray(0);
-
-//    glDisable(GL_BLEND);
 
     shaders.lightPassProgram->release();
 }
