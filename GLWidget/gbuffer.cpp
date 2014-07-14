@@ -12,43 +12,43 @@ GBuffer::GBuffer()
 
 bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
-    // Create the FBO
-       glGenFramebuffers(1, &m_fbo);
-       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+	// Create the FBO
+	glGenFramebuffers(1, &m_fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
 
-       // Erzeuge 5 Texturen
-       glGenTextures(5, m_textures);
+	// Erzeuge 5 Texturen
+	glGenTextures(5, m_textures);
 
-       //Erzeuge die Tiefen Textur
-       glGenTextures(1, &m_depthTexture);
+	//Erzeuge die Tiefen Textur
+	glGenTextures(1, &m_depthTexture);
 
-       //Erzeuge die Finale Textur
-       glGenTextures(1,&m_finalTexture);
+	//Erzeuge die Finale Textur
+	glGenTextures(1,&m_finalTexture);
 
-       for (int i = 0 ; i < 5 ; i++) {
-          glBindTexture(GL_TEXTURE_2D, m_textures[i]);
+	for (int i = 0 ; i < 5 ; i++) {
+		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
 
-          // Dummy-Aufruf, damit OpenGL weiß welches Texturformat wir
-          // anlegen möchten (alternativ auch GL_RGBA16F)
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, windowWidth, windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
-          glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-          glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-          //Bind FBO
-          glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-                                 GL_TEXTURE_2D, m_textures[i], 0);
-       }
+		// Dummy-Aufruf, damit OpenGL weiß welches Texturformat wir
+		// anlegen möchten (alternativ auch GL_RGBA16F)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, windowWidth, windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		//Bind FBO
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+		                       GL_TEXTURE_2D, m_textures[i], 0);
+	}
 
-       // depth
-       glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-       glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, windowWidth, windowHeight, 0,
-                    GL_DEPTH_COMPONENT, GL_FLOAT,NULL);
-       glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
+	// depth
+	glBindTexture(GL_TEXTURE_2D, m_depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, windowWidth, windowHeight, 0,
+	             GL_DEPTH_COMPONENT, GL_FLOAT,NULL);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 
-       //Finale Textur
-       glBindTexture(GL_TEXTURE_2D, m_finalTexture);
-       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0,
-                    GL_RGB, GL_FLOAT,NULL);
-       glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, m_finalTexture, 0);
+	//Finale Textur
+	glBindTexture(GL_TEXTURE_2D, m_finalTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0,
+	             GL_RGB, GL_FLOAT,NULL);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, m_finalTexture, 0);
 
 
 
