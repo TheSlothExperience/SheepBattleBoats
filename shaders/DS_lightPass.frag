@@ -35,7 +35,9 @@ void main(){
 	const float B = 0.33;
 	const float C = 0.66;
 	const float D = 1.0;
+
 	outputColor = vec4(0.0);
+	float diffuse = 0.0;
 
 	for(i = 0; i < numLights; i++) {
 
@@ -45,7 +47,7 @@ void main(){
 
 		vec4 lightColor = lightColors[i];
 
-		float diffuse = max(0.0,dot(N,L));
+		diffuse += max(0.0,dot(N,L));
 		float specular = max(0.0,dot(N,H));
 		specular = pow(specular,0.3*80.0);
 
@@ -68,7 +70,19 @@ void main(){
 			specular = step(0.5,specular);
 		}
 		//HERE: insert materials for diffuse and specular, if finished
-		vec4 color = diffuse*color*lightColor+specular*vec4(1.0,1.0,1.0,1.0);
-		outputColor += color;
+		outputColor += specular * vec4(1.0,1.0,1.0,1.0);
 	}
+
+	float edge = fwidth(diffuse);
+
+	//First 3 if's: Antialiasing at transitions of colorbands
+	if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
+	else if(diffuse > B-edge && diffuse < B+edge) diffuse = stepmix(B,C,edge,diffuse);
+	else if(diffuse > C-edge && diffuse < C+edge) diffuse = stepmix(C,D,edge,diffuse);
+	else if(diffuse < A) diffuse = 0.0;
+	else if(diffuse < B) diffuse = B;
+	else if(diffuse < C) diffuse = C;
+	else diffuse = D;
+
+	outputColor += diffuse*color;
 }
