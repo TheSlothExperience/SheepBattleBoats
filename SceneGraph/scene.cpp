@@ -35,8 +35,9 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
-	//addLight();
-	//lights.at(0)->translate(1.0, 3.0, 1.50);
+	addLight();
+	lights.at(0)->translate(1.0, 3.0, 1.50);
+	addTorus(rootNode, 8);
 }
 
 
