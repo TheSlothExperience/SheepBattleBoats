@@ -234,8 +234,6 @@ void GLWidget::translateCamera(double x, double y, double z) {
 	QVector4D trans(x, y, z, 1.0);
 	trans = trans * camera->getCameraMatrix();
 
-	QVector3D cameraPos = camera->getWorldPosition();
-	QVector3D newPos = cameraPos + QVector3D(trans);
 	this->camera->translate(trans.x(), trans.y(), trans.z());
 }
 

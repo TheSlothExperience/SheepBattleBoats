@@ -36,8 +36,9 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
-	//addLight();
-	//lights.at(0)->translate(1.0, 3.0, 1.50);
+	addLight();
+	lights.at(0)->translate(1.0, 3.0, 1.50);
+	addTorus(rootNode, 8);
 	addSea(rootNode);
 }
 
@@ -370,7 +371,7 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	delete[] colorsArray;
 }
 
-void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix) {
+void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 

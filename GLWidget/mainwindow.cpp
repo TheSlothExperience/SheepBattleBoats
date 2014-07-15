@@ -54,7 +54,28 @@ void MainWindow::setupGL() {
 	glWidgetContext->makeCurrent();
 	glWidgetContext->initializeGL();
 
-	//Set the scene and add a cube
+	//Create the widgets
+	perspectiveGLWidget = new GLWidget(this, glWidgetContext);
+	widgetList.push_back(perspectiveGLWidget);
+	perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
+
+	frontGLWidget = new GLWidget(this, glWidgetContext);
+	widgetList.push_back(frontGLWidget);
+	frontGLWidget->setOrthoCamera(0, 0, 3);
+
+	topGLWidget = new GLWidget(this, glWidgetContext);
+	widgetList.push_back(topGLWidget);
+	topGLWidget->setOrthoCamera(0, 3, 0);
+
+	rightGLWidget = new GLWidget(this, glWidgetContext);
+	widgetList.push_back(rightGLWidget);
+	rightGLWidget->setOrthoCamera(3, 0, 0);
+
+	perspectiveGLWidget->makeCurrent();
+	perspectiveGLWidget->initializeGL();
+
+
+	//Set the scene
 	GLuint idLocation = glWidgetContext->getShaders().shaderProgram->uniformLocation("id");
 	GLuint colorLocation = glWidgetContext->getShaders().shaderProgram->uniformLocation("color");
 	scene = new Scene(glWidgetContext->getModelViewMatLocation(), glWidgetContext->getNormalMatLocation(), idLocation, colorLocation);
@@ -76,24 +97,6 @@ void MainWindow::setupGL() {
 	addDockWidget(Qt::LeftDockWidgetArea, outlinerDock);
 
 	currentNode = scene->root();
-
-
-	//Create the widgets
-	perspectiveGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(perspectiveGLWidget);
-	perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
-
-	frontGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(frontGLWidget);
-	frontGLWidget->setOrthoCamera(0, 0, 3);
-
-	topGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(topGLWidget);
-	topGLWidget->setOrthoCamera(0, 3, 0);
-
-	rightGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(rightGLWidget);
-	rightGLWidget->setOrthoCamera(3, 0, 0);
 
 
 	//Map over the widgets setting the scene and connecting the signals

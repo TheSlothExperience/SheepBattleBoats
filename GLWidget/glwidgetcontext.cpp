@@ -66,8 +66,8 @@ void GLWidgetContext::resizeGL(int, int)
 
 void GLWidgetContext::loadShaders(QString vstring, QString fstring, QOpenGLShaderProgram *prog)
 {
-	QOpenGLShader *vshader;
-	QOpenGLShader *fshader;
+	QOpenGLShader *vshader = NULL;
+	QOpenGLShader *fshader = NULL;
 	loadShaders(vstring, fstring, vshader, fshader, prog);
 }
 
