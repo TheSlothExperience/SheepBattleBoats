@@ -70,6 +70,7 @@ public:
 	QModelIndex addLight();
 
     QModelIndex add3DModel(SceneGraph *node);
+    QModelIndex addSea(SceneGraph *node);
 
 	void lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4 cameraMatrix);
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);

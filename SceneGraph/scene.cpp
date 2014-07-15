@@ -9,6 +9,7 @@
 #include "torus.h"
 #include "light.h"
 #include "object3d.h"
+#include "sea.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -37,6 +38,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 
 	//addLight();
 	//lights.at(0)->translate(1.0, 3.0, 1.50);
+	addSea(rootNode);
 }
 
 
@@ -304,6 +306,21 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
     int id = nextId();
     name += std::to_string(id);
     SceneGraph *s = new SceneGraph(object3d,name);
+    s->setId(id);
+    identifier[id] = s;
+
+    node->add(s);
+    endResetModel();
+    return createIndex(s->row(), 0, s);
+}
+
+QModelIndex Scene::addSea(SceneGraph *node){
+    beginResetModel();
+    Primitive *sea = new Sea();
+    std::string name("Sea of Moist Seaness ");
+    int id = nextId();
+    name += std::to_string(id);
+    SceneGraph *s = new SceneGraph(sea, name);
     s->setId(id);
     identifier[id] = s;
 
