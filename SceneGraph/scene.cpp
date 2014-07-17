@@ -371,7 +371,8 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	delete[] colorsArray;
 }
 
-void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4) {
+void Scene::lightsPass(QOpenGLShaderProgram *shader) {
+	shader->bind();
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 
@@ -404,6 +405,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4) {
 		//Release and relax, brah
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+	shader->release();
 }
 
 void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {

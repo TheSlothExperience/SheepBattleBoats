@@ -18,6 +18,39 @@ uniform vec3 lightPositions[maxLights];
 uniform vec4 lightColors[maxLights];
 uniform int numLights;
 
+uniform mat4 lightViews[maxLights];
+uniform mat4 lightPerspectives[maxLights];
+uniform sampler2D shadowMaps[maxLights];
+uniform mat4 lightBias;
+
+uniform mat4 inverseCameraMatrix;
+
+//Stuff for variance shadow maps -------------------------
+float linstep(float a, float b, float v) {
+	return clamp((v - a) / (b - a), 0, 1);
+}
+
+float chebyshevUpperBound(float d, vec2 moments) {
+
+	//Surface is fully lit
+	if(d <= moments.x) {
+		return 1.0;
+	}
+
+	// The fragment is either in shadow or penumbra. We now use
+    // chebyshev's upperBound to check how likely this pixel is
+	// to be lit (p_max)
+	float variance = moments.y - (moments.x * moments.x);
+	variance = max(variance, 0.00002);
+
+	float delta = d - moments.x;
+	float p_max = variance / (variance + delta*delta);
+
+	//Reduce light bleeding
+	return linstep(0.4, 1.0, p_max);
+}
+//-------------------------------------------------------
+
 float stepmix(float edge0, float edge1, float E, float x){
     float T = clamp(0.5*(x-edge0+E)/E,0.0,1.0);
     return mix(edge0,edge1,T);
@@ -47,9 +80,15 @@ void main(){
 
 		vec4 lightColor = lightColors[i];
 
-		diffuse += max(0.0,dot(N,L));
+		//Calculate shadow visibility
+		vec4 shCoord = (lightBias * lightPerspectives[i] * lightViews[i]) * inverseCameraMatrix * vec4(V, 1.0);
+		vec4 shCoordW = shCoord / shCoord.w;
+		vec2 moments = texture2D(shadowMaps[i], shCoordW.xy).rg; //Distance to light
+		float visibility = chebyshevUpperBound(shCoordW.z, moments);
+
+		diffuse += visibility * max(0.0,dot(N,L));
 		float specular = max(0.0,dot(N,H));
-		specular = pow(specular,0.3*80.0);
+		specular = visibility * pow(specular,0.3*80.0);
 
 		float edge = fwidth(diffuse);
 

@@ -2,7 +2,6 @@
 
 layout (location = 0) in vec3 position;
 
-
 out vec2 UV;
 
 void main()

@@ -67,13 +67,16 @@ void GLWidget::initializeGL()
 }
 
 
-
 void GLWidget::paintGL()
 {
 	//Clear the buffers
     gbuffer.startFrame();
     //Render the Textures for DeferredShading
     DSGeometryPass();
+
+    //Shadow map pass. Render them and blur
+    shadowMapsPass();
+
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
 }
@@ -119,6 +122,8 @@ void GLWidget::DSLightPass(){
     gbuffer.bindLightPass(shaders.lightPassProgram);
     scene->passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
 
+    passShadowMaps(shaders.lightPassProgram, 8);
+
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glEnableVertexAttribArray(0);
@@ -131,7 +136,44 @@ void GLWidget::DSLightPass(){
     shaders.lightPassProgram->release();
 }
 
+void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
+	//Send all the lighting information and shadowmaps
+	std::vector<GLfloat> lightViews = scene->lightViews();
+	std::vector<GLfloat> lightPerspectives = scene->lightPerspectives();
+	glUniformMatrix4fv(shaderProgram->uniformLocation("lightViews"), lightViews.size() / 16, GL_FALSE, lightViews.data());
+	glUniformMatrix4fv(shaderProgram->uniformLocation("lightPerspectives"), lightPerspectives.size() / 16, GL_FALSE, lightPerspectives.data());
 
+	//Now the shadowmaps
+	std::vector<GLuint> shadowMapLocs = scene->shadowMapLocations();
+	GLint *shadowSamplers = new GLint[shadowMapLocs.size()];
+	unsigned int shadowsOffset = texOffset;
+	for(unsigned int i = 0; i < shadowMapLocs.size(); i++) {
+		shadowSamplers[i] = i + shadowsOffset;
+		//Start at GL_TEXTURE0 + shadowsOffset
+		glActiveTexture(GL_TEXTURE0 + shadowsOffset + i);
+		glBindTexture(GL_TEXTURE_2D, shadowMapLocs[i]);
+	}
+	glUniform1iv(shaderProgram->uniformLocation("shadowMaps"), shadowMapLocs.size(), shadowSamplers);
+	delete[] shadowSamplers;
+
+	//An additional bias matrix
+	GLfloat bias[16] = {0.5, 0.0, 0.0, 0.5,
+	                    0.0, 0.5, 0.0, 0.5,
+	                    0.0, 0.0, 0.5, 0.5,
+	                    0.0, 0.0, 0.0, 1.0};
+	glUniformMatrix4fv(shaderProgram->uniformLocation("lightBias"), 1, GL_TRUE, bias);
+	glUniformMatrix4fv(shaderProgram->uniformLocation("inverseCameraMatrix"), 1, GL_FALSE, camera->getCameraMatrix().inverted().constData());
+}
+
+void GLWidget::shadowMapsPass() {
+	if(scene != NULL) {
+        //Discombobulate!
+	    scene->lightsPass(shaders.storeDepthProgram);
+	    scene->blurShadowMaps(shaders.gaussianBlurHProgram, shaders.gaussianBlurVProgram);
+    } else {
+        std::cout << "no scene yet" << std::endl;
+    }
+}
 
 void GLWidget::resizeGL(int width, int height)
 {

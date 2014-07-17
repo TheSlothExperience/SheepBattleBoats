@@ -57,11 +57,9 @@ private:
 
 	Shaders shaders;
 
-
-
-
     void renderScene();
-    void lightsPass();
+    void shadowMapsPass();
+	void passShadowMaps(QOpenGLShaderProgram *shader, int texOffset);
     void paintSceneToCanvas();
 
     GLuint fbo;
