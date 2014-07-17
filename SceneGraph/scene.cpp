@@ -10,6 +10,7 @@
 #include "light.h"
 #include "object3d.h"
 #include "sea.h"
+#include "Reduction.h"
 
 #include "glwidget.h"
 #include <QtGui>
@@ -408,8 +409,19 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 	shader->release();
 }
 
-void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
+void Scene::computeSAT(QOpenGLShaderProgram *sat) {
+	for(auto l : lights) {
+		//glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		Reduction::instance()->computeSATGLTexture(l->getShadowMap(), l->shadowMomentsTemp());
+
+		//Release and relax, brah
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 	GLuint canvasQuad;
 	static const GLfloat g_quad_vertex_buffer_data[] = {
 		-1.0f, -1.0f, 0.0f,

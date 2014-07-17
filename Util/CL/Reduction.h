@@ -6,6 +6,9 @@
     #include <OpenCL/opencl.h>
 #else
     #include <CL/opencl.h>
+    #include <CL/cl_gl.h>
+    #include <CL/cl_gl_ext.h>
+    #include <GL/gl.h>
 #endif
 #include "Common.h"
 
@@ -14,6 +17,8 @@ class Reduction
 public:
 	static Reduction* instance();
 	~Reduction();
+
+	void computeSATGLTexture(GLuint src, GLuint dest);
 
 private:
 	Reduction();

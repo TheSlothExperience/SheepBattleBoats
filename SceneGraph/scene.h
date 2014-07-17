@@ -74,6 +74,7 @@ public:
 
 	void lightsPass(QOpenGLShaderProgram *shader);
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
+	void computeSAT(QOpenGLShaderProgram *sat);
 
 	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
 
