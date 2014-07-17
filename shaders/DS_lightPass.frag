@@ -32,12 +32,12 @@ void main(){
     vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
     int i;
 	const float A = 0.1;
-	const float B = 0.33;
-	const float C = 0.66;
+        const float B = 0.33;
+        const float C = 0.66;
 	const float D = 1.0;
 
 	outputColor = vec4(0.0);
-	float diffuse = 0.0;
+        float diffuse = 0.0;
 
 	for(i = 0; i < numLights; i++) {
 
@@ -45,27 +45,14 @@ void main(){
 		//Blinn: Using H Vektor for cartoonish reflectance look
 		vec3 H = normalize(L+E);
 
-		vec4 lightColor = lightColors[i];
-
 		diffuse += max(0.0,dot(N,L));
 		float specular = max(0.0,dot(N,H));
 		specular = pow(specular,0.3*80.0);
 
-		float edge = fwidth(diffuse);
-
-		//First 3 if's: Antialiasing at transitions of colorbands
-		if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
-		else if(diffuse > B-edge && diffuse < B+edge) diffuse = stepmix(B,C,edge,diffuse);
-		else if(diffuse > C-edge && diffuse < C+edge) diffuse = stepmix(C,D,edge,diffuse);
-		else if(diffuse < A) diffuse = 0.0;
-		else if(diffuse < B) diffuse = B;
-		else if(diffuse < C) diffuse = C;
-		else diffuse = D;
-
 		//Stylized transformation for spekular highlights
-		edge = fwidth(specular);
-		if(specular > 0.5-edge && specular < 0.5+edge){
-			specular = smoothstep(0.5-edge,0.5+edge,specular);
+                float edge2 = fwidth(specular);
+                if(specular > 0.5-edge2 && specular < 0.5+edge2){
+                        specular = smoothstep(0.5-edge2,0.5+edge2,specular);
 		}else{
 			specular = step(0.5,specular);
 		}

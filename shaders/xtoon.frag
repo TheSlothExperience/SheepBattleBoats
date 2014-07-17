@@ -32,8 +32,8 @@ void main()
         vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
         int i;
         const float A = 0.1;
-        const float B = 0.33;
-        const float C = 0.66;
+        const float B = 0.4;
+        const float C = 0.7;
         const float D = 1.0;
 
         float diffuse = 0.0;
@@ -44,13 +44,9 @@ void main()
                //Blinn: Using H Vektor for cartoonish reflectance look
                vec3 H = normalize(L+E);
 
-
-
                diffuse += max(0.0,dot(N,L));
                float specular = max(0.0,dot(N,H));
                specular = pow(specular,0.3*80.0);
-
-
 
                //Stylized transformation for spekular highlights
                float edge2 = fwidth(specular);
