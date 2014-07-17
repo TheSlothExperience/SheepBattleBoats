@@ -87,24 +87,14 @@ void main(){
 		float visibility = chebyshevUpperBound(shCoordW.z, moments);
 
 		diffuse += visibility * max(0.0,dot(N,L));
+
 		float specular = max(0.0,dot(N,H));
 		specular = visibility * pow(specular,0.3*80.0);
 
-		float edge = fwidth(diffuse);
-
-		//First 3 if's: Antialiasing at transitions of colorbands
-		if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
-		else if(diffuse > B-edge && diffuse < B+edge) diffuse = stepmix(B,C,edge,diffuse);
-		else if(diffuse > C-edge && diffuse < C+edge) diffuse = stepmix(C,D,edge,diffuse);
-		else if(diffuse < A) diffuse = 0.0;
-		else if(diffuse < B) diffuse = B;
-		else if(diffuse < C) diffuse = C;
-		else diffuse = D;
-
 		//Stylized transformation for spekular highlights
-		edge = fwidth(specular);
-		if(specular > 0.5-edge && specular < 0.5+edge){
-			specular = smoothstep(0.5-edge,0.5+edge,specular);
+		float edge2 = fwidth(specular);
+		if(specular > 0.5-edge2 && specular < 0.5+edge2){
+			specular = smoothstep(0.5-edge2,0.5+edge2,specular);
 		}else{
 			specular = step(0.5,specular);
 		}
