@@ -96,7 +96,7 @@ bool Reduction::initContextResources() {
 		return false;
 	}
 
-	reduceHorizontalKernel = clCreateKernel(clProgram, "ReduceHorizontal", &clError);
+	reduceHorizontalTransposeKernel = clCreateKernel(clProgram, "ReduceHorizontal", &clError);
 	V_RETURN_FALSE_CL(clError, "Failed to compile kernel: ReduceHorizontal");
 	reduceVerticalKernel = clCreateKernel(clProgram, "ReduceVertical", &clError);
 	V_RETURN_FALSE_CL(clError, "Failed to compile kernel: ReduceVertical");
@@ -114,47 +114,80 @@ inline void checkCL(cl_int err, std::string msg = "") {
 	}
 }
 
-void Reduction::computeSATGLTexture(GLuint src, GLuint dest, int width, int height) {
+void Reduction::computeSATGLTexture(GLuint src, GLuint temp, GLuint dest, int width, int height) {
     cl_int err = 5;
-	cl_mem clSrc, clDest;
+    cl_mem clSrc, clTemp, clDest;
     clSrc = clCreateFromGLTexture2D(clContext, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, src, &err);
 	checkCL(err, "creating src");
+	clTemp = clCreateFromGLTexture2D(clContext, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, temp, &err);
+	checkCL(err, "creating temp");
 	clDest = clCreateFromGLTexture2D(clContext, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, dest, &err);
 	checkCL(err, "creating dest");
 
 	glFinish();
 	clEnqueueAcquireGLObjects(clCommandQueue, 1,  &clSrc, 0, 0, NULL);
 	checkCL(err, "acquiring src");
+	clEnqueueAcquireGLObjects(clCommandQueue, 1,  &clTemp, 0, 0, NULL);
+	checkCL(err, "acquiring temp");
 	clEnqueueAcquireGLObjects(clCommandQueue, 1,  &clDest, 0, 0, NULL);
 	checkCL(err, "acquiring dest");
 
-	//Pass the images
 	//Horizontal pass
-	err = clSetKernelArg(reduceHorizontalKernel, 0, sizeof(clSrc), &clSrc);
-	checkCL(err, "passing src");
-	err = clSetKernelArg(reduceHorizontalKernel, 1, sizeof(clSrc), &clSrc);
-	checkCL(err, "passing dest");
-	err = clSetKernelArg(reduceHorizontalKernel, 2, sizeof(int), &width);
-	checkCL(err, "passing width");
-	err = clSetKernelArg(reduceHorizontalKernel, 3, sizeof(int), &height);
-	checkCL(err, "passing height");
-	err = clSetKernelArg(reduceHorizontalKernel, 4, width * sizeof(cl_float4), NULL);
-	checkCL(err, "passing temp");
+	{
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 0, sizeof(clSrc), &clSrc);
+		checkCL(err, "passing src");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 1, sizeof(clSrc), &clTemp);
+		checkCL(err, "passing dest");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 2, sizeof(int), &width);
+		checkCL(err, "passing width");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 3, sizeof(int), &height);
+		checkCL(err, "passing height");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 4, width * sizeof(cl_float4), NULL);
+		checkCL(err, "passing temp");
 
-	size_t global_work_size[] = {std::min(width, 512), 1};
-	size_t local_work_size[] = {std::min(width, 512), 1};
-	for(int i = 0; i < height; i++) {
-		err = clSetKernelArg(reduceHorizontalKernel, 5, sizeof(int), &i);
-		checkCL(err, "passing row");
-		err = clEnqueueNDRangeKernel(clCommandQueue, reduceHorizontalKernel, 1, NULL, global_work_size, local_work_size, 0, NULL, NULL);
-		checkCL(err, "starting the kernel " + i);
+		size_t global_work_size[] = {std::min(width / 2, 512), 1};
+		size_t local_work_size[] = {std::min(width / 2, 512), 1};
+		for(int i = 0; i < height; i++) {
+			err = clSetKernelArg(reduceHorizontalTransposeKernel, 5, sizeof(int), &i);
+			checkCL(err, "passing row");
+			err = clEnqueueNDRangeKernel(clCommandQueue, reduceHorizontalTransposeKernel, 1, NULL, global_work_size, local_work_size, 0, NULL, NULL);
+			checkCL(err, "starting the kernel " + i);
+		}
 	}
+
+	//Vertical pass
+	{
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 0, sizeof(clSrc), &clTemp);
+		checkCL(err, "passing src");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 1, sizeof(clSrc), &clDest);
+		checkCL(err, "passing dest");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 2, sizeof(int), &height);
+		checkCL(err, "passing width");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 3, sizeof(int), &width);
+		checkCL(err, "passing height");
+		err = clSetKernelArg(reduceHorizontalTransposeKernel, 4, height * sizeof(cl_float4), NULL);
+		checkCL(err, "passing temp");
+
+		size_t global_work_sizeV[] = {std::min(height / 2, 512), 1};
+		size_t local_work_sizeV[] = {std::min(height /2, 512), 1};
+		for(int i = 0; i < width; i++) {
+			err = clSetKernelArg(reduceHorizontalTransposeKernel, 5, sizeof(int), &i);
+			checkCL(err, "passing row");
+			err = clEnqueueNDRangeKernel(clCommandQueue, reduceHorizontalTransposeKernel, 1, NULL, global_work_sizeV, local_work_sizeV, 0, NULL, NULL);
+			checkCL(err, "starting the kernel " + i);
+		}
+	}
+
+
 
 	clFinish(clCommandQueue);
 	clEnqueueReleaseGLObjects(clCommandQueue, 1,  &clSrc, 0, 0, NULL);
 	checkCL(err, "Releasing src");
+	clEnqueueReleaseGLObjects(clCommandQueue, 1,  &clTemp, 0, 0, NULL);
+	checkCL(err, "Releasing temp");
 	clEnqueueReleaseGLObjects(clCommandQueue, 1,  &clDest, 0, 0, NULL);
 	checkCL(err, "Releasing dest");
 	clReleaseMemObject(clSrc);
+	clReleaseMemObject(clTemp);
 	clReleaseMemObject(clDest);
 }

@@ -49,6 +49,7 @@ __kernel void ReduceHorizontal(__read_only image2d_t src, __write_only image2d_t
 	barrier(CLK_LOCAL_MEM_FENCE);
 
 	//Write to output array. We want inclusive scan, so sum the initial array
-	write_imagef(dest, uv, temp[2*ID] + read_imagef(src, sampler, uv));
-	write_imagef(dest, uv + (int2)(1, 0), temp[2*ID + 1] + read_imagef(src, sampler, uv + (int2)(1, 0)));
+	//Writ transposed
+	write_imagef(dest, uv.yx, temp[2*ID] + read_imagef(src, sampler, uv));
+	write_imagef(dest, uv.yx + (int2)(0, 1), temp[2*ID + 1] + read_imagef(src, sampler, uv + (int2)(1, 0)));
 }

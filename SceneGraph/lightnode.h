@@ -22,6 +22,8 @@ private:
 	GLuint moments;
 	GLuint momentsTemp;
 	GLuint depthBuffer;
+	int m_shadowWidth;
+	int m_shadowHeight;
 
 public:
 	LightNode(Primitive *p, std::string name);
@@ -60,6 +62,9 @@ public:
 	GLuint shadowMoments() {return moments;}
 	GLuint shadowMomentsTemp() {return momentsTemp;}
 	GLuint getShadowMap() {return shadowMap;}
+
+	int shadowWidth() {return m_shadowWidth;}
+	int shadowHeight() {return m_shadowHeight;}
 
 	void changeColor(float r, float g, float b, float a);
 };

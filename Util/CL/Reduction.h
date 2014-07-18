@@ -20,7 +20,7 @@ public:
 	static Reduction* instance();
 	~Reduction();
 
-	void computeSATGLTexture(GLuint src, GLuint dest, int width, int height);
+	void computeSATGLTexture(GLuint src, GLuint temp, GLuint dest, int width, int height);
 
 private:
 	Reduction();
@@ -33,7 +33,7 @@ private:
 	cl_device_id		clDevice;
 
 	cl_program          clProgram;
-	cl_kernel           reduceHorizontalKernel;
+	cl_kernel           reduceHorizontalTransposeKernel;
 	cl_kernel           reduceVerticalKernel;
 
 	bool initContextResources();

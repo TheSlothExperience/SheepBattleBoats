@@ -382,7 +382,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0,0, 1024, 768);
+		glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
 		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, l->perspectiveMatrix().constData());
 
@@ -411,13 +411,13 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 
 void Scene::computeSAT(QOpenGLShaderProgram *sat) {
 	for(auto l : lights) {
-		//glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
+		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		Reduction::instance()->computeSATGLTexture(l->getShadowMap(), l->shadowMomentsTemp(), 1024, 768);
+		Reduction::instance()->computeSATGLTexture(l->getShadowMap(), l->shadowMoments(), l->shadowMomentsTemp(), l->shadowWidth(), l->shadowHeight());
 
 		//Release and relax, brah
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 
@@ -448,7 +448,7 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glViewport(0,0, 1024, 768);
+			glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
@@ -477,7 +477,7 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glViewport(0,0, 1024, 768);
+			glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
