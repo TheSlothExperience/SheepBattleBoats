@@ -13,6 +13,7 @@ include(Camera/Camera.pri)
 include(GLWidget/GLWidget.pri)
 include(Geometry/Geometry.pri)
 include(SceneGraph/SceneGraph.pri)
+include(GameLogic/GameLogic.pri)
 
 
 OTHER_FILES += shaders/* \

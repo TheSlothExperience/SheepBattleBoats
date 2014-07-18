@@ -222,3 +222,13 @@ void SceneGraph::translate(double x, double y, double z) {
 void SceneGraph::rotate(QQuaternion q) {
 	rotation = q * rotation;
 }
+
+//void SceneGraph::testCollisions(){
+
+//    if(leaf) {
+//    qDebug()<<"testCollision in scenegraph";
+//    } else {
+//        //Else, recurse into its children
+//        std::for_each(children.begin(), children.end(), [](SceneGraph *s){s->testCollisions();});
+//    }
+//}

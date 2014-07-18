@@ -101,7 +101,7 @@ public:
     QList<LevelObjectNode*> getLvlObjAdresses(){return this->levelObjAdresses;}
     void translateMotherSheep(double z);
     void rotateMotherSheep(double rotation);
-    void executeObjectBehavior();
+
 
 
 };

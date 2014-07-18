@@ -62,6 +62,7 @@ public:
 	GLuint getShadowMap() {return shadowMap;}
 
 	void changeColor(float r, float g, float b, float a);
+
 };
 
 #endif

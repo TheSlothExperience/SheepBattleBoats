@@ -9,12 +9,13 @@
 #include "torus.h"
 #include "light.h"
 #include "object3d.h"
+#include "levelobject.h"
 
 #include "glwidget.h"
 #include <QtGui>
 #include <GL/gl.h>
 #include <iostream>
-
+#include<collisiondetecion.h>
 Scene::Scene(QObject *parent)
 	: QAbstractItemModel(parent)
 {
@@ -37,7 +38,8 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 
 	addLight();
 	lights.at(0)->translate(1.0, 3.0, 1.50);
-	addTorus(rootNode, 8);
+    levelObjAdresses= QList<LevelObjectNode*>();
+//	addTorus(rootNode, 8);
 }
 
 
@@ -313,6 +315,21 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
     return createIndex(s->row(), 0, s);
 }
 
+LevelObjectNode* Scene::addLevelObj(){
+
+    LevelObject *lvlObj = new LevelObject();
+    std::string name("LevelObj ");
+    int id = nextId();
+
+    LevelObjectNode *s = new LevelObjectNode(lvlObj,name);
+    s->setId(id);
+    identifier[id] = s;
+
+    rootNode->add(s);
+    levelObjAdresses.append(s);
+    return s;
+}
+
 void Scene::draw(QMatrix4x4 cameraMatrix) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= cameraMatrix;
@@ -529,3 +546,41 @@ std::vector<GLfloat> Scene::lightViews() {
 std::vector<GLuint> Scene::shadowMapLocations() {
 	return fmap<GLuint>(lights, [=](LightNode *l){return l->getShadowMap();});
 }
+
+void Scene::initLevel(){
+    LevelObjectNode *temp=addLevelObj();
+    mainBoat=temp;
+ temp=addLevelObj();
+//    temp->translate(1.0, 0.0, 0.0);
+//temp=addLevelObj();
+//    temp->translate(-10.0,0.0, -10.0);
+}
+
+void Scene::testCollisions(){
+    for(int i=0;i<levelObjAdresses.length()-1;i++){
+//        qDebug()<<QString::number(levelObjAdresses.length()-1);
+        for(int j=i+1;j<levelObjAdresses.length();j++){
+//            qDebug()<<QString::number(levelObjAdresses.at(j)->getId());
+           BoundingBox* bb1= levelObjAdresses.at(i)->getBB();
+           BoundingBox* bb2= levelObjAdresses.at(j)->getBB();
+
+           if(CollisionDetecion::isCollision(bb1,bb2)==1){
+               qDebug()<<"Colission";
+           }else{
+               qDebug()<<"no Colission";
+           }
+        }
+    }
+//    rootNode->testCollisions();
+}
+
+void Scene::translateMotherSheep(double z){
+    QVector3D dir= mainBoat->getRotation().rotatedVector(QVector3D(0.0,0.0,z));
+    mainBoat->translate(dir.x(),dir.y(),dir.z());
+}
+
+void Scene::rotateMotherSheep(double angle){
+    QQuaternion rot = QQuaternion(cos(angle/2.0), sin(angle/2.0) * QVector3D(0.0, 1.0, 0.0));
+    mainBoat->rotate(rot);
+}
+

@@ -10,6 +10,7 @@
 #include <QImage>
 #include <iostream>
 #include <cstdio>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -32,8 +33,28 @@ MainWindow::MainWindow(QWidget *parent)
 	setMenuBar(menuBar);
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
+
+    initGameLogic();
+
 }
 
+
+void MainWindow::initGameLogic(){
+
+    initLevel();
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(testCollision()));
+    timer->start(500);
+
+//    for(int i=0;i<scene->getLvlObjAdresses().length();i++){
+//        qDebug()<<"lvlObj"+QString::number(i);
+//    }
+}
+
+void MainWindow::testCollision(){
+    qDebug()<<"Mainwindow::testCollision";
+    scene->testCollisions();
+}
 MainWindow::~MainWindow()
 {
 
@@ -292,6 +313,14 @@ void MainWindow::createActions() {
     add3DModelAction = new QAction(this);
     add3DModelAction->setIcon(QIcon(":/img/add.png"));
     connect(add3DModelAction, SIGNAL(triggered()),this,SLOT(add3DModel()));
+
+    addLvlObjAction = new QAction(this);
+    addLvlObjAction ->setIcon(QIcon(":/img/add.png"));
+    connect(addLvlObjAction , SIGNAL(triggered()),this,SLOT(addLvlObj()));
+
+    shootAction=new QAction(this);
+    shootAction->setShortcut(tr("l"));
+    connect(shootAction,SIGNAL(triggered()),this,SLOT(shoot()));
 }
 
 void MainWindow::createMenus() {
@@ -316,7 +345,9 @@ void MainWindow::createMenus() {
 
 }
 
-
+void MainWindow::initLevel(){
+    scene->initLevel();
+}
 void MainWindow::keyPressEvent(QKeyEvent *event) {
 	if(event->key() == Qt::Key_Delete) {
 		//Delete the current node
@@ -342,25 +373,33 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 			cameraModeAction->activate(QAction::Trigger);
 		}
 	} else if(event->key() == Qt::Key_W) {
-		activeViewport->translateCamera(0, 0, -0.1);
-		QString msg = "Camera world position: ";
-		QVector3D cPos = activeViewport->getCameraWorldPosition();
-		msg += QString::number(cPos.x());
-		msg += ", ";
-		msg += QString::number(cPos.y());
-		msg += ", ";
-		msg += QString::number(cPos.z());
-		statusbar->showMessage(msg, 5000);
+//        activeViewport->translateCamera(0, 0, -0.1);
+        scene->translateMotherSheep(-0.1);
+        QString msg = "Camera world position: ";
+        QVector3D cPos = activeViewport->getCameraWorldPosition();
+
+        msg += QString::number(cPos.x());
+        msg += ", ";
+        msg += QString::number(cPos.y());
+        msg += ", ";
+        msg += QString::number(cPos.z());
+
+
 		emit updateGL();
-	} else if(event->key() == Qt::Key_S) {
-		activeViewport->translateCamera(0, 0, 0.1);
+        statusbar->showMessage(msg, 5000);
+    } else if(event->key() == Qt::Key_S) {
+//		activeViewport->translateCamera(0, 0, 0.1);
+         scene->translateMotherSheep(0.1);
 		emit updateGL();
 	} else if(event->key() == Qt::Key_A) {
-		activeViewport->rotateCamera(-0.03);
+//		activeViewport->rotateCamera(-0.03);
+        scene->rotateMotherSheep(0.1);
+
 		emit updateGL();
 	} else if(event->key() == Qt::Key_D) {
-		activeViewport->rotateCamera(0.03);
-		emit updateGL();
+//		activeViewport->rotateCamera(0.03);
+        scene->rotateMotherSheep(-0.1);
+        emit updateGL();
 	}
 }
 
@@ -419,6 +458,13 @@ void MainWindow::addLight(){
 }
 
 void MainWindow::add3DModel(){
+    load3DModel();
+    QModelIndex idx = scene->add3DModel(currentNode);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
+    emit updateGL();
+}
+
+void MainWindow::addLvlObj(){
     load3DModel();
     QModelIndex idx = scene->add3DModel(currentNode);
     sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
@@ -537,4 +583,8 @@ void MainWindow::load3DModel(){
         emit updateGL();
     }
 
+}
+
+void MainWindow::shoot(){
+    qDebug()<<"shoot";
 }

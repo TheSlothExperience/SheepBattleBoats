@@ -1,0 +1,7 @@
+#include "levelobject.h"
+
+LevelObject::LevelObject()
+{
+}
+
+

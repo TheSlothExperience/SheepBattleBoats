@@ -2,6 +2,7 @@
 #define PRIMITIVE_H
 
 #include <GL/gl.h>
+#include<boundingbox.h>
 
 class Primitive
 {

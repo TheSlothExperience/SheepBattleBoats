@@ -232,8 +232,7 @@ QQuaternion M4toQuat(QMatrix4x4 mat) {
 
 void GLWidget::translateCamera(double x, double y, double z) {
 	QVector4D trans(x, y, z, 1.0);
-	trans = trans * camera->getCameraMatrix();
-
+    trans = trans * camera->getCameraMatrix();
 	this->camera->translate(trans.x(), trans.y(), trans.z());
 }
 
@@ -257,7 +256,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 		}
 	}
 
-	if ((event->buttons() & Qt::LeftButton) && dragging) {
+//	if ((event->buttons() & Qt::LeftButton) && dragging) {
 		//Here we implement the trackball. Sample two points on the sphere and
 		//calculate their angle to use as the rotation.
 
@@ -288,7 +287,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 		} else {
 			emit rotate(&worldQuat);
 		}
-	}
+//	}
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
