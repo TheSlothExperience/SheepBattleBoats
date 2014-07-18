@@ -44,6 +44,8 @@ public:
 	void translateCamera(double x, double y, double z);
 	void rotateCamera(float angle);
 
+	void setSATShadows(bool set) {satShadowsp = set;}
+
 private:
     int tesselationLevel;
 
@@ -81,6 +83,7 @@ private:
     GLuint modelViewMatLocation;
     GLuint normalMatLocation;
     GLuint lightPositionLocation;
+	bool satShadowsp;
 
     GBuffer gbuffer;
 

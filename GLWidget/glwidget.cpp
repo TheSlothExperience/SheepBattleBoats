@@ -16,7 +16,7 @@ const int TEXTURE_HEIGHT = 768;
 GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
 	: QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget),
 	  tesselationLevel(0),
-	  zoom(0.0), dragging(false)
+	  zoom(0.0), dragging(false), satShadowsp(false)
 {
 	scene = NULL;
 }
