@@ -500,6 +500,7 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+	glDeleteBuffers(1, &canvasQuad);
 }
 
 /* Takes a nested functor `F (F A)` from `start` to
