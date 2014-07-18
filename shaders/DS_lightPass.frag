@@ -81,17 +81,46 @@ void main(){
 
 		vec4 lightColor = lightColors[i];
 
-		//Calculate shadow visibility
-		{
-			vec4 shCoord = (lightBias * lightPerspectives[i] * lightViews[i]) * inverseCameraMatrix * vec4(V, 1.0);
-			vec4 shCoordW = shCoord / shCoord.w;
-			vec2 moments = texture2D(shadowMaps[i], shCoordW.xy).rg; //Distance to light
-			float visibility = chebyshevUpperBound(shCoordW.z, moments);
+		//Calculate shadow visibility ---------------------------------------------------
+		vec4 shCoord = (lightBias * lightPerspectives[i] * lightViews[i]) * inverseCameraMatrix * vec4(V, 1.0);
+		vec4 shCoordW = shCoord / shCoord.w;
+		float d_receiver = shCoordW.z;
+		vec2 moments = texture2D(shadowMaps[i], shCoordW.xy).rg; //Distance to light
+		float visibility = chebyshevUpperBound(d_receiver, moments);
 
-			float lightWidth = 1.0; //Make light with fixed. Later dynamic
+		float lightWidth = 1.0; //Make light with fixed. Later dynamic
+		vec2 sizes = textureSize(shadowMaps[i], 0);
+
+		if(false) {
 			//Search blocker
-			float d_blocker;
+			vec2 x = vec2(1.0 / sizes.x, 0.0);
+			vec2 y = vec2(0.0, 1.0 / sizes.y);
+			//Average blocker distance
+			float d_blocker =
+				texture2D(shadowMaps[i], shCoordW.xy).r
+				+ texture2D(shadowMaps[i], shCoordW.xy + x).r
+				+ texture2D(shadowMaps[i], shCoordW.xy - x).r
+				+ texture2D(shadowMaps[i], shCoordW.xy + y).r
+				+ texture2D(shadowMaps[i], shCoordW.xy - y).r;
+			d_blocker /= 5.0;
+			float w_penumbra = (d_receiver - d_blocker) * lightWidth / d_blocker;
+			//Now sample the SAT accordingly
+			x *= 2 * w_penumbra;
+			y *= 2 * w_penumbra;
+			//MAX is in the lower right corner:
+			//(x_max, y_max) - (x_max, y_min) - (x_min, y_max) + (x_min, y_min)
+			vec2 s =
+				texture2D(shadowMaps[i], shCoordW.xy + x - y).rg
+				- texture2D(shadowMaps[i], shCoordW.xy + x + y).rg
+				- texture2D(shadowMaps[i], shCoordW.xy - x - y).rg
+				+ texture2D(shadowMaps[i], shCoordW.xy - x + y).rg;
+			s /= (2 * 2 * w_penumbra) * (2 * 2 * w_penumbra);
+
+			visibility = chebyshevUpperBound(d_receiver, s);
 		}
+		// -----------------------------------------------------------------------------
+
+
 
 		diffuse += visibility * max(0.0,dot(N,L));
 
