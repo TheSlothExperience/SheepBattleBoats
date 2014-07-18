@@ -176,7 +176,9 @@ void GLWidget::shadowMapsPass() {
         //Discombobulate!
 	    scene->lightsPass(shaders.storeDepthProgram);
 	    scene->blurShadowMaps(shaders.gaussianBlurHProgram, shaders.gaussianBlurVProgram);
-	    scene->computeSAT(NULL);
+	    if(satShadowsp) {
+		    scene->computeSAT(NULL);
+	    }
     } else {
         std::cout << "no scene yet" << std::endl;
     }

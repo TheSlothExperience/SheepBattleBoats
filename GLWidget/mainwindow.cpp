@@ -165,6 +165,7 @@ void MainWindow::createColorDock() {
 	connect(blueSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
 
 	satShadowCheckBox = new QCheckBox("SAT shadows");
+	connect(satShadowCheckBox, SIGNAL(toggled(bool)), this, SLOT(setSATShadows(bool)));
 
 
 	QWidget *contents = new QWidget;
