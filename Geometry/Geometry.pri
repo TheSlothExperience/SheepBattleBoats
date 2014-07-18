@@ -8,7 +8,8 @@ HEADERS  += Geometry/primitive.h \
 			Geometry/sphere.h \
 			Geometry/torus.h \
 			Geometry/light.h \
-    Geometry/object3d.h
+    Geometry/object3d.h \
+    Geometry/texture.h
 
 SOURCES  += Geometry/cube.cpp \
 		 	Geometry/cone.cpp \
@@ -16,4 +17,5 @@ SOURCES  += Geometry/cube.cpp \
 			Geometry/sphere.cpp \
 			Geometry/torus.cpp \
 			Geometry/light.cpp \
-    Geometry/object3d.cpp
+    Geometry/object3d.cpp \
+    Geometry/texture.cpp

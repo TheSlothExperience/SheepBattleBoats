@@ -7,6 +7,8 @@ TEMPLATE = app
 
 QMAKE_CXXFLAGS += -std=c++11
 
+LIBS+= -L/usr/local/lib -lassimp
+
 SOURCES += main.cpp
 
 include(Camera/Camera.pri)
