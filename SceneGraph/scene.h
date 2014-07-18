@@ -81,6 +81,7 @@ public:
 	std::vector<GLfloat> lightPerspectives();
 	std::vector<GLfloat> lightViews();
 	std::vector<GLuint> shadowMapLocations();
+	std::vector<GLuint> shadowSATs();
 
 
 	SceneGraph *root() {return rootNode;};

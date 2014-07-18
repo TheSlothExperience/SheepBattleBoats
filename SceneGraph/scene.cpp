@@ -561,3 +561,7 @@ std::vector<GLfloat> Scene::lightViews() {
 std::vector<GLuint> Scene::shadowMapLocations() {
 	return fmap<GLuint>(lights, [=](LightNode *l){return l->getShadowMap();});
 }
+
+std::vector<GLuint> Scene::shadowSATs() {
+	return fmap<GLuint>(lights, [=](LightNode *l){return l->shadowMomentsTemp();});
+}

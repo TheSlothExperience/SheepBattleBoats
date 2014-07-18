@@ -21,6 +21,7 @@ uniform int numLights;
 uniform mat4 lightViews[maxLights];
 uniform mat4 lightPerspectives[maxLights];
 uniform sampler2D shadowMaps[maxLights];
+uniform sampler2D shadowSATs[maxLights];
 uniform mat4 lightBias;
 
 uniform mat4 inverseCameraMatrix;
@@ -81,10 +82,16 @@ void main(){
 		vec4 lightColor = lightColors[i];
 
 		//Calculate shadow visibility
-		vec4 shCoord = (lightBias * lightPerspectives[i] * lightViews[i]) * inverseCameraMatrix * vec4(V, 1.0);
-		vec4 shCoordW = shCoord / shCoord.w;
-		vec2 moments = texture2D(shadowMaps[i], shCoordW.xy).rg; //Distance to light
-		float visibility = chebyshevUpperBound(shCoordW.z, moments);
+		{
+			vec4 shCoord = (lightBias * lightPerspectives[i] * lightViews[i]) * inverseCameraMatrix * vec4(V, 1.0);
+			vec4 shCoordW = shCoord / shCoord.w;
+			vec2 moments = texture2D(shadowMaps[i], shCoordW.xy).rg; //Distance to light
+			float visibility = chebyshevUpperBound(shCoordW.z, moments);
+
+			float lightWidth = 1.0; //Make light with fixed. Later dynamic
+			//Search blocker
+			float d_blocker;
+		}
 
 		diffuse += visibility * max(0.0,dot(N,L));
 

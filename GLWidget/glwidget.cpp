@@ -145,15 +145,21 @@ void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int tex
 
 	//Now the shadowmaps
 	std::vector<GLuint> shadowMapLocs = scene->shadowMapLocations();
+	std::vector<GLuint> shadowSATLocs = scene->shadowSATs();
 	GLint *shadowSamplers = new GLint[shadowMapLocs.size()];
+	GLint *shadowSATs = new GLint[shadowSATLocs.size()];
 	unsigned int shadowsOffset = texOffset;
 	for(unsigned int i = 0; i < shadowMapLocs.size(); i++) {
 		shadowSamplers[i] = i + shadowsOffset;
+		shadowSATs[i] = i + shadowsOffset + shadowMapLocs.size();
 		//Start at GL_TEXTURE0 + shadowsOffset
 		glActiveTexture(GL_TEXTURE0 + shadowsOffset + i);
 		glBindTexture(GL_TEXTURE_2D, shadowMapLocs[i]);
+		glActiveTexture(GL_TEXTURE0 + shadowsOffset + shadowMapLocs.size() + i);
+		glBindTexture(GL_TEXTURE_2D, shadowSATLocs[i]);
 	}
 	glUniform1iv(shaderProgram->uniformLocation("shadowMaps"), shadowMapLocs.size(), shadowSamplers);
+	glUniform1iv(shaderProgram->uniformLocation("shadowSATs"), shadowSATLocs.size(), shadowSATs);
 	delete[] shadowSamplers;
 
 	//An additional bias matrix
