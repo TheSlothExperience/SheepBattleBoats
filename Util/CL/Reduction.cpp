@@ -138,8 +138,17 @@ void Reduction::computeSATGLTexture(GLuint src, GLuint dest, int width, int heig
 	checkCL(err, "passing width");
 	err = clSetKernelArg(reduceHorizontalKernel, 3, sizeof(int), &height);
 	checkCL(err, "passing height");
-	err = clSetKernelArg(reduceHorizontalKernel, 4, width * height * sizeof(cl_float4), NULL);
+	err = clSetKernelArg(reduceHorizontalKernel, 4, width * sizeof(cl_float4), NULL);
 	checkCL(err, "passing temp");
+
+	size_t global_work_size[] = {std::min(width, 512), 1};
+	size_t local_work_size[] = {std::min(width, 512), 1};
+	for(int i = 0; i < height; i++) {
+		err = clSetKernelArg(reduceHorizontalKernel, 5, sizeof(int), &i);
+		checkCL(err, "passing row");
+		err = clEnqueueNDRangeKernel(clCommandQueue, reduceHorizontalKernel, 1, NULL, global_work_size, local_work_size, 0, NULL, NULL);
+		checkCL(err, "starting the kernel " + i);
+	}
 
 	clFinish(clCommandQueue);
 	clEnqueueReleaseGLObjects(clCommandQueue, 1,  &clSrc, 0, 0, NULL);
