@@ -11,14 +11,16 @@
     #include <GL/gl.h>
 #endif
 #include "Common.h"
+#include <QObject>
 
-class Reduction
+class Reduction : public QObject
 {
+	Q_OBJECT
 public:
 	static Reduction* instance();
 	~Reduction();
 
-	void computeSATGLTexture(GLuint src, GLuint dest);
+	void computeSATGLTexture(GLuint src, GLuint dest, int width, int height);
 
 private:
 	Reduction();
@@ -29,6 +31,10 @@ private:
 	cl_command_queue	clCommandQueue;
 	cl_platform_id		clPlatform;
 	cl_device_id		clDevice;
+
+	cl_program          clProgram;
+	cl_kernel           reduceHorizontalKernel;
+	cl_kernel           reduceVerticalKernel;
 
 	bool initContextResources();
 	void cleanupContextResources();

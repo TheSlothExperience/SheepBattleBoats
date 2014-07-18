@@ -414,7 +414,7 @@ void Scene::computeSAT(QOpenGLShaderProgram *sat) {
 		//glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		Reduction::instance()->computeSATGLTexture(l->getShadowMap(), l->shadowMomentsTemp());
+		Reduction::instance()->computeSATGLTexture(l->getShadowMap(), l->shadowMomentsTemp(), 1024, 768);
 
 		//Release and relax, brah
 		//glBindFramebuffer(GL_FRAMEBUFFER, 0);

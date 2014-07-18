@@ -1,7 +1,7 @@
 #include "Reduction.h"
 #include <GL/glx.h>
 #include <vector>
-
+#include <QFile>
 Reduction* Reduction::m_instance = NULL;
 
 Reduction* Reduction::instance() {
@@ -73,6 +73,33 @@ bool Reduction::initContextResources() {
 	//from that device are needed.
 	clCommandQueue = clCreateCommandQueue(clContext, clDevice, 0, &clError);
 	V_RETURN_FALSE_CL(clError, "Failed to create the command queue in the context");
+
+
+	//Now create and compile the programs
+	size_t programSize = 0;
+
+	QFile f(":/shaders/Reduce.cl");
+	if(!f.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
+
+
+	std::string programCodeStr = std::string(f.readAll().data());
+	const char *programCode = programCodeStr.c_str();
+	programSize = f.size();
+
+	clProgram = clCreateProgramWithSource(clContext, 1, (const char**) &programCode, &programSize, &clError);
+	V_RETURN_FALSE_CL(clError, "Failed to create program file");
+
+	clError = clBuildProgram(clProgram, 1, &clDevice, NULL, NULL, NULL);
+
+	if(clError != CL_SUCCESS) {
+		PrintBuildLog(clProgram, clDevice);
+		return false;
+	}
+
+	reduceHorizontalKernel = clCreateKernel(clProgram, "ReduceHorizontal", &clError);
+	V_RETURN_FALSE_CL(clError, "Failed to compile kernel: ReduceHorizontal");
+	reduceVerticalKernel = clCreateKernel(clProgram, "ReduceVertical", &clError);
+	V_RETURN_FALSE_CL(clError, "Failed to compile kernel: ReduceVertical");
 	return true;
 }
 
@@ -87,7 +114,7 @@ inline void checkCL(cl_int err, std::string msg = "") {
 	}
 }
 
-void Reduction::computeSATGLTexture(GLuint src, GLuint dest) {
+void Reduction::computeSATGLTexture(GLuint src, GLuint dest, int width, int height) {
     cl_int err = 5;
 	cl_mem clSrc, clDest;
     clSrc = clCreateFromGLTexture2D(clContext, CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, src, &err);
@@ -101,11 +128,24 @@ void Reduction::computeSATGLTexture(GLuint src, GLuint dest) {
 	clEnqueueAcquireGLObjects(clCommandQueue, 1,  &clDest, 0, 0, NULL);
 	checkCL(err, "acquiring dest");
 
-	//Magic goes here
+	//Pass the images
+	//Horizontal pass
+	err = clSetKernelArg(reduceHorizontalKernel, 0, sizeof(clSrc), &clSrc);
+	checkCL(err, "passing src");
+	err = clSetKernelArg(reduceHorizontalKernel, 1, sizeof(clSrc), &clSrc);
+	checkCL(err, "passing dest");
+	err = clSetKernelArg(reduceHorizontalKernel, 2, sizeof(int), &width);
+	checkCL(err, "passing width");
+	err = clSetKernelArg(reduceHorizontalKernel, 3, sizeof(int), &height);
+	checkCL(err, "passing height");
+	err = clSetKernelArg(reduceHorizontalKernel, 4, width * height * sizeof(cl_float4), NULL);
+	checkCL(err, "passing temp");
 
 	clFinish(clCommandQueue);
 	clEnqueueReleaseGLObjects(clCommandQueue, 1,  &clSrc, 0, 0, NULL);
 	checkCL(err, "Releasing src");
 	clEnqueueReleaseGLObjects(clCommandQueue, 1,  &clDest, 0, 0, NULL);
 	checkCL(err, "Releasing dest");
+	clReleaseMemObject(clSrc);
+	clReleaseMemObject(clDest);
 }

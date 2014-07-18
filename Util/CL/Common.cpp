@@ -29,15 +29,15 @@ void LoadProgram(const char* Path, char** pSource, size_t* SourceSize)
 
 	// open the OpenCL source code file
     #ifdef _WIN32   // Windows version
-        if(fopen_s(&pFileStream, Path, "rb") != 0) 
-        {       
+        if(fopen_s(&pFileStream, Path, "rb") != 0)
+        {
             cout<<"File not found: "<<Path;
 			return;
         }
     #else           // Linux version
         pFileStream = fopen(Path, "rb");
-        if(pFileStream == 0) 
-        {       
+        if(pFileStream == 0)
+        {
             cout<<"File not found: "<<Path;
 			return;
         }
