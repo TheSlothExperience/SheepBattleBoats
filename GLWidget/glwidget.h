@@ -63,6 +63,7 @@ private:
     void shadowMapsPass();
 	void passShadowMaps(QOpenGLShaderProgram *shader, int texOffset);
     void paintSceneToCanvas();
+    void getSceneIntensity();
 
     GLuint fbo;
     GLuint renderTex;

@@ -161,6 +161,7 @@ void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
     glBindTexture(GL_TEXTURE_2D,m_finalTexture);
 }
 
+
 //void GBuffer::BindForReading(){
 //    glBindFramebuffer(GL_READ_FRAMEBUFFER,m_fbo);
 //}

@@ -80,7 +80,8 @@ void GLWidget::paintGL()
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
 
-    paintSceneToCanvas();
+    //paintSceneToCanvas();
+    getSceneIntensity();
 }
 
 /*
@@ -155,6 +156,30 @@ void GLWidget::paintSceneToCanvas() {
     glDisableVertexAttribArray(0);
 
     Shaders::release(shaders.canvasProgram);
+}
+
+void GLWidget::getSceneIntensity(){
+
+    Shaders::bind(shaders.intensityProgram);
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
+    glClearColor(8.0f, 8.0f, 8.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0,0, this->width(), this->height());
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    gbuffer.bindFinalPass(shaders.intensityProgram);
+
+    glUniform2f(shaders.intensityProgram->uniformLocation("pixelSize"),1.0/(float) this->width(),1.0/(float) this->height());
+
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+    glDisableVertexAttribArray(0);
+    Shaders::release(shaders.intensityProgram);
 }
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
