@@ -17,7 +17,10 @@ private:
     std::string fileName;
     GLenum textureTarget;
     GLuint textureObj;
-    //QImage* image;
+    QImage* image;
+    //blob
+//    Magick::Image* m_pImage;
+//    Magick::Blob m_blob;
 
 };
 

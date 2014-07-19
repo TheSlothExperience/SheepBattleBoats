@@ -18,6 +18,15 @@ uniform vec3 lightPositions[maxLights];
 uniform vec4 lightColors[maxLights];
 uniform int numLights;
 
+
+
+void sobelize(sampler2D texture){
+
+
+
+}
+
+
 float stepmix(float edge0, float edge1, float E, float x){
     float T = clamp(0.5*(x-edge0+E)/E,0.0,1.0);
     return mix(edge0,edge1,T);
