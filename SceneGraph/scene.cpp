@@ -10,6 +10,7 @@
 #include "light.h"
 #include "object3d.h"
 #include "sea.h"
+#include "seanode.h"
 #include "Reduction.h"
 
 #include "glwidget.h"
@@ -319,10 +320,10 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
 QModelIndex Scene::addSea(SceneGraph *node){
     beginResetModel();
     Primitive *sea = new Sea();
-    std::string name("Sea of Moist Seaness ");
+    std::string name("Sea of Moist Wetness ");
     int id = nextId();
     name += std::to_string(id);
-    SceneGraph *s = new SceneGraph(sea, name);
+    SeaNode *s = new SeaNode(sea, name);
     s->setId(id);
     identifier[id] = s;
 
