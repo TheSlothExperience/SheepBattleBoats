@@ -47,7 +47,7 @@ struct Neighbors
 
     Neighbors()
     {
-        n1 = n2 = (uint) -1;
+        n1 = n2 = (uint)-1;
     }
 
     void addNeighbor(uint n)

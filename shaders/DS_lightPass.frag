@@ -20,10 +20,36 @@ uniform int numLights;
 
 
 
-void sobelize(sampler2D texture){
+float intensity(vec4 color){
+    return sqrt((color.x*color.x)+(color.y*color.y)+(color.z*color.z));
+}
 
+vec3 simpleEdgeDetector(float step, vec2 center, vec4 outputColor){
 
+    int radius = 20;
+    float centerIntensity = intensity(texture2D(colorTexture,center));
+    int darker = 0;
+    float maxIntensity = centerIntensity;
+    for(int i = -radius; i<=radius;i++){
 
+        for(int j = -radius; j<=radius; j++){
+
+            vec2 currentLocation = center + vec2(i*step,j*step);
+            float currentIntensity = intensity(texture2D(colorTexture,currentLocation));
+            if(currentIntensity <centerIntensity){
+                maxIntensity = currentIntensity;
+            }
+        }
+    }
+
+    if((maxIntensity - centerIntensity)>0.01*radius){
+
+        if(darker / (radius*radius) < (1-(1/radius))){
+            return vec3(0.0,0.0,0.0);
+        }
+    }
+
+    return outputColor.xyz;
 }
 
 
@@ -80,5 +106,12 @@ void main(){
 	else if(diffuse < C) diffuse = C;
 	else diffuse = D;
 
-	outputColor += diffuse*color;
+        outputColor += diffuse*color;
+
+        //TRYING OUT AWESOMENSS
+        float step = 1.0 / textureSize(colorTexture,0).x;
+        vec2 centerColor = texture2D(colorTexture, vec2(0.5,0.5)).st;
+        outputColor.xyz = simpleEdgeDetector(step,centerColor,outputColor);
+        outputColor.a= 0.0;
+
 }

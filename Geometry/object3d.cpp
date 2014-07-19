@@ -236,8 +236,8 @@ bool Object3D::initMaterials(const aiScene *pScene, const std::string &filename)
 
 
 void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> indices){
-
-    // Step 1 - find the two triangles that share every edge
+   int c = 0;
+    // Step 1 - find the two triangles that share edge
     for (uint i=0; i<paiMesh->mNumFaces;i++){
         const aiFace& face = paiMesh->mFaces[i];
 
@@ -247,13 +247,15 @@ void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> 
         for(uint j=0;j<3;j++){
 
             uint index = face.mIndices[j];
+
             aiVector3D& v = paiMesh->mVertices[index];
 
             if(posMap.find(v)==posMap.end()){
-                posMap[v]=index;
-            }else{
-                index = posMap[v];
+                    posMap[v]=index;
+                }else{
+                    index = posMap[v];
             }
+
             unique.indices[j]=index;
         }
 
@@ -277,7 +279,7 @@ void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> 
             assert(indexMap.find(e) != indexMap.end());
             Neighbors n = indexMap[e];
             uint otherTri = n.getOther(i);
-
+            std::cout<< "index" << otherTri << std::endl;
             assert(otherTri != -1);
 
             const Face& otherFace = uniqueFaces[otherTri];
