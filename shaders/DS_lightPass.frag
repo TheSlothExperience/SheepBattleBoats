@@ -60,7 +60,9 @@ float stepmix(float edge0, float edge1, float E, float x){
 void main(){
 
     vec4 color=vec4(texture(colorTexture,UV));
-    vec3 V=vec3(texture(posTexture,UV));
+    vec4 V_=vec4(texture(posTexture,UV));
+    vec3 V = V_.xyz;
+    float a = V_.a;
     vec3 N=vec3(texture(normalTexture,UV));
 
     vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
@@ -149,5 +151,6 @@ void main(){
 	else if(diffuse < C) diffuse = C;
 	else diffuse = D;
 
+	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
 	outputColor += diffuse*color;
 }

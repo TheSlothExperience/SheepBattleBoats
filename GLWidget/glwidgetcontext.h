@@ -12,14 +12,21 @@
 #include "primitive.h"
 
 struct Shaders {
-	QOpenGLShaderProgram *shaderProgram;
-	QOpenGLShaderProgram *canvasProgram;
-	QOpenGLShaderProgram *quadviewProgram;
-	QOpenGLShaderProgram *storeDepthProgram;
-	QOpenGLShaderProgram *gaussianBlurHProgram;
-	QOpenGLShaderProgram *gaussianBlurVProgram;
-	QOpenGLShaderProgram *geometryPassProgram;
-	QOpenGLShaderProgram *lightPassProgram;
+	static QOpenGLShaderProgram *shaderProgram;
+	static QOpenGLShaderProgram *canvasProgram;
+	static QOpenGLShaderProgram *quadviewProgram;
+	static QOpenGLShaderProgram *storeDepthProgram;
+	static QOpenGLShaderProgram *gaussianBlurHProgram;
+	static QOpenGLShaderProgram *gaussianBlurVProgram;
+	static QOpenGLShaderProgram *geometryPassProgram;
+	static QOpenGLShaderProgram *lightPassProgram;
+	static QOpenGLShaderProgram *phongProgram;
+
+	static void bind(QOpenGLShaderProgram *sp);
+	static void release(QOpenGLShaderProgram *sp);
+
+private:
+	static QOpenGLShaderProgram *last;
 };
 
 class GLWidgetContext : public QGLWidget

@@ -90,26 +90,21 @@ void GLWidget::paintGL()
  */
 void GLWidget::DSGeometryPass() {
     //Load the phong shading program
-    shaders.shaderProgram->bind();
+	Shaders::bind(Shaders::shaderProgram);
 
-    glUniformMatrix4fv(shaders.shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
     glViewport(0,0,1024,768);
     gbuffer.bindGeometryPass();
 
-    glDepthMask(GL_TRUE);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-
     if(scene != NULL) {
         //Discombobulate!
-        scene->draw(camera->getCameraMatrix());
+	    scene->draw(camera);
     } else {
         std::cout << "no scene yet" << std::endl;
     }
 
     glDepthMask(GL_TRUE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    shaders.shaderProgram->release();
+    Shaders::release(shaders.shaderProgram);
 }
 
 /* Mix the textures and render the scene to the magical quad
@@ -117,10 +112,10 @@ void GLWidget::DSGeometryPass() {
  */
 void GLWidget::DSLightPass(){
 
-    shaders.lightPassProgram->bind();
+	Shaders::bind(shaders.lightPassProgram);
 
     gbuffer.bindLightPass(shaders.lightPassProgram);
-    scene->passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
+    Scene::passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
 
     passShadowMaps(shaders.lightPassProgram, 8);
 
@@ -133,7 +128,7 @@ void GLWidget::DSLightPass(){
 
     glDisableVertexAttribArray(0);
 
-    shaders.lightPassProgram->release();
+    Shaders::release(shaders.lightPassProgram);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -141,11 +136,13 @@ void GLWidget::DSLightPass(){
  * the screen
  */
 void GLWidget::paintSceneToCanvas() {
-	shaders.canvasProgram->bind();
+	Shaders::bind(shaders.canvasProgram);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(8.0f, 8.0f, 8.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0,0, this->width(), this->height());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gbuffer.bindFinalPass(shaders.canvasProgram);
 
     //Draw our nifty, pretty quad
@@ -157,7 +154,7 @@ void GLWidget::paintSceneToCanvas() {
 
     glDisableVertexAttribArray(0);
 
-    shaders.canvasProgram->release();
+    Shaders::release(shaders.canvasProgram);
 }
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
