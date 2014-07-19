@@ -1,4 +1,4 @@
-#include "collisiondetecion.h"
+#include "collisiondetection.h"
 #include <QtGui>
 #include<iostream>
 CollisionDetecion::CollisionDetecion()

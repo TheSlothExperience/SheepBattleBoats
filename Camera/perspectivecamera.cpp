@@ -43,5 +43,6 @@ void PerspectiveCamera::reset() {
 }
 
 void PerspectiveCamera::zoom(double z) {
-	this->fov -= z * 3;
+//	this->fov -= z * 3;
+    position+=QVector3D(0.0,-z/5.0,-z);
 }

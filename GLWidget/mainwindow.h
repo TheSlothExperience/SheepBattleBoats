@@ -94,6 +94,12 @@ private:
 
     void initGameLogic();
     void initLevel();
+    void doMovements();
+
+    bool wPressed=false;
+    bool sPressed=false;
+    bool dPressed=false;
+    bool aPressed=false;
 
 public slots:
 	void addCube();
@@ -125,7 +131,8 @@ public slots:
 	void setDualView();
 	void setQuadView();
 	void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
-    void testCollision();
+    void gameTick();
+    void testCollisions();
     void shoot();
 
 signals:

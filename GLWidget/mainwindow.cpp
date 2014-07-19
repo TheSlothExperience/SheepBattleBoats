@@ -42,18 +42,52 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::initGameLogic(){
 
     initLevel();
+
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(testCollision()));
-    timer->start(500);
+    connect(timer, SIGNAL(timeout()), this, SLOT(gameTick()));
+    timer->start(100);
 
 //    for(int i=0;i<scene->getLvlObjAdresses().length();i++){
 //        qDebug()<<"lvlObj"+QString::number(i);
 //    }
 }
 
-void MainWindow::testCollision(){
-    qDebug()<<"Mainwindow::testCollision";
+void MainWindow::gameTick(){
+    testCollisions();
+    doMovements();
+    scene->behaviourExecutions();
+    emit updateGL();
+}
+
+void MainWindow::testCollisions(){
     scene->testCollisions();
+}
+
+void MainWindow::doMovements(){
+
+    //"Vor und zurück"
+    if(wPressed){
+        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.02));
+
+    }else if(sPressed){
+        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.02));
+    }else{
+        scene->getMainBoat()->stopVelocity();
+    }
+
+    if(dPressed){
+        scene->getMainBoat()->changeSteeringValue(0.04);
+    }else if(aPressed){
+        scene->getMainBoat()->changeSteeringValue(-0.04);
+    }else{
+        scene->getMainBoat()->stopRotating();
+    }
+
+
+    QVector3D newTranslation= scene->convertToMotherSheepTranslation();
+    scene->translateMotherSheep(newTranslation);
+    scene->rotateMotherSheep();
+    activeViewport->translateBoardCamera(newTranslation);
 }
 MainWindow::~MainWindow()
 {
@@ -78,7 +112,7 @@ void MainWindow::setupGL() {
 	//Create the widgets
 	perspectiveGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(perspectiveGLWidget);
-	perspectiveGLWidget->setPerspectiveCamera(1, 1, 3);
+    perspectiveGLWidget->setPerspectiveCamera(0, 1, 5);
 
 	frontGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(frontGLWidget);
@@ -319,7 +353,7 @@ void MainWindow::createActions() {
     connect(addLvlObjAction , SIGNAL(triggered()),this,SLOT(addLvlObj()));
 
     shootAction=new QAction(this);
-    shootAction->setShortcut(tr("l"));
+    shootAction->setShortcut(tr("Space"));
     connect(shootAction,SIGNAL(triggered()),this,SLOT(shoot()));
 }
 
@@ -349,58 +383,40 @@ void MainWindow::initLevel(){
     scene->initLevel();
 }
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-	if(event->key() == Qt::Key_Delete) {
-		//Delete the current node
-		QModelIndex idx = sceneOutliner->selectionModel()->currentIndex();
-		QString msg;
-		if(static_cast<SceneGraph*>(idx.internalPointer()) == scene->root()) {
-			statusbar->showMessage("Cannot delete the root, fool!", 5000);
-		} else {
-			msg += "Deleting: ";
-			msg += scene->data(idx, Qt::DisplayRole).toString();
-			statusbar->showMessage(msg, 5000);
-			if(scene->removeRows(idx.row(), 1, idx.parent())) {
-				emit updateGL();
-			}
-		}
-	} else if(event->key() == Qt::Key_Control) {
-		//Toggle camera and interactive mode
-		if(cameraModeAction->isChecked()) {
-			objectModeAction->setChecked(true);
-			objectModeAction->activate(QAction::Trigger);
+    if(event->key() == Qt::Key_Delete) {
+        //Delete the current node
+        QModelIndex idx = sceneOutliner->selectionModel()->currentIndex();
+        QString msg;
+        if(static_cast<SceneGraph*>(idx.internalPointer()) == scene->root()) {
+            statusbar->showMessage("Cannot delete the root, fool!", 5000);
+        } else {
+            msg += "Deleting: ";
+            msg += scene->data(idx, Qt::DisplayRole).toString();
+            statusbar->showMessage(msg, 5000);
+            if(scene->removeRows(idx.row(), 1, idx.parent())) {
+                emit updateGL();
+            }
+        }
+    } else if(event->key() == Qt::Key_Control) {
+        //Toggle camera and interactive mode
+        if(cameraModeAction->isChecked()) {
+            objectModeAction->setChecked(true);
+            objectModeAction->activate(QAction::Trigger);
 		} else {
 			cameraModeAction->setChecked(true);
 			cameraModeAction->activate(QAction::Trigger);
 		}
-	} else if(event->key() == Qt::Key_W) {
-//        activeViewport->translateCamera(0, 0, -0.1);
-        scene->translateMotherSheep(-0.1);
-        QString msg = "Camera world position: ";
-        QVector3D cPos = activeViewport->getCameraWorldPosition();
-
-        msg += QString::number(cPos.x());
-        msg += ", ";
-        msg += QString::number(cPos.y());
-        msg += ", ";
-        msg += QString::number(cPos.z());
-
-
-		emit updateGL();
-        statusbar->showMessage(msg, 5000);
-    } else if(event->key() == Qt::Key_S) {
-//		activeViewport->translateCamera(0, 0, 0.1);
-         scene->translateMotherSheep(0.1);
-		emit updateGL();
-	} else if(event->key() == Qt::Key_A) {
-//		activeViewport->rotateCamera(-0.03);
-        scene->rotateMotherSheep(0.1);
-
-		emit updateGL();
-	} else if(event->key() == Qt::Key_D) {
-//		activeViewport->rotateCamera(0.03);
-        scene->rotateMotherSheep(-0.1);
-        emit updateGL();
-	}
+    }else if(event->key() == Qt::Key_W) {
+        wPressed=true;
+    }  else if(event->key() == Qt::Key_S) {
+        sPressed=true;
+    } else if(event->key() == Qt::Key_A) {
+        dPressed=true;
+    } else if(event->key() == Qt::Key_D) {
+        aPressed=true;
+    }else if(event->key() == Qt::Key_Space) {
+        shoot();
+    }
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
@@ -413,7 +429,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
 			cameraModeAction->setChecked(true);
 			cameraModeAction->activate(QAction::Trigger);
 		}
-	}
+    }else if(event->key() == Qt::Key_W) {
+        wPressed=false;
+    }  else if(event->key() == Qt::Key_S) {
+        sPressed=false;
+    } else if(event->key() == Qt::Key_A) {
+        dPressed=false;
+    } else if(event->key() == Qt::Key_D) {
+        aPressed=false;
+    }
 }
 
 
@@ -436,18 +460,18 @@ void MainWindow::addCylinder(){
 }
 void MainWindow::addSphere(){
     QModelIndex idx = scene->addSphere(currentNode, 6);
-	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
-	emit updateGL();
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
+    emit updateGL();
 }
 void MainWindow::addTorus(){
     QModelIndex idx = scene->addTorus(currentNode, 6);
-	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
-	emit updateGL();
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
+    emit updateGL();
 }
 
 void MainWindow::addGroup(){
-	QModelIndex idx = scene->addGroup(currentNode);
-	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
+    QModelIndex idx = scene->addGroup(currentNode);
+    sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
 }
 
@@ -465,7 +489,6 @@ void MainWindow::add3DModel(){
 }
 
 void MainWindow::addLvlObj(){
-    load3DModel();
     QModelIndex idx = scene->add3DModel(currentNode);
     sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
     emit updateGL();
@@ -587,4 +610,6 @@ void MainWindow::load3DModel(){
 
 void MainWindow::shoot(){
     qDebug()<<"shoot";
+    scene->addProjectile();
+
 }

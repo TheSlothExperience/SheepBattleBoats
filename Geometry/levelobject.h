@@ -7,8 +7,15 @@ class LevelObject: public Primitive
 {
 private:
     GLuint indexBufferObject;
-    int count;
+//    int count;
     BoundingBox *bb;
+    int count;
+    int numVerts;
+    int parts;
+    int idxPerPart;
+
+
+
 
 public:
     LevelObject();
@@ -16,6 +23,7 @@ public:
     bool intersect();
     void draw();
     BoundingBox *getBB();
+
 
 };
 

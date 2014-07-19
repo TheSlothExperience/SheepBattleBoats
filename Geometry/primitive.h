@@ -9,10 +9,14 @@ class Primitive
 protected:
     GLuint vertexBufferObject;
     GLuint normalBufferObject;
+    QVector3D shootingDir;
+    BoundingBox *bb;
 
 public:
     virtual ~Primitive() = 0;
     virtual void draw() = 0;
+    virtual void exeObjBehaviour() {}
+    virtual BoundingBox* getBB() {return this->bb;}
 };
 
 inline Primitive::~Primitive() {}

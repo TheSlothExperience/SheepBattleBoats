@@ -75,6 +75,7 @@ public:
 
     QModelIndex add3DModel(SceneGraph *node);
     LevelObjectNode *addLevelObj();
+    LevelObjectNode *addProjectile();
 
 
 
@@ -98,10 +99,16 @@ public:
 
     void initLevel();
     void testCollisions();
+    void doMovements();
+    LevelObjectNode* getMainBoat(){return this->mainBoat;}
     QList<LevelObjectNode*> getLvlObjAdresses(){return this->levelObjAdresses;}
-    void translateMotherSheep(double z);
-    void rotateMotherSheep(double rotation);
-    void executeObjectBehavior();
+    void translateMotherSheep(QVector3D);
+    void rotateMotherSheep();
+    QVector3D convertToMotherSheepTranslation();
+    void behaviourExecutions();
+
+
+
 
 
 };

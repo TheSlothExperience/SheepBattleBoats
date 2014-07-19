@@ -1,5 +1,9 @@
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
+HEADERS  += GameLogic/collisiondetection.h
+HEADERS += GameLogic/boundingbox.h
 
-SOURCES += GameLogic/pron.cpp
+
+SOURCES += GameLogic/collisiondetection.cpp
+SOURCES += GameLogic/boundingbox.cpp

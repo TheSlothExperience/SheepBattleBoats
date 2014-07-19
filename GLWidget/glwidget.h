@@ -42,6 +42,7 @@ public:
     void setCameraActive(bool active = true) {this->cameraActive = active;}
 
 	void translateCamera(double x, double y, double z);
+    void translateBoardCamera(QVector3D trans);
 	void rotateCamera(float angle);
 
 private:

@@ -1,7 +1,9 @@
 #ifndef MOTHERSHEEP_H
 #define MOTHERSHEEP_H
 
-class MotherSheep
+#include<levelobject.h>
+
+class MotherSheep: LevelObject
 {
 public:
     MotherSheep();

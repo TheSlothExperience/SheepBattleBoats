@@ -223,6 +223,15 @@ void SceneGraph::rotate(QQuaternion q) {
 	rotation = q * rotation;
 }
 
+QQuaternion SceneGraph::getRotation(){
+    QQuaternion temp=this->rotation;
+    return temp;
+}
+
+QVector3D SceneGraph::getTranslation(){
+    QVector3D temp=this->translation;
+    return temp;
+}
 //void SceneGraph::testCollisions(){
 
 //    if(leaf) {

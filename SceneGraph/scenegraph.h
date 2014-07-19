@@ -43,7 +43,8 @@ public:
 	bool insertChildren(int position, int count, int columns);
 	int row();
 
-    QQuaternion getRotation(){return this->rotation;}
+    QQuaternion getRotation();
+    QVector3D getTranslation();
 
 	void setParent(SceneGraph *s);
 
@@ -63,6 +64,8 @@ public:
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
 //    virtual void testCollisions();
+
+    Primitive* getPrimitive(){return this->primitive;}
 };
 
 #endif //SCENE_H

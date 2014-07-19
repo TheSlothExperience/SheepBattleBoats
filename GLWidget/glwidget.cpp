@@ -236,6 +236,11 @@ void GLWidget::translateCamera(double x, double y, double z) {
 	this->camera->translate(trans.x(), trans.y(), trans.z());
 }
 
+void GLWidget::translateBoardCamera(QVector3D trans){
+// trans = trans * camera->getCameraMatrix();
+    this->camera->translate(trans.x(), trans.y(), trans.z());
+}
+
 void GLWidget::rotateCamera(float angle) {
 	QQuaternion rot = QQuaternion(cos(angle/2.0), sin(angle/2.0) * QVector3D(0.0, 1.0, 0.0));
 	camera->rotate(rot);

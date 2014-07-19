@@ -10,10 +10,8 @@ HEADERS  += Geometry/primitive.h \
 			Geometry/light.h \
     Geometry/object3d.h \
     Geometry/levelobject.h \
-    Geometry/boundingbox.h \
-    Geometry/collisiondetecion.h \
-    Geometry/projectile.h \
-    Geometry/mothersheep.h
+    Geometry/mothersheep.h \
+    Geometry/projectile.h
 
 SOURCES  += Geometry/cube.cpp \
 		 	Geometry/cone.cpp \
@@ -23,7 +21,5 @@ SOURCES  += Geometry/cube.cpp \
 			Geometry/light.cpp \
     Geometry/object3d.cpp \
     Geometry/levelobject.cpp \
-    Geometry/boundingbox.cpp \
-    Geometry/collisiondetecion.cpp \
-    Geometry/projectile.cpp \
-    Geometry/mothersheep.cpp
+    Geometry/mothersheep.cpp \
+    Geometry/projectile.cpp
