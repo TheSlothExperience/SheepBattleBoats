@@ -142,7 +142,9 @@ void GLWidget::DSLightPass(){
 void GLWidget::paintSceneToCanvas() {
 	Shaders::bind(shaders.canvasProgram);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(8.0f, 8.0f, 8.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0,0, this->width(), this->height());
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gbuffer.bindFinalPass(shaders.canvasProgram);
