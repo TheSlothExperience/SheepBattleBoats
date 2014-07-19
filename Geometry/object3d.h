@@ -63,8 +63,8 @@ struct MeshEntry{
         unsigned int materialIndex;
     };
 
-    std::vector<MeshEntry> m_Entries;
-    std::vector<Texture> m_Textures;
+    std::vector<MeshEntry> entries;
+    std::vector<Texture> textures;
 };
 
 #endif // OBJECT3D_H

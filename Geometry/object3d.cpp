@@ -69,11 +69,11 @@ bool Object3D::loadMesh(const std::string& filename){
 //First init all the meshes for the scene
 bool Object3D::initFromScene(const aiScene *pScene, const std::string &filename){
 
-    m_Entries.resize(pScene->mNumMeshes);
-    m_Textures.resize(pScene->mNumMaterials);
+    entries.resize(pScene->mNumMeshes);
+    textures.resize(pScene->mNumMaterials);
 
     //Init the meshes in the scene
-    for(unsigned int i = 0; i<m_Entries.size();i++){
+    for(unsigned int i = 0; i<entries.size();i++){
         const aiMesh* paiMesh = pScene->mMeshes[i];
         initMesh(i,paiMesh);
     }
@@ -83,7 +83,7 @@ bool Object3D::initFromScene(const aiScene *pScene, const std::string &filename)
 
 bool Object3D::initMesh(unsigned int index, const aiMesh *paiMesh){
 
-    m_Entries[index].materialIndex = paiMesh->mMaterialIndex;
+    entries[index].materialIndex = paiMesh->mMaterialIndex;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
@@ -109,24 +109,94 @@ bool Object3D::initMesh(unsigned int index, const aiMesh *paiMesh){
         indices.push_back(Face.mIndices[2]);
     }
 
-    m_Entries[index].init(vertices, indices);
+    entries[index].init(vertices, indices);
 
 }
 
 bool Object3D::initMaterials(const aiScene *pScene, const std::string &filename){
 
+    // Extract the directory part from the file name
+    std::string::size_type slashIndex = filename.find_last_of("/");
+    std::string dir;
 
+    if (slashIndex == std::string::npos) {
+        dir = ".";
+    }
+    else if (slashIndex == 0) {
+        dir = "/";
+    }
+    else {
+        dir = filename.substr(0, slashIndex);
+    }
+
+    bool ret = true;
+
+//    // Initialize the materials
+//    for (unsigned int i = 0 ; i < pScene->mNumMaterials ; i++) {
+//        const aiMaterial* pMaterial = pScene->mMaterials[i];
+
+//        textures[i] = NULL;
+
+//        if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+//            aiString path;
+
+//            if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
+//                std::string fullPath = dir + "/" + path.data;
+//                textures[i] = new Texture(GL_TEXTURE_2D, fullPath.c_str());
+
+//                if (!textures[i]->load()) {
+//                    printf("Error loading texture '%s'\n", fullPath.c_str());
+//                    delete textures[i];
+//                    textures[i] = NULL;
+//                    ret = false;
+//                }
+//                else {
+//                    printf("Loaded texture '%s'\n", fullPath.c_str());
+//                }
+//            }
+//        }
+
+//        // Load a white texture in case the model does not include its own texture
+//        if (!textures[i]) {
+//            textures[i] = new Texture(GL_TEXTURE_2D, "./white.png");
+
+//           ret = textures[i]->load();
+//        }
+//    }
+
+    return ret;
 
 }
 
 //RENDER THIS SHIAT
 void Object3D::draw(){
 
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    for (unsigned int i = 0 ; i < entries.size() ; i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, entries[i].vb);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)20);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entries[i].ib);
+
+        const unsigned int materialIndex = entries[i].materialIndex;
+
+//        if (materialIndex < textures.size() && textures[materialIndex]) {
+//            textures[materialIndex]->bind(GL_TEXTURE0);
+//        }
+
+        glDrawElements(GL_TRIANGLES, entries[i].numIndices, GL_UNSIGNED_INT, 0);
+    }
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+
 }
 
 Object3D::~Object3D(){
-
-
 }
-
-
