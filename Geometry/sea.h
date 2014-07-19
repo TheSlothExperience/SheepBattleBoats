@@ -12,6 +12,12 @@ public:
 	Sea();
 	~Sea();
 	void draw();
+
+private:
+	int seaWidth;
+	int seaHeight;
+	int tessellation;
+	int numVertices;
 };
 
 
