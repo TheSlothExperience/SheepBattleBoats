@@ -7,63 +7,64 @@
 Sea::Sea() {
 	seaWidth = 200;
 	seaHeight = 200;
-	tessellation = 8;
-	numVertices = 6 * (seaWidth * seaHeight);
+	tessellation = 4;
+	numVertices = 6 * (seaWidth * tessellation * seaHeight * tessellation);
 	GLfloat* vertices = new GLfloat[numVertices * 3];
 
 	GLfloat* normals = new GLfloat[numVertices * 3];
 
-	for(int z = 0; z < seaHeight; z++) {
-		int z_off = z - (seaHeight / 2);
-		for(int x = 0; x < seaWidth; x++) {
-			int x_off = x - (seaWidth / 2);
-			vertices[18*(z * seaWidth + x) + 0] = x_off;
-			vertices[18*(z * seaWidth + x) + 1] = 0.0;
-			vertices[18*(z * seaWidth + x) + 2] = z_off;
+	int span = seaWidth * tessellation;
+	for(int z = 0; z < seaHeight * tessellation; z++) {
+		float z_off = z / tessellation - (seaHeight / 2);
+		for(int x = 0; x < seaWidth * tessellation; x++) {
+			float x_off = x / tessellation - (seaWidth / 2);
+			vertices[18*(z * span + x) + 0] = x_off;
+			vertices[18*(z * span + x) + 1] = 0.0;
+			vertices[18*(z * span + x) + 2] = z_off;
 
-			vertices[18*(z * seaWidth + x) + 3 + 0] = x_off;
-			vertices[18*(z * seaWidth + x) + 3 + 1] = 0.0;
-			vertices[18*(z * seaWidth + x) + 3 + 2] = z_off + 1.0;
+			vertices[18*(z * span + x) + 3 + 0] = x_off;
+			vertices[18*(z * span + x) + 3 + 1] = 0.0;
+			vertices[18*(z * span + x) + 3 + 2] = z_off + 1.0;
 
-			vertices[18*(z * seaWidth + x) + 6 + 0] = x_off + 1.0;
-			vertices[18*(z * seaWidth + x) + 6 + 1] = 0.0;
-			vertices[18*(z * seaWidth + x) + 6 + 2] = z_off;
+			vertices[18*(z * span + x) + 6 + 0] = x_off + 1.0;
+			vertices[18*(z * span + x) + 6 + 1] = 0.0;
+			vertices[18*(z * span + x) + 6 + 2] = z_off;
 
-			vertices[18*(z * seaWidth + x) + 9 + 0] = x_off + 1.0;
-			vertices[18*(z * seaWidth + x) + 9 + 1] = 0.0;
-			vertices[18*(z * seaWidth + x) + 9 + 2] = z_off;
+			vertices[18*(z * span + x) + 9 + 0] = x_off + 1.0;
+			vertices[18*(z * span + x) + 9 + 1] = 0.0;
+			vertices[18*(z * span + x) + 9 + 2] = z_off;
 
-			vertices[18*(z * seaWidth + x) + 12 + 0] = x_off;
-			vertices[18*(z * seaWidth + x) + 12 + 1] = 0.0;
-			vertices[18*(z * seaWidth + x) + 12 + 2] = z_off + 1.0;
+			vertices[18*(z * span + x) + 12 + 0] = x_off;
+			vertices[18*(z * span + x) + 12 + 1] = 0.0;
+			vertices[18*(z * span + x) + 12 + 2] = z_off + 1.0;
 
-			vertices[18*(z * seaWidth + x) + 15 + 0] = x_off + 1.0;
-			vertices[18*(z * seaWidth + x) + 15 + 1] = 0.0;
-			vertices[18*(z * seaWidth + x) + 15 + 2] = z_off + 1.0;
+			vertices[18*(z * span + x) + 15 + 0] = x_off + 1.0;
+			vertices[18*(z * span + x) + 15 + 1] = 0.0;
+			vertices[18*(z * span + x) + 15 + 2] = z_off + 1.0;
 
-			normals[18*(z * seaWidth + x) + 0] = 0.0;
-			normals[18*(z * seaWidth + x) + 1] = 1.0;
-			normals[18*(z * seaWidth + x) + 2] = 0.0;
+			normals[18*(z * span + x) + 0] = 0.0;
+			normals[18*(z * span + x) + 1] = 1.0;
+			normals[18*(z * span + x) + 2] = 0.0;
 
-			normals[18*(z * seaWidth + x) + 3 + 0] = 0.0;
-			normals[18*(z * seaWidth + x) + 3 + 1] = 1.0;
-			normals[18*(z * seaWidth + x) + 3 + 2] = 0.0;
+			normals[18*(z * span + x) + 3 + 0] = 0.0;
+			normals[18*(z * span + x) + 3 + 1] = 1.0;
+			normals[18*(z * span + x) + 3 + 2] = 0.0;
 
-			normals[18*(z * seaWidth + x) + 6 + 0] = 0.0;
-			normals[18*(z * seaWidth + x) + 6 + 1] = 1.0;
-			normals[18*(z * seaWidth + x) + 6 + 2] = 0.0;
+			normals[18*(z * span + x) + 6 + 0] = 0.0;
+			normals[18*(z * span + x) + 6 + 1] = 1.0;
+			normals[18*(z * span + x) + 6 + 2] = 0.0;
 
-			normals[18*(z * seaWidth + x) + 9 + 0] = 0.0;
-			normals[18*(z * seaWidth + x) + 9 + 1] = 1.0;
-			normals[18*(z * seaWidth + x) + 9 + 2] = 0.0;
+			normals[18*(z * span + x) + 9 + 0] = 0.0;
+			normals[18*(z * span + x) + 9 + 1] = 1.0;
+			normals[18*(z * span + x) + 9 + 2] = 0.0;
 
-			normals[18*(z * seaWidth + x) + 12 + 0] = 0.0;
-			normals[18*(z * seaWidth + x) + 12 + 1] = 1.0;
-			normals[18*(z * seaWidth + x) + 12 + 2] = 0.0;
+			normals[18*(z * span + x) + 12 + 0] = 0.0;
+			normals[18*(z * span + x) + 12 + 1] = 1.0;
+			normals[18*(z * span + x) + 12 + 2] = 0.0;
 
-			normals[18*(z * seaWidth + x) + 15 + 0] = 0.0;
-			normals[18*(z * seaWidth + x) + 15 + 1] = 1.0;
-			normals[18*(z * seaWidth + x) + 15 + 2] = 0.0;
+			normals[18*(z * span + x) + 15 + 0] = 0.0;
+			normals[18*(z * span + x) + 15 + 1] = 1.0;
+			normals[18*(z * span + x) + 15 + 2] = 0.0;
 		}
 	}
 
