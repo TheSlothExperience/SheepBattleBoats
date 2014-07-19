@@ -22,11 +22,7 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 }
 
 void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
-	std::cout << "~ Sea" << std::endl;
 	GBuffer::activeGBuffer()->drawToFinal();
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glViewport(0, 0, 1024, 512);
-
 	Shaders::bind(Shaders::phongProgram);
 	Scene::passLights(cameraMatrix, Shaders::phongProgram);
 	MVStack.push(MVStack.top());

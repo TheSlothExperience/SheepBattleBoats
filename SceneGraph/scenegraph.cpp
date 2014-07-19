@@ -157,7 +157,6 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, 
 }
 
 void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
-	std::cout << "~ Generic" << std::endl;
 	Shaders::bind(shader);
 	MVStack.push(MVStack.top());
 
