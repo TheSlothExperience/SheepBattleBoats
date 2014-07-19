@@ -9,16 +9,16 @@ in vec4 id4;
 
 uniform vec4 color;
 
-layout (location = 0) out vec3 worldPosOut;
-layout (location = 1) out vec3 diffuseOut;
-layout (location = 2) out vec3 normalOut;
-layout (location = 3) out vec3 depthOut;
-layout (location = 4) out vec3 textCoordOut;
+layout (location = 0) out vec4 worldPosOut;
+layout (location = 1) out vec4 diffuseOut;
+layout (location = 2) out vec4 normalOut;
+layout (location = 3) out vec4 depthOut;
+layout (location = 4) out vec4 textCoordOut;
 
 void main(){
-	worldPosOut = V;
-	diffuseOut = color.xyz;
-	normalOut = normalize(N);
-	depthOut = vec3(gl_FragCoord.z);
-	textCoordOut = vec3(texCoord0,0.0);
+	worldPosOut = vec4(V, 1.0);
+	diffuseOut = color;
+	normalOut = vec4(normalize(N), 1.0);
+	depthOut = vec4(gl_FragCoord.z);
+	textCoordOut = vec4(texCoord0,0.0, 1.0);
 }

@@ -3,6 +3,7 @@
 
 #include "scenegraph.h"
 #include "lightnode.h"
+#include "camera.h"
 
 #include <stack>
 #include <map>
@@ -29,7 +30,7 @@ private:
 
 	std::map<int, SceneGraph*> identifier;
 
-	std::vector<LightNode*> lights;
+	static std::vector<LightNode*> lights;
 
 	QVector4D lightPosition;
 	std::stack<QMatrix4x4> modelViewMatrixStack;
@@ -76,8 +77,6 @@ public:
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
 	void computeSAT(QOpenGLShaderProgram *sat);
 
-	void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
-
 	std::vector<GLfloat> lightPerspectives();
 	std::vector<GLfloat> lightViews();
 	std::vector<GLuint> shadowMapLocations();
@@ -88,9 +87,10 @@ public:
 
 	QModelIndex identify(int i);
 	void setLightLocation(GLuint lightPositionLocation);
+	static void passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp);
 
-	void draw(QMatrix4x4 cameraMatrix);
-    void DS_geometryPass(QMatrix4x4 cameraMatrix);
+	void draw(Camera *camera);
+    void DS_geometryPass(Camera *camera);
 };
 
 #endif //SCENE_H

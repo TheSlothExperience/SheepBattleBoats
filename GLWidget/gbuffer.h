@@ -25,9 +25,14 @@ public:
     void bindStencilPass();
     void bindLightPass( QOpenGLShaderProgram *lightPassProgram);
     void bindFinalPass(QOpenGLShaderProgram *canvasProgram);
+	void drawToFinal();
 //    void setReadBuffer(GBUFFER_TEXTURE_TYPE texType);
 
+	static GBuffer *activeGBuffer();
+
 private:
+	static GBuffer* m_activeGBuffer;
+
     GLuint m_fbo;
     GLuint m_textures[5];
     GLuint m_depthTexture;
