@@ -12,6 +12,8 @@ GBuffer::GBuffer()
 
 bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
+	this->windowWidth = windowWidth;
+	this->windowHeight = windowHeight;
 	// Create the FBO
 	glGenFramebuffers(1, &m_fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
@@ -34,7 +36,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 		//Bind FBO
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
 		                       GL_TEXTURE_2D, m_textures[i], 0);
 	}
 
@@ -46,9 +48,11 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 	//Finale Textur
 	glBindTexture(GL_TEXTURE_2D, m_finalTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowWidth, windowHeight, 0,
 	             GL_RGB, GL_FLOAT,NULL);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, m_finalTexture, 0);
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, m_finalTexture, 0);
 
 
 
@@ -71,7 +75,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 void GBuffer::startFrame(){
     glBindBuffer(GL_FRAMEBUFFER,m_fbo);
-    GLenum DrawBuffers[5]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4};
+    GLenum DrawBuffers[6]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5};
     glDrawBuffers(5,DrawBuffers);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
@@ -97,6 +101,8 @@ void GBuffer::bindStencilPass(){
 void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
 //    glDrawBuffer(GL_COLOR_ATTACHMENT4);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	glViewport(0,0, windowWidth, windowHeight);
 
     glActiveTexture(GL_TEXTURE0);
         glUniform1i(lightPassProgram->uniformLocation("posTexture"),0);
@@ -122,18 +128,18 @@ void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
         glUniform1i(lightPassProgram->uniformLocation("textCoordTexture2"),5);
     glBindTexture(GL_TEXTURE_2D,m_textures[4]);
 
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT5};
 
+    glDrawBuffers(1,drawBuffers);
 }
 
-void GBuffer::bindFinalPass(){
+void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
 
     //Fertig mit schreiben
     glBindFramebuffer(GL_FRAMEBUFFER,0);
-    //Lese aus dem geschriebenen Inhalt im FBO
-    glBindFramebuffer(GL_READ_FRAMEBUFFER,m_fbo);
-    glReadBuffer(GL_COLOR_ATTACHMENT4);
-
-
+    glActiveTexture(GL_TEXTURE0);
+        glUniform1i(canvasProgram->uniformLocation("scene"),0);
+    glBindTexture(GL_TEXTURE_2D,m_finalTexture);
 }
 
 //void GBuffer::BindForReading(){

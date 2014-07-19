@@ -79,6 +79,8 @@ void GLWidget::paintGL()
 
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
+
+    paintSceneToCanvas();
 }
 
 /*
@@ -110,14 +112,12 @@ void GLWidget::DSGeometryPass() {
     shaders.shaderProgram->release();
 }
 
-//Mix the textures and render the scene to the magical quad
+/* Mix the textures and render the scene to the magical quad
+ * located in the finalTexture of the GBuffer
+ */
 void GLWidget::DSLightPass(){
 
     shaders.lightPassProgram->bind();
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0,0,this->width(), this->height());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gbuffer.bindLightPass(shaders.lightPassProgram);
     scene->passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
@@ -134,6 +134,30 @@ void GLWidget::DSLightPass(){
     glDisableVertexAttribArray(0);
 
     shaders.lightPassProgram->release();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/* Get the rendered texture from the GBuffer and paint it to
+ * the screen
+ */
+void GLWidget::paintSceneToCanvas() {
+	shaders.canvasProgram->bind();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0, this->width(), this->height());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gbuffer.bindFinalPass(shaders.canvasProgram);
+
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+    glDisableVertexAttribArray(0);
+
+    shaders.canvasProgram->release();
 }
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
