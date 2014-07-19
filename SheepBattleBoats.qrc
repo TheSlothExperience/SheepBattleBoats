@@ -31,5 +31,6 @@
         <file>shaders/gaussianBlurV.frag</file>
         <file>shaders/xtoon.frag</file>
         <file>shaders/xtoon.vert</file>
+        <file>shaders/Reduce.cl</file>
     </qresource>
 </RCC>

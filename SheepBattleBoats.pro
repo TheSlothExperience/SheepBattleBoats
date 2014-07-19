@@ -15,6 +15,7 @@ include(Camera/Camera.pri)
 include(GLWidget/GLWidget.pri)
 include(Geometry/Geometry.pri)
 include(SceneGraph/SceneGraph.pri)
+include(Util/Util.pri)
 
 
 OTHER_FILES += shaders/* \

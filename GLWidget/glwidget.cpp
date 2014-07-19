@@ -16,7 +16,7 @@ const int TEXTURE_HEIGHT = 768;
 GLWidget::GLWidget(QWidget *parent, const QGLWidget *shareWidget)
 	: QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget),
 	  tesselationLevel(0),
-	  zoom(0.0), dragging(false)
+	  zoom(0.0), dragging(false), satShadowsp(false)
 {
 	scene = NULL;
 }
@@ -67,15 +67,20 @@ void GLWidget::initializeGL()
 }
 
 
-
 void GLWidget::paintGL()
 {
 	//Clear the buffers
     gbuffer.startFrame();
     //Render the Textures for DeferredShading
     DSGeometryPass();
+
+    //Shadow map pass. Render them and blur
+    shadowMapsPass();
+
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
+
+    paintSceneToCanvas();
 }
 
 /*
@@ -85,39 +90,34 @@ void GLWidget::paintGL()
  */
 void GLWidget::DSGeometryPass() {
     //Load the phong shading program
-    shaders.shaderProgram->bind();
+	Shaders::bind(Shaders::shaderProgram);
 
-    glUniformMatrix4fv(shaders.shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
     glViewport(0,0,1024,768);
     gbuffer.bindGeometryPass();
 
-    glDepthMask(GL_TRUE);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-
     if(scene != NULL) {
         //Discombobulate!
-        scene->draw(camera->getCameraMatrix());
+	    scene->draw(camera);
     } else {
         std::cout << "no scene yet" << std::endl;
     }
 
     glDepthMask(GL_TRUE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    shaders.shaderProgram->release();
+    Shaders::release(shaders.shaderProgram);
 }
 
-//Mix the textures and render the scene to the magical quad
+/* Mix the textures and render the scene to the magical quad
+ * located in the finalTexture of the GBuffer
+ */
 void GLWidget::DSLightPass(){
 
-    shaders.lightPassProgram->bind();
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0,0,this->width(), this->height());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	Shaders::bind(shaders.lightPassProgram);
 
     gbuffer.bindLightPass(shaders.lightPassProgram);
-    scene->passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
+    Scene::passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
+
+    passShadowMaps(shaders.lightPassProgram, 8);
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
@@ -128,10 +128,82 @@ void GLWidget::DSLightPass(){
 
     glDisableVertexAttribArray(0);
 
-    shaders.lightPassProgram->release();
+    Shaders::release(shaders.lightPassProgram);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+/* Get the rendered texture from the GBuffer and paint it to
+ * the screen
+ */
+void GLWidget::paintSceneToCanvas() {
+	Shaders::bind(shaders.canvasProgram);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(8.0f, 8.0f, 8.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0,0, this->width(), this->height());
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gbuffer.bindFinalPass(shaders.canvasProgram);
+
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+    glDisableVertexAttribArray(0);
+
+    Shaders::release(shaders.canvasProgram);
+}
+
+void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
+	//Send all the lighting information and shadowmaps
+	std::vector<GLfloat> lightViews = scene->lightViews();
+	std::vector<GLfloat> lightPerspectives = scene->lightPerspectives();
+	glUniformMatrix4fv(shaderProgram->uniformLocation("lightViews"), lightViews.size() / 16, GL_FALSE, lightViews.data());
+	glUniformMatrix4fv(shaderProgram->uniformLocation("lightPerspectives"), lightPerspectives.size() / 16, GL_FALSE, lightPerspectives.data());
+
+	//Now the shadowmaps
+	std::vector<GLuint> shadowMapLocs = scene->shadowMapLocations();
+	std::vector<GLuint> shadowSATLocs = scene->shadowSATs();
+	GLint *shadowSamplers = new GLint[shadowMapLocs.size()];
+	GLint *shadowSATs = new GLint[shadowSATLocs.size()];
+	unsigned int shadowsOffset = texOffset;
+	for(unsigned int i = 0; i < shadowMapLocs.size(); i++) {
+		shadowSamplers[i] = i + shadowsOffset;
+		shadowSATs[i] = i + shadowsOffset + shadowMapLocs.size();
+		//Start at GL_TEXTURE0 + shadowsOffset
+		glActiveTexture(GL_TEXTURE0 + shadowsOffset + i);
+		glBindTexture(GL_TEXTURE_2D, shadowMapLocs[i]);
+		glActiveTexture(GL_TEXTURE0 + shadowsOffset + shadowMapLocs.size() + i);
+		glBindTexture(GL_TEXTURE_2D, shadowSATLocs[i]);
+	}
+	glUniform1iv(shaderProgram->uniformLocation("shadowMaps"), shadowMapLocs.size(), shadowSamplers);
+	glUniform1iv(shaderProgram->uniformLocation("shadowSATs"), shadowSATLocs.size(), shadowSATs);
+	delete[] shadowSamplers;
+
+	//An additional bias matrix
+	GLfloat bias[16] = {0.5, 0.0, 0.0, 0.5,
+	                    0.0, 0.5, 0.0, 0.5,
+	                    0.0, 0.0, 0.5, 0.5,
+	                    0.0, 0.0, 0.0, 1.0};
+	glUniformMatrix4fv(shaderProgram->uniformLocation("lightBias"), 1, GL_TRUE, bias);
+	glUniformMatrix4fv(shaderProgram->uniformLocation("inverseCameraMatrix"), 1, GL_FALSE, camera->getCameraMatrix().inverted().constData());
+}
+
+void GLWidget::shadowMapsPass() {
+	if(scene != NULL) {
+        //Discombobulate!
+	    scene->lightsPass(shaders.storeDepthProgram);
+	    scene->blurShadowMaps(shaders.gaussianBlurHProgram, shaders.gaussianBlurVProgram);
+	    if(satShadowsp) {
+		    scene->computeSAT(NULL);
+	    }
+    } else {
+        std::cout << "no scene yet" << std::endl;
+    }
+}
 
 void GLWidget::resizeGL(int width, int height)
 {

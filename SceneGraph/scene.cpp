@@ -9,11 +9,17 @@
 #include "torus.h"
 #include "light.h"
 #include "object3d.h"
+#include "sea.h"
+#include "seanode.h"
+#include "Reduction.h"
 
 #include "glwidget.h"
+#include "glwidgetcontext.h"
 #include <QtGui>
 #include <GL/gl.h>
 #include <iostream>
+
+std::vector<LightNode*> Scene::lights = vector<LightNode*>();
 
 Scene::Scene(QObject *parent)
 	: QAbstractItemModel(parent)
@@ -38,6 +44,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 	addLight();
 	lights.at(0)->translate(1.0, 3.0, 1.50);
 	addTorus(rootNode, 8);
+	addSea(rootNode);
 }
 
 
@@ -315,19 +322,34 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
     return createIndex(s->row(), 0, s);
 }
 
-void Scene::draw(QMatrix4x4 cameraMatrix) {
-	modelViewMatrixStack.push(modelViewMatrixStack.top());
-	modelViewMatrixStack.top() *= cameraMatrix;
+QModelIndex Scene::addSea(SceneGraph *node){
+    beginResetModel();
+    Primitive *sea = new Sea();
+    std::string name("Sea of Moist Seaness ");
+    int id = nextId();
+    name += std::to_string(id);
+    SeaNode *s = new SeaNode(sea, name);
+    s->setId(id);
+    identifier[id] = s;
 
-	this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
+    node->add(s);
+    endResetModel();
+    return createIndex(s->row(), 0, s);
+}
+
+void Scene::draw(Camera *camera) {
+	modelViewMatrixStack.push(modelViewMatrixStack.top());
+	modelViewMatrixStack.top() *= camera->getCameraMatrix();
+
+	this->rootNode->draw(modelViewMatrixStack, camera->getCameraMatrix(), camera->getProjectionMatrix());
 	modelViewMatrixStack.pop();
 }
 
-void Scene::DS_geometryPass(QMatrix4x4 cameraMatrix){
+void Scene::DS_geometryPass(Camera *camera){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
-    modelViewMatrixStack.top() *= cameraMatrix;
+    modelViewMatrixStack.top() *= camera->getCameraMatrix();
 
-    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
+    this->rootNode->draw(modelViewMatrixStack, camera->getCameraMatrix(), camera->getProjectionMatrix());
     modelViewMatrixStack.pop();
 }
 
@@ -356,7 +378,8 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	delete[] colorsArray;
 }
 
-void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4) {
+void Scene::lightsPass(QOpenGLShaderProgram *shader) {
+	Shaders::bind(shader);
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 
@@ -365,20 +388,17 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4) {
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0,0, 1024, 768);
-
-		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, l->perspectiveMatrix().constData());
+		glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
 		modelViewMatrixStack.push(modelViewMatrixStack.top());
 		modelViewMatrixStack.top() *= l->lightView();
 
 		GLuint colorLocation = shader->uniformLocation("color");
 
-		this->rootNode->draw(modelViewMatrixStack
-		                   , shader->uniformLocation("modelViewMatrix")
-		                   , shader->uniformLocation("normalMatrix")
-		                   , shader->uniformLocation("id")
-		                   , colorLocation);
+		this->rootNode->drawGeometry(modelViewMatrixStack
+		                   , l->lightView()
+		                   , l->perspectiveMatrix()
+		                   , shader);
 
 		modelViewMatrixStack.pop();
 
@@ -389,10 +409,22 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader, QMatrix4x4) {
 		//Release and relax, brah
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+	Shaders::release(shader);
+}
+
+void Scene::computeSAT(QOpenGLShaderProgram *sat) {
+	for(auto l : lights) {
+		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		Reduction::instance()->computeSATGLTexture(l->getShadowMap(), l->shadowMoments(), l->shadowMomentsTemp(), l->shadowWidth(), l->shadowHeight());
+
+		//Release and relax, brah
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 }
 
 void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
-
 	GLuint canvasQuad;
 	static const GLfloat g_quad_vertex_buffer_data[] = {
 		-1.0f, -1.0f, 0.0f,
@@ -413,13 +445,13 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 
 		//First pass, horizontal
 		{
-			hs->bind();
+			Shaders::bind(hs);
 			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
 			glDrawBuffers(1, DrawBuffers);
 
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glViewport(0,0, 1024, 768);
+			glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
@@ -437,18 +469,18 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 			//Recreate the mipmaps
 			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
 			glGenerateMipmap(GL_TEXTURE_2D);
-			hs->release();
+			Shaders::release(hs);
 		}
 
 		//Second pass, vertical into the shadow map
 		{
-			vs->bind();
+			Shaders::bind(vs);
 			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 			glDrawBuffers(1, DrawBuffers);
 
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glViewport(0,0, 1024, 768);
+			glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
@@ -466,11 +498,12 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 			//Recreate the mipmaps
 			glBindTexture(GL_TEXTURE_2D, l->getShadowMap());
 			glGenerateMipmap(GL_TEXTURE_2D);
-			vs->release();
+			Shaders::release(vs);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+	glDeleteBuffers(1, &canvasQuad);
 }
 
 /* Takes a nested functor `F (F A)` from `start` to
@@ -530,4 +563,8 @@ std::vector<GLfloat> Scene::lightViews() {
 
 std::vector<GLuint> Scene::shadowMapLocations() {
 	return fmap<GLuint>(lights, [=](LightNode *l){return l->getShadowMap();});
+}
+
+std::vector<GLuint> Scene::shadowSATs() {
+	return fmap<GLuint>(lights, [=](LightNode *l){return l->shadowMomentsTemp();});
 }

@@ -164,8 +164,13 @@ void MainWindow::createColorDock() {
 	blueSlider->setValue(255);
 	connect(blueSlider, SIGNAL(valueChanged(int)), this, SLOT(changedColor()));
 
+	satShadowCheckBox = new QCheckBox("SAT shadows");
+	connect(satShadowCheckBox, SIGNAL(toggled(bool)), this, SLOT(setSATShadows(bool)));
+
+
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
+	layout->addWidget(satShadowCheckBox);
 	layout->addWidget(redSlider);
 	layout->addWidget(greenSlider);
 	layout->addWidget(blueSlider);
@@ -427,6 +432,10 @@ void MainWindow::add3DModel(){
 
 void MainWindow::changeActiveId(int id){
 	mapWidgets([=](GLWidget *w){w->changeActiveId(id);});
+}
+
+void MainWindow::setSATShadows(bool set){
+	mapWidgets([=](GLWidget *w){w->setSATShadows(set);});
 }
 
 

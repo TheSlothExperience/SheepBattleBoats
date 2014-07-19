@@ -7,6 +7,7 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector3D>
+#include <QOpenGLShader>
 
 #include "primitive.h"
 
@@ -58,8 +59,9 @@ public:
 	bool isLeaf() {return leaf;};
 	SceneGraph* add(Primitive *p);
 	SceneGraph* add(SceneGraph *s);;
-	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
-	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix);
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
+	virtual void drawGeometry(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
 };
 
 #endif //SCENE_H
