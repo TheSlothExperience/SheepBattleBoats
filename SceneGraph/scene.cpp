@@ -19,6 +19,8 @@
 #include <GL/gl.h>
 #include <iostream>
 
+std::vector<LightNode*> Scene::lights = vector<LightNode*>();
+
 Scene::Scene(QObject *parent)
 	: QAbstractItemModel(parent)
 {
@@ -337,7 +339,7 @@ void Scene::draw(Camera *camera) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
 	modelViewMatrixStack.top() *= camera->getCameraMatrix();
 
-	this->rootNode->draw(modelViewMatrixStack, camera->getProjectionMatrix());
+	this->rootNode->draw(modelViewMatrixStack, camera->getCameraMatrix(), camera->getProjectionMatrix());
 	modelViewMatrixStack.pop();
 }
 
@@ -345,7 +347,7 @@ void Scene::DS_geometryPass(Camera *camera){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= camera->getCameraMatrix();
 
-    this->rootNode->draw(modelViewMatrixStack, camera->getProjectionMatrix());
+    this->rootNode->draw(modelViewMatrixStack, camera->getCameraMatrix(), camera->getProjectionMatrix());
     modelViewMatrixStack.pop();
 }
 
@@ -391,7 +393,8 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 
 		GLuint colorLocation = shader->uniformLocation("color");
 
-		this->rootNode->draw(modelViewMatrixStack
+		this->rootNode->drawGeometry(modelViewMatrixStack
+		                   , l->lightView()
 		                   , l->perspectiveMatrix()
 		                   , shader);
 

@@ -14,8 +14,6 @@ uniform int numLights;
 
 uniform mat4 lightViews[maxLights];
 uniform mat4 lightPerspectives[maxLights];
-uniform sampler2D shadowMaps[maxLights];
-uniform mat4 lightBias;
 
 out vec4 shadowCoords[maxLights];
 
@@ -35,11 +33,6 @@ void main()
 
     // Transforming The Vertex Position To ModelView-Space
     V = vec3(modelViewMatrix * position);
-
-    //Set the vertices up for the shadowmaps lookup
-    for(int i = 0; i < numLights; i++) {
-	    shadowCoords[i] = (lightBias * lightPerspectives[i] * lightViews[i]) * (inverseCameraMatrix * modelViewMatrix) * position;
-    }
 
     id4 = id;
 }

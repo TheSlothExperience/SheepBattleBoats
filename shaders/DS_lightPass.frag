@@ -150,4 +150,5 @@ void main(){
 	else diffuse = D;
 
 	outputColor += diffuse*color;
+	gl_FragDepth = V.z;
 }

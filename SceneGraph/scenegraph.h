@@ -59,8 +59,9 @@ public:
 	bool isLeaf() {return leaf;};
 	SceneGraph* add(Primitive *p);
 	SceneGraph* add(SceneGraph *s);;
-	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 projectionMatrix);
-	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix);
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
+	virtual void drawGeometry(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
 };
 
 #endif //SCENE_H

@@ -1,7 +1,11 @@
 #define GL_GLEXT_PROTOTYPES
 #include "gbuffer.h"
 
+GBuffer* GBuffer::m_activeGBuffer = NULL;
 
+GBuffer* GBuffer::activeGBuffer() {
+	return m_activeGBuffer;
+}
 
 GBuffer::GBuffer()
 {
@@ -11,9 +15,10 @@ GBuffer::GBuffer()
 }
 
 bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
-
+	m_activeGBuffer = this;
 	this->windowWidth = windowWidth;
 	this->windowHeight = windowHeight;
+	glEnable(GL_DEPTH_TEST);
 	// Create the FBO
 	glGenFramebuffers(1, &m_fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
@@ -21,7 +26,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	// Erzeuge 5 Texturen
 	glGenTextures(5, m_textures);
 
-	//Erzeuge die Tiefen Textur
+	// Depth
 	glGenTextures(1, &m_depthTexture);
 
 	//Erzeuge die Finale Textur
@@ -44,7 +49,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	glBindTexture(GL_TEXTURE_2D, m_depthTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, windowWidth, windowHeight, 0,
 	             GL_DEPTH_COMPONENT, GL_FLOAT,NULL);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 
 	//Finale Textur
 	glBindTexture(GL_TEXTURE_2D, m_finalTexture);
@@ -74,13 +79,15 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 
 void GBuffer::startFrame(){
+	m_activeGBuffer = this;
     glBindBuffer(GL_FRAMEBUFFER,m_fbo);
-    GLenum DrawBuffers[6]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5};
-    glDrawBuffers(5,DrawBuffers);
+    GLenum DrawBuffers[]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5};
+    glDrawBuffers(6,DrawBuffers);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void GBuffer::bindGeometryPass(){
+	m_activeGBuffer = this;
     glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
 
     GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0,
@@ -90,15 +97,18 @@ void GBuffer::bindGeometryPass(){
                          GL_COLOR_ATTACHMENT4};
 
     glDrawBuffers(5,drawBuffers);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void GBuffer::bindStencilPass(){
+	m_activeGBuffer = this;
 
     //Abschalten des Zeichnen der Buffer
 //    glDrawBuffers(GL_NONE);
 }
 
 void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
+	m_activeGBuffer = this;
 //    glDrawBuffer(GL_COLOR_ATTACHMENT4);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
@@ -118,14 +128,10 @@ void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
 
     glActiveTexture(GL_TEXTURE3);
         glUniform1i(lightPassProgram->uniformLocation("depthCoordTexture"),3);
-    glBindTexture(GL_TEXTURE_2D,m_textures[3]);
-
-    glActiveTexture(GL_TEXTURE4);
-        glUniform1i(lightPassProgram->uniformLocation("depthTexture2"),4);
     glBindTexture(GL_TEXTURE_2D,m_depthTexture);
 
-    glActiveTexture(GL_TEXTURE5);
-        glUniform1i(lightPassProgram->uniformLocation("textCoordTexture2"),5);
+    glActiveTexture(GL_TEXTURE4);
+        glUniform1i(lightPassProgram->uniformLocation("textCoordTexture2"),4);
     glBindTexture(GL_TEXTURE_2D,m_textures[4]);
 
     GLenum drawBuffers[]={GL_COLOR_ATTACHMENT5};
@@ -134,12 +140,15 @@ void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
 }
 
 void GBuffer::drawToFinal() {
+	m_activeGBuffer = this;
     glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
+	glViewport(0,0, windowWidth, windowHeight);
     GLenum drawBuffers[]={GL_COLOR_ATTACHMENT5};
     glDrawBuffers(1,drawBuffers);
 }
 
 void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
+	m_activeGBuffer = this;
 
     //Fertig mit schreiben
     glBindFramebuffer(GL_FRAMEBUFFER,0);

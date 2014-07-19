@@ -99,10 +99,6 @@ void GLWidget::DSGeometryPass() {
     glViewport(0,0,1024,768);
     gbuffer.bindGeometryPass();
 
-    glDepthMask(GL_TRUE);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-
     if(scene != NULL) {
         //Discombobulate!
 	    scene->draw(camera);
@@ -123,7 +119,7 @@ void GLWidget::DSLightPass(){
 	Shaders::bind(shaders.lightPassProgram);
 
     gbuffer.bindLightPass(shaders.lightPassProgram);
-    scene->passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
+    Scene::passLights(camera->getCameraMatrix(), shaders.lightPassProgram);
 
     passShadowMaps(shaders.lightPassProgram, 8);
 
@@ -148,7 +144,7 @@ void GLWidget::paintSceneToCanvas() {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0,0, this->width(), this->height());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gbuffer.bindFinalPass(shaders.canvasProgram);
 
     //Draw our nifty, pretty quad
