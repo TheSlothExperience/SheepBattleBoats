@@ -248,7 +248,6 @@ void Shaders::bind(QOpenGLShaderProgram *sp) {
 		if(last) last->release();
 		sp->bind();
 		last = sp;
-		std::cout << "Switched shaders" << std::endl;
 	}
 }
 

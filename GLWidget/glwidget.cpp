@@ -72,18 +72,14 @@ void GLWidget::paintGL()
 	//Clear the buffers
     gbuffer.startFrame();
     //Render the Textures for DeferredShading
-    std::cout << "-- Geometry" << std::endl;
     DSGeometryPass();
 
     //Shadow map pass. Render them and blur
-    std::cout << "-- Shadows" << std::endl;
     shadowMapsPass();
 
     //Use of the Textures to Render to the Magic Quad
-    std::cout << "-- Shading!!" << std::endl;
     DSLightPass();
 
-    std::cout << "-- Canvasing" << std::endl;
     paintSceneToCanvas();
 }
 
