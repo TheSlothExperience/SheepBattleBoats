@@ -23,8 +23,8 @@ public:
     void startFrame();
     void bindGeometryPass();
     void bindStencilPass();
-    void bindLightPass( QOpenGLShaderProgram *canvasProgram);
-    void bindFinalPass();
+    void bindLightPass( QOpenGLShaderProgram *lightPassProgram);
+    void bindFinalPass(QOpenGLShaderProgram *canvasProgram);
 //    void setReadBuffer(GBUFFER_TEXTURE_TYPE texType);
 
 private:
@@ -33,7 +33,7 @@ private:
     GLuint m_depthTexture;
     GLuint m_finalTexture;
 
-
+	int windowWidth, windowHeight;
 };
 
 #endif // GBUFFER_H
