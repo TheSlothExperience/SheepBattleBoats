@@ -96,7 +96,6 @@ void GLWidget::DSGeometryPass() {
     //Load the phong shading program
 	Shaders::bind(Shaders::shaderProgram);
 
-    glUniformMatrix4fv(shaders.shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
     glViewport(0,0,1024,768);
     gbuffer.bindGeometryPass();
 
@@ -106,7 +105,7 @@ void GLWidget::DSGeometryPass() {
 
     if(scene != NULL) {
         //Discombobulate!
-        scene->draw(camera->getCameraMatrix());
+	    scene->draw(camera);
     } else {
         std::cout << "no scene yet" << std::endl;
     }

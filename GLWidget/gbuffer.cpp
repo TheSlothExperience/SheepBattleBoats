@@ -133,6 +133,12 @@ void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
     glDrawBuffers(1,drawBuffers);
 }
 
+void GBuffer::drawToFinal() {
+    glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT5};
+    glDrawBuffers(1,drawBuffers);
+}
+
 void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
 
     //Fertig mit schreiben

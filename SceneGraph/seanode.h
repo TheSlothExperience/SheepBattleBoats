@@ -18,6 +18,9 @@ private:
 public:
 	SeaNode(Primitive *p, std::string name);
 	~SeaNode();
+
+	void draw(std::stack<QMatrix4x4> &MVStack);
+	void draw(std::stack<QMatrix4x4> &MVStack, QOpenGLShaderProgram *shader);
 };
 
 #endif

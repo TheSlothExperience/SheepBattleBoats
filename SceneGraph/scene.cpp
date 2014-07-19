@@ -10,6 +10,7 @@
 #include "light.h"
 #include "object3d.h"
 #include "sea.h"
+#include "seanode.h"
 #include "Reduction.h"
 
 #include "glwidget.h"
@@ -323,7 +324,7 @@ QModelIndex Scene::addSea(SceneGraph *node){
     std::string name("Sea of Moist Seaness ");
     int id = nextId();
     name += std::to_string(id);
-    SceneGraph *s = new SceneGraph(sea, name);
+    SeaNode *s = new SeaNode(sea, name);
     s->setId(id);
     identifier[id] = s;
 
@@ -332,19 +333,19 @@ QModelIndex Scene::addSea(SceneGraph *node){
     return createIndex(s->row(), 0, s);
 }
 
-void Scene::draw(QMatrix4x4 cameraMatrix) {
+void Scene::draw(Camera *camera) {
 	modelViewMatrixStack.push(modelViewMatrixStack.top());
-	modelViewMatrixStack.top() *= cameraMatrix;
+	modelViewMatrixStack.top() *= camera->getCameraMatrix();
 
-	this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
+	this->rootNode->draw(modelViewMatrixStack, camera->getProjectionMatrix());
 	modelViewMatrixStack.pop();
 }
 
-void Scene::DS_geometryPass(QMatrix4x4 cameraMatrix){
+void Scene::DS_geometryPass(Camera *camera){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
-    modelViewMatrixStack.top() *= cameraMatrix;
+    modelViewMatrixStack.top() *= camera->getCameraMatrix();
 
-    this->rootNode->draw(modelViewMatrixStack, modelViewMatLocation, normalMatLocation, idLocation, colorLocation);
+    this->rootNode->draw(modelViewMatrixStack, camera->getProjectionMatrix());
     modelViewMatrixStack.pop();
 }
 
@@ -385,18 +386,13 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0,0, l->shadowWidth(), l->shadowHeight());
 
-		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, l->perspectiveMatrix().constData());
-
 		modelViewMatrixStack.push(modelViewMatrixStack.top());
 		modelViewMatrixStack.top() *= l->lightView();
 
 		GLuint colorLocation = shader->uniformLocation("color");
 
 		this->rootNode->draw(modelViewMatrixStack
-		                   , shader->uniformLocation("modelViewMatrix")
-		                   , shader->uniformLocation("normalMatrix")
-		                   , shader->uniformLocation("id")
-		                   , colorLocation
+		                   , l->perspectiveMatrix()
 		                   , shader);
 
 		modelViewMatrixStack.pop();

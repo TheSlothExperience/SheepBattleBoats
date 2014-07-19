@@ -25,6 +25,7 @@ public:
     void bindStencilPass();
     void bindLightPass( QOpenGLShaderProgram *lightPassProgram);
     void bindFinalPass(QOpenGLShaderProgram *canvasProgram);
+	void drawToFinal();
 //    void setReadBuffer(GBUFFER_TEXTURE_TYPE texType);
 
 private:

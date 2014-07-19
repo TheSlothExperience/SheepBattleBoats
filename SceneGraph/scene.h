@@ -3,6 +3,7 @@
 
 #include "scenegraph.h"
 #include "lightnode.h"
+#include "camera.h"
 
 #include <stack>
 #include <map>
@@ -89,8 +90,8 @@ public:
 	QModelIndex identify(int i);
 	void setLightLocation(GLuint lightPositionLocation);
 
-	void draw(QMatrix4x4 cameraMatrix);
-    void DS_geometryPass(QMatrix4x4 cameraMatrix);
+	void draw(Camera *camera);
+    void DS_geometryPass(Camera *camera);
 };
 
 #endif //SCENE_H

@@ -152,40 +152,11 @@ void SceneGraph::setParent(SceneGraph *s) {
 	this->parentNode = s;
 }
 
-void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc) {
-
-	MVStack.push(MVStack.top());
-
-	MVStack.top().translate(this->translation);
-
-	//Convert the quat to a matrix, may be a performance leak.
-	QMatrix4x4 tempRot;
-	tempRot.rotate(this->rotation.normalized());
-	MVStack.top() *= tempRot;
-
-	//If the node is a leaf, draw its contents
-	if(leaf) {
-		glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
-		glUniformMatrix4fv(normalLoc, 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
-		int r = (id & 0x000000FF) >>  0;
-		int g = (id & 0x0000FF00) >>  8;
-		int b = (id & 0x00FF0000) >> 16;
-		glUniform4f(idLoc, r/255.0f, g/255.0f, b/255.0f, 1.0f);
-
-		this->primitive->draw();
-	} else {
-		//Else, recurse into its children
-		std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc);});
-	}
-
-	MVStack.pop();
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 projectionMatrix) {
+	draw(MVStack, projectionMatrix, Shaders::shaderProgram);
 }
 
-void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc) {
-	draw(MVStack, mvLoc, normalLoc, idLoc, colorLoc, Shaders::shaderProgram);
-}
-
-void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QOpenGLShaderProgram *shader) {
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
 	Shaders::bind(shader);
 	MVStack.push(MVStack.top());
 
@@ -198,19 +169,20 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
 
 	//If the node is a leaf, draw its contents
 	if(leaf) {
-		glUniformMatrix4fv(mvLoc, 1, GL_FALSE, MVStack.top().constData());
-		glUniformMatrix4fv(normalLoc, 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
+		glUniformMatrix4fv(shader->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
+		glUniformMatrix4fv(shader->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
+		glUniformMatrix4fv(shader->uniformLocation("normalMatrix"), 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
 		int r = (id & 0x000000FF) >>  0;
 		int g = (id & 0x0000FF00) >>  8;
 		int b = (id & 0x00FF0000) >> 16;
-		glUniform4f(idLoc, r/255.0f, g/255.0f, b/255.0f, 1.0f);
+		glUniform4f(shader->uniformLocation("id"), r/255.0f, g/255.0f, b/255.0f, 1.0f);
 
-		glUniform4fv(colorLoc, 1, color);
+		glUniform4fv(shader->uniformLocation("color"), 1, color);
 
 		this->primitive->draw();
 	} else {
 		//Else, recurse into its children
-		std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc, colorLoc, shader](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc, colorLoc, shader);});
+		std::for_each(children.begin(), children.end(), [&MVStack, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, projectionMatrix, shader);});
 	}
 
 	MVStack.pop();
