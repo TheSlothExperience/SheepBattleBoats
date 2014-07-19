@@ -396,7 +396,8 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 		                   , shader->uniformLocation("modelViewMatrix")
 		                   , shader->uniformLocation("normalMatrix")
 		                   , shader->uniformLocation("id")
-		                   , colorLocation);
+		                   , colorLocation
+		                   , shader);
 
 		modelViewMatrixStack.pop();
 

@@ -72,14 +72,18 @@ void GLWidget::paintGL()
 	//Clear the buffers
     gbuffer.startFrame();
     //Render the Textures for DeferredShading
+    std::cout << "-- Geometry" << std::endl;
     DSGeometryPass();
 
     //Shadow map pass. Render them and blur
+    std::cout << "-- Shadows" << std::endl;
     shadowMapsPass();
 
     //Use of the Textures to Render to the Magic Quad
+    std::cout << "-- Shading!!" << std::endl;
     DSLightPass();
 
+    std::cout << "-- Canvasing" << std::endl;
     paintSceneToCanvas();
 }
 
@@ -90,7 +94,7 @@ void GLWidget::paintGL()
  */
 void GLWidget::DSGeometryPass() {
     //Load the phong shading program
-	Shaders::bind(shaders.shaderProgram);
+	Shaders::bind(Shaders::shaderProgram);
 
     glUniformMatrix4fv(shaders.shaderProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().constData());
     glViewport(0,0,1024,768);

@@ -7,6 +7,7 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector3D>
+#include <QOpenGLShader>
 
 #include "primitive.h"
 
@@ -60,6 +61,7 @@ public:
 	SceneGraph* add(SceneGraph *s);;
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
+	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QOpenGLShaderProgram *shader);
 };
 
 #endif //SCENE_H

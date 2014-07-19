@@ -229,6 +229,15 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcst
 //-----------------------------------------------------------------------
 QOpenGLShaderProgram* Shaders::last = NULL;
 
+QOpenGLShaderProgram *Shaders::shaderProgram = NULL;
+QOpenGLShaderProgram *Shaders::canvasProgram = NULL;
+QOpenGLShaderProgram *Shaders::quadviewProgram = NULL;
+QOpenGLShaderProgram *Shaders::storeDepthProgram = NULL;
+QOpenGLShaderProgram *Shaders::gaussianBlurHProgram = NULL;
+QOpenGLShaderProgram *Shaders::gaussianBlurVProgram = NULL;
+QOpenGLShaderProgram *Shaders::geometryPassProgram = NULL;
+QOpenGLShaderProgram *Shaders::lightPassProgram = NULL;
+
 void Shaders::bind(QOpenGLShaderProgram *sp) {
 	if(sp == last) {
 		return;

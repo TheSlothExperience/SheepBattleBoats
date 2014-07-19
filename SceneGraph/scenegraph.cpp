@@ -1,6 +1,7 @@
 #define GL_GLEXT_PROTOTYPES
 
 #include "scenegraph.h"
+#include "glwidgetcontext.h"
 
 #include <algorithm>
 #include <functional>
@@ -181,7 +182,11 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
 }
 
 void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc) {
+	draw(MVStack, mvLoc, normalLoc, idLoc, colorLoc, Shaders::shaderProgram);
+}
 
+void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QOpenGLShaderProgram *shader) {
+	Shaders::bind(shader);
 	MVStack.push(MVStack.top());
 
 	MVStack.top().translate(this->translation);
@@ -205,10 +210,11 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint norm
 		this->primitive->draw();
 	} else {
 		//Else, recurse into its children
-		std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc, colorLoc](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc, colorLoc);});
+		std::for_each(children.begin(), children.end(), [&MVStack, mvLoc, normalLoc, idLoc, colorLoc, shader](SceneGraph *s){s->draw(MVStack, mvLoc, normalLoc, idLoc, colorLoc, shader);});
 	}
 
 	MVStack.pop();
+	Shaders::release(shader);
 }
 
 void SceneGraph::setName(std::string name) {
