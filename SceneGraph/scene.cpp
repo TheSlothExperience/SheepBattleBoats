@@ -13,6 +13,7 @@
 #include "Reduction.h"
 
 #include "glwidget.h"
+#include "glwidgetcontext.h"
 #include <QtGui>
 #include <GL/gl.h>
 #include <iostream>
@@ -373,7 +374,7 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 }
 
 void Scene::lightsPass(QOpenGLShaderProgram *shader) {
-	shader->bind();
+	Shaders::bind(shader);
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 
@@ -406,7 +407,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 		//Release and relax, brah
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	shader->release();
+	Shaders::release(shader);
 }
 
 void Scene::computeSAT(QOpenGLShaderProgram *sat) {
@@ -442,7 +443,7 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 
 		//First pass, horizontal
 		{
-			hs->bind();
+			Shaders::bind(hs);
 			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT2};
 			glDrawBuffers(1, DrawBuffers);
 
@@ -466,12 +467,12 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 			//Recreate the mipmaps
 			glBindTexture(GL_TEXTURE_2D, l->shadowMomentsTemp());
 			glGenerateMipmap(GL_TEXTURE_2D);
-			hs->release();
+			Shaders::release(hs);
 		}
 
 		//Second pass, vertical into the shadow map
 		{
-			vs->bind();
+			Shaders::bind(vs);
 			GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 			glDrawBuffers(1, DrawBuffers);
 
@@ -495,7 +496,7 @@ void Scene::blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs) {
 			//Recreate the mipmaps
 			glBindTexture(GL_TEXTURE_2D, l->getShadowMap());
 			glGenerateMipmap(GL_TEXTURE_2D);
-			vs->release();
+			Shaders::release(vs);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

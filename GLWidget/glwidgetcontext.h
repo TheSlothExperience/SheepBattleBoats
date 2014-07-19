@@ -20,6 +20,12 @@ struct Shaders {
 	QOpenGLShaderProgram *gaussianBlurVProgram;
 	QOpenGLShaderProgram *geometryPassProgram;
 	QOpenGLShaderProgram *lightPassProgram;
+
+	static void bind(QOpenGLShaderProgram *sp);
+	static void release(QOpenGLShaderProgram *sp);
+
+private:
+	static QOpenGLShaderProgram *last;
 };
 
 class GLWidgetContext : public QGLWidget

@@ -223,3 +223,23 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcst
 
 	prog->link();
 }
+
+
+
+//-----------------------------------------------------------------------
+QOpenGLShaderProgram* Shaders::last = NULL;
+
+void Shaders::bind(QOpenGLShaderProgram *sp) {
+	if(sp == last) {
+		return;
+	} else {
+		if(last) last->release();
+		sp->bind();
+		last = sp;
+		std::cout << "Switched shaders" << std::endl;
+	}
+}
+
+void Shaders::release(QOpenGLShaderProgram *sp) {
+	last = sp;
+}
