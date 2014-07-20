@@ -45,7 +45,7 @@ void MainWindow::initGameLogic(){
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameTick()));
-    timer->start(100);
+    timer->start(34);
 
 
 //    for(int i=0;i<scene->getLvlObjAdresses().length();i++){
@@ -71,18 +71,22 @@ void MainWindow::doMovements(){
 
     //"Vor und zurück"
     if(wPressed){
-        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.02));
+        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.002));
 
     }else if(sPressed){
-        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.02));
+        if(scene->getMainBoat()->getVelocity().z()<0){
+            scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.004));
+        }else{
+            scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.001));
+        }
     }else{
         scene->getMainBoat()->stopVelocity();
     }
 
     if(dPressed){
-        scene->getMainBoat()->changeSteeringValue(0.04);
+        scene->getMainBoat()->changeSteeringValue(0.02);
     }else if(aPressed){
-        scene->getMainBoat()->changeSteeringValue(-0.04);
+        scene->getMainBoat()->changeSteeringValue(-0.02);
     }else{
         scene->getMainBoat()->stopRotating();
     }
@@ -628,9 +632,9 @@ void MainWindow::load3DModel(){
 
 void MainWindow::shoot(float shootingHeight){
     qDebug()<<"shoot";
-//    QQuaternion rot = scene->getMainBoat()->getRotation();
-   QVector3D temp=QVector3D(0.0,5.0,-1.0);
-//   temp=rot.rotatedVector(temp);
+   QQuaternion rot = scene->getMainBoat()->getRotation();
+   QVector3D temp=QVector3D(0.0,5.0,-4.0);
+   temp=rot.rotatedVector(temp);
     scene->addProjectile(temp);
 
 }

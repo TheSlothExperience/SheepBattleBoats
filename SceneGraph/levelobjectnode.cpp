@@ -57,6 +57,9 @@ void LevelObjectNode::increaseVelocity(QVector3D vTobeAdded){
     if(v.z()>MAX_VELOCITY.z()){
        v=MAX_VELOCITY;
     }
+    if(v.z()<-MAX_VELOCITY.z()){
+        v=-MAX_VELOCITY;
+    }
 }
 
 void LevelObjectNode::changeSteeringValue(float angleTobeAdded){
@@ -71,10 +74,10 @@ void LevelObjectNode::changeSteeringValue(float angleTobeAdded){
 }
 
 void LevelObjectNode::stopVelocity(){
-    if(v.z()>0.015){
-        increaseVelocity(QVector3D(0.0,0.0,-0.015));
-    }else if(v.z()<-0.015){
-        increaseVelocity(QVector3D(0.0,0.0,0.015));
+    if(v.z()>0.003){
+        increaseVelocity(QVector3D(0.0,0.0,-0.0030));
+    }else if(v.z()<-0.003){
+        increaseVelocity(QVector3D(0.0,0.0,0.0030));
     }
     else{
         setVelocity(QVector3D(0.0,0.0,0.0));
@@ -96,4 +99,12 @@ void LevelObjectNode::exeObjBehaviour(){
 //    primitive->exeObjBehaviour();
 //    qDebug()<<"exeObjBehaviour in LevelNode";
     move();
+}
+
+void LevelObjectNode::reactToCollision(){
+    qDebug()<<"deleting row " << row();
+
+
+    setDeadmark(true);
+//    emit deleteNode(this);
 }

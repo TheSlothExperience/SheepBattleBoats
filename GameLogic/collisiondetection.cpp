@@ -17,6 +17,15 @@ int CollisionDetecion::isCollision(BoundingBox* bb1, BoundingBox *bb2){
 
     if (bb1->max[2]+bb1->position.z() < bb2->min[2]+bb2->position.z() || bb1->min[2]+bb1->position.z() > bb2->max[2]+bb2->position.z()) return 0;
 
+//    std::cout<<bb1->position.x;
+    qDebug()<<"BOOM between "
+              +QString::number(bb1->position.x())+","
+              +QString::number(bb1->position.y())+","
+              +QString::number(bb1->position.z())+
+              "  and  "
+              +QString::number(bb2->position.x())+","
+              +QString::number(bb2->position.y())+","
+              +QString::number(bb2->position.z());
     //Wenn es soweit kommt, dann gibt es eine Schnitt
     return 1;
 }

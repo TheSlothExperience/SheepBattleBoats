@@ -19,13 +19,35 @@ void ProjectileNode::draw(){
 
 void ProjectileNode::exeObjBehaviour(){
 //    qDebug()<<"exeObjBehaviour in projectileNode.";
-    if(livedTicks>=MAX_TICKSTOLIVE||translation.y()<0){
-        qDebug()<<"Projectile shouldbe dead";
+    float t= livedTicks;
+    if(livedTicks>=MAX_TICKSTOLIVE||translation.y()<-10.0){
+//        qDebug()<<"Projectile shouldbe dead";
     }else{
-        livedTicks++;
-        translation=QVector3D(startPos.x(),
-                              gravity*livedTicks*livedTicks+shootDir.y()*livedTicks+startPos.y(),
-                              shootDir.z()*livedTicks+startPos.z());
+        livedTicks+=0.1;
+        translation=QVector3D(shootDir.x()*t+startPos.x(),
+                              gravity*t*t+shootDir.y()*t+startPos.y(),
+                              shootDir.z()*t+startPos.z());
+//        setNewBBPosition(translation);
 
     }
+}
+
+BoundingBox* ProjectileNode::getBB(){
+    BoundingBox* a=primitive->getBB();
+//    qDebug()<<QString::number(translation.x());
+    a->position=translation;
+
+    return a;
+}
+
+void ProjectileNode::setNewPosition(QVector3D newPos){
+    this->getBB()->setNewPosition(newPos);
+}
+
+void ProjectileNode::reactToCollision(){
+    qDebug()<<"deleting row " << row();
+
+
+    setDeadmark(true);
+//    emit deleteNode(this);
 }

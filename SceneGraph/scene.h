@@ -17,7 +17,6 @@
 
 class Scene : public QAbstractItemModel
 {
-	Q_OBJECT
 
 private:
 	SceneGraph *rootNode;
@@ -109,6 +108,9 @@ public:
     void rotateMotherSheep();
     QVector3D convertToMotherSheepTranslation();
     void behaviourExecutions();
+
+//public slots:
+//    void deleteNodeAdress(SceneGraph* nodeAdress);
 };
 
 #endif //SCENE_H

@@ -6,17 +6,20 @@
 class ProjectileNode: public SceneGraph
 {
 private:
-    const int MAX_TICKSTOLIVE=100;
-    int livedTicks=0;
-    const float gravity=-1.0;
+    const int MAX_TICKSTOLIVE=500;
+    float livedTicks=0.0;
+    const float gravity=-2.0;
     QVector3D shootDir;
     QVector3D startPos;
+    void setNewPosition(QVector3D newPos);
 
 public:
     ProjectileNode(QVector3D startPos,QVector3D shootingDir,Primitive *p, std::string name);
     ~ProjectileNode();
     void draw();
     void exeObjBehaviour();
+    BoundingBox* getBB();
+    void reactToCollision();
 
 };
 

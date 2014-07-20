@@ -259,4 +259,6 @@ BoundingBox* SceneGraph::getBB(){
 
 void SceneGraph::exeObjBehaviour(){
 //    qDebug()<<"exeObjBehaviour in SceneGraph";
+
 }
+

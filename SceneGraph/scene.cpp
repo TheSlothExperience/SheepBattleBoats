@@ -383,8 +383,8 @@ LevelObjectNode* Scene::addLevelObj(){
 ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
     QVector3D temp=mainBoat->getBB()->position;
 
-    qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
-    Projectile *lvlObj = new Projectile(mainBoat->getBB()->position);
+//    qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
+    Projectile *lvlObj = new Projectile(temp);
     std::string name("LevelObj ");
     int id = nextId();
     name+=std::to_string(id);
@@ -397,6 +397,7 @@ ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
 
     rootNode->add(s);
     levelObjAdresses.append(s);
+//    connect(s, SIGNAL(deleteNode(SceneGraph*)),this,SLOT(deleteNodeAdress(SceneGraph*)));
     return s;
 }
 void Scene::DS_geometryPass(Camera *camera){
@@ -625,19 +626,36 @@ std::vector<GLuint> Scene::shadowSATs() {
 
 void Scene::testCollisions(){
     for(int i=0;i<levelObjAdresses.length()-1;i++){
-        for(int j=i+1;j<levelObjAdresses.length();j++){
-           BoundingBox* bb1= levelObjAdresses.at(i)->getBB();
-           BoundingBox* bb2= levelObjAdresses.at(j)->getBB();
 
-//           if(CollisionDetecion::isCollision(bb1,bb2)==1){
-//               qDebug()<<"Colission";
-//               mainBoat->setVelocity(QVector3D(0.0,0.0,0.0));
-//           }else{
-//               qDebug()<<"no Colission";
-//           }
+        for(int j=i+1;j<levelObjAdresses.length();j++){
+
+            BoundingBox* bb1= levelObjAdresses.at(i)->getBB();
+            BoundingBox* bb2= levelObjAdresses.at(j)->getBB();
+
+            bool boatInvolved=mainBoat==levelObjAdresses.at(i)||mainBoat==levelObjAdresses.at(j);
+            if(CollisionDetecion::isCollision(bb1,bb2)==1
+                    && !boatInvolved){
+                qDebug()<<"fette kollision";
+                levelObjAdresses.at(i)->reactToCollision();
+                levelObjAdresses.at(j)->reactToCollision();
+            }else{
+                //               qDebug()<<"no Colission";
+            }
+
         }
     }
-//    rootNode->testCollisions();
+    int adressCount= levelObjAdresses.length();
+    for(int i=adressCount-1;i>=0;i--){
+        if(levelObjAdresses.at(i)->isMarkedDead()){
+            SceneGraph* adress=levelObjAdresses.at(i);
+            adress->parent()->removeChildren(adress->row(),1);
+            levelObjAdresses.removeAt(i);
+            qDebug()<<"delete an object";
+
+
+        }
+    }
+    //    rootNode->testCollisions();
 }
 
 //void Scene::doMovements(){
@@ -663,3 +681,7 @@ void Scene::behaviourExecutions(){
         levelObjAdresses.at(i)->exeObjBehaviour();
     }
 }
+
+//void Scene::deleteNodeAdress(SceneGraph *nodeAdress){
+//    qDebug()<<nodeAdress;
+//}

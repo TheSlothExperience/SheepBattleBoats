@@ -14,8 +14,8 @@ private :
     QVector3D v; //Positionsänderungen pro GameTick
     float rotationAngle;//Winkel der Rotation pro GameTick
     bool moving;
-    const float MAX_ROTATION=0.1;
-    const QVector3D MAX_VELOCITY=QVector3D(0.0,0.0,0.2);
+    const float MAX_ROTATION=0.05;
+    const QVector3D MAX_VELOCITY=QVector3D(0.0,0.0,0.3);
 public:
 
     LevelObjectNode(Primitive *p, std::string name);
@@ -45,6 +45,7 @@ public:
 //    void executeObjectBehavior();
     void exeObjBehaviour();
     BoundingBox* getBB();
+    void reactToCollision();
 };
 
 #endif // LEVELOBJECTNODE_H

@@ -34,3 +34,7 @@ QString BoundingBox::getString(){
 
 
 }
+
+void BoundingBox::setNewPosition(QVector3D newPos){
+    this->position=newPos;
+}
