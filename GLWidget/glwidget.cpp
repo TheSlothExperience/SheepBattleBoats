@@ -167,8 +167,9 @@ void GLWidget::getSceneIntensity(){
     Shaders::bind(shaders.intensityProgram);
 
     gbuffer.tempTexture(0);
-
-    glUniform2f(shaders.intensityProgram->uniformLocation("pixelSize"),1.0/(float) this->width(),1.0/(float) this->height());
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(shaders.intensityProgram->uniformLocation("scene"),0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.getFinalLocation());
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
