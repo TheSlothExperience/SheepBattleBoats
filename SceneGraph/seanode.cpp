@@ -34,15 +34,6 @@ SeaNode::SeaNode(Primitive *p, std::string name)
 		}
 	}
 
-	float val;
-	causticData = new GLfloat[seaWidth * seaHeight];
-	for(int y = 0; y < seaHeight; y++) {
-		for(int x = 0; x < seaWidth; x++) {
-			val = scaled_octave_noise_2d(4, 0.1, 0.5, 0.0, 1.0, x * frequency, y * frequency);
-			causticData[y * seaWidth + x] = inInterval(0.5, 0.7, val);
-		}
-	}
-
 	glGenTextures(1, &noiseTexture);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -54,17 +45,6 @@ SeaNode::SeaNode(Primitive *p, std::string name)
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R16, seaWidth, seaHeight, periodicity, 0, GL_RED, GL_FLOAT, (void*) noiseData);
 	glBindTexture(GL_TEXTURE_3D, 0);
-
-	glGenTextures(1, &causticTexture);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, causticTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, seaWidth, seaHeight, 0, GL_RED, GL_FLOAT, (void*) causticData);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	QOpenGLShaderProgram *sh = Shaders::waterGeometryProgram;
 	Shaders::bind(sh);
