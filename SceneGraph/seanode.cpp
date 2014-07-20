@@ -17,25 +17,29 @@ SeaNode::SeaNode(Primitive *p, std::string name)
 {
 	seaWidth = 200;
 	seaHeight = 200;
+	periodicity = 200;
 	//Create noise texture
 	float frequency = 1.0 / pow(2.0, 5);
-	noiseData = new GLfloat[seaWidth * seaHeight];
-	for(int y = 0; y < seaHeight; y++) {
-		for(int x = 0; x < seaWidth; x++) {
-			noiseData[y * seaWidth + x] = scaled_raw_noise_2d(0.0, 1.0, x * frequency, y * frequency);
+	noiseData = new GLfloat[seaWidth * seaHeight * (int) periodicity];
+	for(int z = 0; z < (int) periodicity; z++) {
+		for(int y = 0; y < seaHeight; y++) {
+			for(int x = 0; x < seaWidth; x++) {
+				noiseData[z * (seaWidth * seaHeight) + y * seaWidth + x] = scaled_raw_noise_3d(0.0, 1.0, x * frequency, y * frequency, z * frequency);
+			}
 		}
 	}
 
 	glGenTextures(1, &noiseTexture);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, noiseTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, seaWidth, seaHeight, 0, GL_RED, GL_FLOAT, (void*) noiseData);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_3D, noiseTexture);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R16, seaWidth, seaHeight, periodicity, 0, GL_RED, GL_FLOAT, (void*) noiseData);
+	glBindTexture(GL_TEXTURE_3D, 0);
 }
 
 
@@ -71,7 +75,7 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 		glUniform4fv(sh->uniformLocation("color"), 1, color);
 
 		glActiveTexture(GL_TEXTURE5);
-		glBindTexture(GL_TEXTURE_2D, noiseTexture);
+		glBindTexture(GL_TEXTURE_3D, noiseTexture);
 		glUniform1i(sh->uniformLocation("noiseTexture"), 5);
 
 		glUniform1i(sh->uniformLocation("seaWidth"), seaWidth);

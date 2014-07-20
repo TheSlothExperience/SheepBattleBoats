@@ -9,7 +9,7 @@ layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 normal;
 layout(location = 2) in vec2 texCoords;
 
-uniform sampler2D noiseTexture;
+uniform sampler3D noiseTexture;
 
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
@@ -18,12 +18,14 @@ uniform mat4 normalMatrix;
 uniform int seaWidth;
 uniform int seaHeight;
 
+uniform float time;
+
 uniform vec4 id;
 
 void main()
 {
 	vec2 UV = position.xz / vec2(seaWidth, seaHeight);
-	float height = texture2D(noiseTexture, UV);
+	float height = texture(noiseTexture, vec3(UV, time)).r;
 	vec4 V_ = vec4(position.x, height, position.z, 1.0);
     gl_Position = (perspectiveMatrix * modelViewMatrix) * V_;
 
