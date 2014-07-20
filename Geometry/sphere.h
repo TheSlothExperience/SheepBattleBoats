@@ -16,5 +16,4 @@ public:
 	void draw();
 };
 
-
 #endif

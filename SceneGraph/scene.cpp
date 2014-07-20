@@ -12,6 +12,9 @@
 #include "sea.h"
 #include "seanode.h"
 #include "Reduction.h"
+#include "levelobject.h"
+#include "projectile.h"
+#include "collisiondetection.h"
 
 #include "glwidget.h"
 #include "glwidgetcontext.h"
@@ -26,6 +29,7 @@ Scene::Scene(QObject *parent)
 {
 	this->modelViewMatrixStack.push(QMatrix4x4());
 }
+
 Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObject *parent)
 	: QAbstractItemModel(parent)
 {
@@ -43,10 +47,28 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 
 	addLight();
 	lights.at(0)->translate(1.0, 3.0, 1.50);
-	addTorus(rootNode, 8);
-	addSea(rootNode);
+	//addTorus(rootNode, 8);
+	//addSea(rootNode);
+    levelObjAdresses= QList<SceneGraph*>();
+//	addTorus(rootNode, 8);
 }
 
+void Scene::initLevel(){
+    LevelObjectNode *temp=addLevelObj();
+    mainBoat=temp;
+//    temp=addLevelObj();
+//    temp->translate(1.0, 0.0, 0.0);
+    temp=addLevelObj();
+    temp->translate(0.0,0.0, -10.0);
+    temp=addLevelObj();
+    temp->translate(0.0,0.0, -20.0);
+    temp=addLevelObj();
+    temp->translate(0.0,0.0, -30.0);
+    temp=addLevelObj();
+    temp->translate(0.0,0.0, -40.0);
+
+
+}
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
 	if(!hasIndex(row, column, parent)) {
@@ -343,6 +365,40 @@ void Scene::draw(Camera *camera) {
 	modelViewMatrixStack.pop();
 }
 
+LevelObjectNode* Scene::addLevelObj(){
+
+    LevelObject *lvlObj = new LevelObject();
+    std::string name("LevelObj ");
+    int id = nextId();
+
+    LevelObjectNode *s = new LevelObjectNode(lvlObj,name);
+    s->setId(id);
+    identifier[id] = s;
+
+    rootNode->add(s);
+    levelObjAdresses.append(s);
+    return s;
+}
+
+ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
+    QVector3D temp=mainBoat->getBB()->position;
+
+    qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
+    Projectile *lvlObj = new Projectile(mainBoat->getBB()->position);
+    std::string name("LevelObj ");
+    int id = nextId();
+    name+=std::to_string(id);
+    ProjectileNode *s = new ProjectileNode(temp,shootingDir,lvlObj,name);
+    QVector3D temp2 =mainBoat->getTranslation();
+    s->translate(temp2.x(),temp2.y(),temp2.z());
+    s->rotate(mainBoat->getRotation());
+    s->setId(id);
+    identifier[id] = s;
+
+    rootNode->add(s);
+    levelObjAdresses.append(s);
+    return s;
+}
 void Scene::DS_geometryPass(Camera *camera){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= camera->getCameraMatrix();
@@ -565,4 +621,45 @@ std::vector<GLuint> Scene::shadowMapLocations() {
 
 std::vector<GLuint> Scene::shadowSATs() {
 	return fmap<GLuint>(lights, [=](LightNode *l){return l->shadowMomentsTemp();});
+}
+
+void Scene::testCollisions(){
+    for(int i=0;i<levelObjAdresses.length()-1;i++){
+        for(int j=i+1;j<levelObjAdresses.length();j++){
+           BoundingBox* bb1= levelObjAdresses.at(i)->getBB();
+           BoundingBox* bb2= levelObjAdresses.at(j)->getBB();
+
+//           if(CollisionDetecion::isCollision(bb1,bb2)==1){
+//               qDebug()<<"Colission";
+//               mainBoat->setVelocity(QVector3D(0.0,0.0,0.0));
+//           }else{
+//               qDebug()<<"no Colission";
+//           }
+        }
+    }
+//    rootNode->testCollisions();
+}
+
+//void Scene::doMovements(){
+//    for(int i=0;i<levelObjAdresses.length();i++){
+//        levelObjAdresses.at(i)->move();
+//    }
+//}
+QVector3D Scene::convertToMotherSheepTranslation(){
+    return  mainBoat->getRotation().rotatedVector(mainBoat->getVelocity());
+}
+
+void Scene::translateMotherSheep(QVector3D dir){
+    mainBoat->translate(dir.x(),dir.y(),dir.z());
+}
+
+void Scene::rotateMotherSheep(){
+    QQuaternion rot = QQuaternion(cos(mainBoat->getSteeringValue()/2.0), sin(mainBoat->getSteeringValue()/2.0) * QVector3D(0.0, 1.0, 0.0));
+    mainBoat->rotate(rot);
+}
+
+void Scene::behaviourExecutions(){
+    for(int i=0;i<levelObjAdresses.length();i++){
+        levelObjAdresses.at(i)->exeObjBehaviour();
+    }
 }

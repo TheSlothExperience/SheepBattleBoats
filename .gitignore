@@ -6,3 +6,4 @@ data/*
 /results/
 /*.pro.user.*
 *~
+*.autosave
