@@ -23,7 +23,6 @@
         <file>shaders/DS_geometryPass.vert</file>
         <file>shaders/DS_lightPass.vert</file>
         <file>shaders/DS_lightPass.frag</file>
-        <file>shaders/bloom.frag</file>
         <file>shaders/storeDepth.frag</file>
         <file>shaders/storeDepth.vert</file>
         <file>shaders/gaussianBlurH.frag</file>

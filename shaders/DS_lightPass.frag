@@ -99,10 +99,10 @@ void main(){
 
     vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
     int i;
-	const float A = 0.1;
-	const float B = 0.33;
-	const float C = 0.66;
-	const float D = 1.0;
+        const float A = 0.1;
+        const float B = 0.4;
+        const float C = 0.7;
+        const float D = 1.0;
 
 	outputColor = vec4(0.0);
 	float diffuse = 0.0;
@@ -159,7 +159,7 @@ void main(){
 		diffuse += visibility * max(0.0,dot(N,L));
 
 		float specular = max(0.0,dot(N,H));
-		specular = visibility * pow(specular,0.3*80.0);
+                specular =  visibility * pow(specular,30.0);
 
 		//Stylized transformation for spekular highlights
 		float edge2 = fwidth(specular);
@@ -169,19 +169,19 @@ void main(){
 			specular = step(0.5,specular);
 		}
 		//HERE: insert materials for diffuse and specular, if finished
-		outputColor += specular * vec4(1.0,1.0,1.0,1.0);
+                outputColor += specular * vec4(1.0,1.0,1.0,1.0);
 	}
 
 	float edge = fwidth(diffuse);
 
 	//First 3 if's: Antialiasing at transitions of colorbands
-	if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
+        if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
 	else if(diffuse > B-edge && diffuse < B+edge) diffuse = stepmix(B,C,edge,diffuse);
 	else if(diffuse > C-edge && diffuse < C+edge) diffuse = stepmix(C,D,edge,diffuse);
-	else if(diffuse < A) diffuse = 0.0;
-	else if(diffuse < B) diffuse = B;
-	else if(diffuse < C) diffuse = C;
-	else diffuse = D;
+        else if(diffuse < A) diffuse = A;
+        else if(diffuse < B) diffuse = B;
+        else if(diffuse < C) diffuse = C;
+        else diffuse = D;
 
 	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
 	outputColor += diffuse*color;
