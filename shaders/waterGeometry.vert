@@ -2,6 +2,7 @@
 
 out vec3 N;
 out vec3 V;
+out vec4 W;
 out vec2 texCoord0;
 out vec4 id4;
 out vec4 C;
@@ -15,6 +16,7 @@ uniform sampler3D noiseTexture;
 uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
+uniform mat4 cameraInverseMatrix;
 
 uniform int seaWidth;
 uniform int seaHeight;
@@ -35,7 +37,7 @@ void main()
 
     // Transforming The Vertex Position To ModelView-Space
     V = vec3(modelViewMatrix * V_);
-
+    W = cameraInverseMatrix * modelViewMatrix * V_;
 
     //Weitergabe der Texturkoordinaten
     texCoord0 = texCoords;

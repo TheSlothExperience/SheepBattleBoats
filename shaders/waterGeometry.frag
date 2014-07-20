@@ -5,6 +5,7 @@ in vec3 V;
 in vec2 texCoord0;
 in vec4 id4;
 in vec4 C;
+in vec4 W;
 
 uniform float time;
 
@@ -118,13 +119,12 @@ void main(){
 	float f = 0.25;
 
 	//Bright hightlights
-	float sb = snoise3D(vec3(V.x * f, time * 5, V.z * f)) * 0.5 + 0.5;
+	float sb = snoise3D(vec3(W.x * f, time * 5, W.z * f)) * 0.5 + 0.5;
 	sb = inInterval(0.6, 0.7, sb);
 
 	//Dark hightlights
-	float sd = snoise3D(vec3(V.z * f, time * 5, V.x * f)) * 0.5 + 0.5;
+	float sd = snoise3D(vec3(W.z * f, time * 5, W.x * f)) * 0.5 + 0.5;
 	sd = inInterval(0.15, 0.3, sd);
-	//sd = -sd;
 
 	float sn = max(sd, sb);
 

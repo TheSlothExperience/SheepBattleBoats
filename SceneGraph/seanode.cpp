@@ -77,6 +77,7 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 	if(leaf) {
 		Shaders::bind(sh);
 		glUniformMatrix4fv(sh->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
+		glUniformMatrix4fv(sh->uniformLocation("cameraInverseMatrix"), 1, GL_FALSE, cameraMatrix.inverted().constData());
 		glUniformMatrix4fv(sh->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
 		glUniformMatrix4fv(sh->uniformLocation("normalMatrix"), 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
 		int r = (id & 0x000000FF) >>  0;
@@ -89,7 +90,6 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 		struct timeval start;
 		gettimeofday(&start, NULL);
 		float seconds = ((start.tv_sec % (int) periodicity) + start.tv_usec / 1000000.0) / (periodicity / 4);
-		std::cout << seconds << std::endl;
 
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_3D, noiseTexture);
