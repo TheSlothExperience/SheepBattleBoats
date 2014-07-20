@@ -152,7 +152,7 @@ void GLWidget::paintSceneToCanvas() {
     //blurred Intensity to da Vader
     glActiveTexture(GL_TEXTURE1);
     glUniform1i(shaders.canvasProgram->uniformLocation("blurredIntensity"),1);
-    glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(1));
+    glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(2));
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
