@@ -16,9 +16,9 @@
 SeaNode::SeaNode(Primitive *p, std::string name)
 	: SceneGraph(p, name)
 {
-	seaWidth = 200;
-	seaHeight = 200;
-	periodicity = 200;
+	seaWidth = 256;
+	seaHeight = 256;
+	periodicity = 512;
 	//Create noise texture
 	float frequency = 1.0 / pow(2.0, 5);
 	noiseData = new GLfloat[seaWidth * seaHeight * (int) periodicity];
@@ -41,6 +41,13 @@ SeaNode::SeaNode(Primitive *p, std::string name)
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R16, seaWidth, seaHeight, periodicity, 0, GL_RED, GL_FLOAT, (void*) noiseData);
 	glBindTexture(GL_TEXTURE_3D, 0);
+
+	QOpenGLShaderProgram *sh = Shaders::waterGeometryProgram;
+	Shaders::bind(sh);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_3D, noiseTexture);
+	glUniform1i(sh->uniformLocation("noiseTexture"), 5);
+	Shaders::release(sh);
 }
 
 
@@ -77,12 +84,12 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 
 		struct timeval start;
 		gettimeofday(&start, NULL);
-		float seconds = start.tv_usec / 10000000.0;
+		float seconds = ((start.tv_sec % (int) periodicity) + start.tv_usec / 1000000.0) / (periodicity / 4);
 		std::cout << seconds << std::endl;
 
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_3D, noiseTexture);
-		glUniform1i(sh->uniformLocation("noiseTexture"), 5);
+		//glUniform1i(sh->uniformLocation("noiseTexture"), 5);
 
 		glUniform1i(sh->uniformLocation("seaWidth"), seaWidth);
 		glUniform1i(sh->uniformLocation("seaHeight"), seaHeight);
