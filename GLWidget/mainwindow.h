@@ -49,10 +49,13 @@ private:
 	QAction *addConeAction;
 	QAction *addSphereAction;
     QAction *add3DModelAction;
+    QAction *addLvlObjAction;
 
 	QAction *addGroupAction;
 
 	QAction *addLightAction;
+
+    QAction *shootAction;
 
 	QMenu *helpMenu;
 	QAction *aboutAction;
@@ -89,6 +92,18 @@ private:
 	void createColorDock();
 	void setupGL();
     void load3DModel();
+
+    void initGameLogic();
+    void initLevel();
+    void doMovements();
+
+    bool wPressed=false;
+    bool sPressed=false;
+    bool dPressed=false;
+    bool aPressed=false;
+
+    float shootingHeight;
+    bool shooting=false;
 public slots:
 	void addCube();
 	void addCone();
@@ -96,6 +111,7 @@ public slots:
 	void addSphere();
 	void addTorus();
     void add3DModel();
+    void addLvlObj();
 
 	void addGroup();
 
@@ -119,6 +135,9 @@ public slots:
 	void setDualView();
 	void setQuadView();
 	void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
+    void gameTick();
+    void testCollisions();
+    void shoot(float shootingHeight);
 
 signals:
 	void updateGL();

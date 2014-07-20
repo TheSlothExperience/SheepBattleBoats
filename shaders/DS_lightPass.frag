@@ -71,7 +71,7 @@ float chebyshevUpperBound(float d, vec2 moments) {
 	}
 
 	// The fragment is either in shadow or penumbra. We now use
-    // chebyshev's upperBound to check how likely this pixel is
+	// chebyshev's upperBound to check how likely this pixel is
 	// to be lit (p_max)
 	float variance = moments.y - (moments.x * moments.x);
 	variance = max(variance, 0.00002);
@@ -85,33 +85,33 @@ float chebyshevUpperBound(float d, vec2 moments) {
 //-------------------------------------------------------
 
 float stepmix(float edge0, float edge1, float E, float x){
-    float T = clamp(0.5*(x-edge0+E)/E,0.0,1.0);
-    return mix(edge0,edge1,T);
+	float T = clamp(0.5*(x-edge0+E)/E,0.0,1.0);
+	return mix(edge0,edge1,T);
 }
 
 void main(){
 
-    vec4 color=vec4(texture(colorTexture,UV));
-    vec4 V_=vec4(texture(posTexture,UV));
-    vec3 V = V_.xyz;
-    float a = V_.a;
-    vec3 N=vec3(texture(normalTexture,UV));
+	vec4 color=vec4(texture(colorTexture,UV));
+	vec4 V_=vec4(texture(posTexture,UV));
+	vec3 V = V_.xyz;
+	float a = V_.a;
+	vec3 N=vec3(texture(normalTexture,UV));
 
-    float coarseDetail = 2.0;
-    float minDistance = 0.5;
-    vec3 focusPoint = vec3(0.0,0.0,5.0);
-    float detail = 1 - log(V.z/minDistance)/log(coarseDetail);
+	float coarseDetail = 2.0;
+	float minDistance = 0.5;
+	vec3 focusPoint = vec3(0.0,0.0,5.0);
+	float detail = 1 - log(V.z/minDistance)/log(coarseDetail);
 
-    vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
-    int i;
+	vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
+	int i;
 
-        const float A = 0.1;
-        const float B = 0.4;
-        const float C = 0.7;
-        const float D = 1.0;
+	const float A = 0.1;
+	const float B = 0.4;
+	const float C = 0.7;
+	const float D = 1.0;
 
 	outputColor = vec4(0.0);
-        float diffuse = 0.0;
+	float diffuse = 0.0;
 	for(i = 0; i < numLights; i++) {
 
 		vec3 L = normalize(lightPositions[i] - V);
@@ -159,9 +159,9 @@ void main(){
 		}
 		// -----------------------------------------------------------------------------
 
-                diffuse += visibility * max(0.0,dot(N,L));
-                float specular = max(0.0,dot(N,H));
-                specular =  visibility * pow(specular,30.0);
+		diffuse += visibility * max(0.0,dot(N,L));
+		float specular = max(0.0,dot(N,H));
+		specular =  visibility * pow(specular,30.0);
 
 		//Stylized transformation for spekular highlights
 		float edge2 = fwidth(specular);
@@ -171,24 +171,24 @@ void main(){
 			specular = step(0.5,specular);
 		}
 		//HERE: insert materials for diffuse and specular, if finished
-                outputColor += specular * vec4(1.0,1.0,1.0,1.0);
+		outputColor += specular * vec4(1.0,1.0,1.0,1.0);
 	}
 
 	float edge = fwidth(diffuse);
 
 	//First 3 if's: Antialiasing at transitions of colorbands
-        if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
+	if(diffuse > A-edge && diffuse < A+edge) diffuse = stepmix(A,B,edge,diffuse);
 	else if(diffuse > B-edge && diffuse < B+edge) diffuse = stepmix(B,C,edge,diffuse);
 	else if(diffuse > C-edge && diffuse < C+edge) diffuse = stepmix(C,D,edge,diffuse);
-        else if(diffuse < A) diffuse = A;
-        else if(diffuse < B) diffuse = B;
-        else if(diffuse < C) diffuse = C;
-        else diffuse = D;
+	else if(diffuse < A) diffuse = A;
+	else if(diffuse < B) diffuse = B;
+	else if(diffuse < C) diffuse = C;
+	else diffuse = D;
 
-        if(sobelize(normalTexture)>0.2 || sobelize(depthTexture)>0.2){
-            color = vec4(0.0,0.0,1.0,1.0);
-        }
+	if(sobelize(normalTexture)>0.4 || sobelize(depthTexture)>0.05){
+		color = color * vec4(vec3(0.3), 1.0);
+	}
 
-        gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
-        outputColor += diffuse*color;
+	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
+	outputColor += diffuse*color;
 }
