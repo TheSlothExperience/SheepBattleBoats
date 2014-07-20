@@ -25,15 +25,27 @@ uniform float time;
 
 uniform vec4 id;
 
+
+vec3 samplePosition(float x, float z)
+{
+	return vec3(x, texture(noiseTexture, vec3(x / seaWidth, z / seaHeight, time)).r, z);
+}
+
 void main()
 {
-	vec2 UV = position.xz / vec2(seaWidth, seaHeight);
-	float height = texture(noiseTexture, vec3(UV, time)).r;
-	vec4 V_ = vec4(position.x, height, position.z, 1.0);
+	float x = position.x;
+	float y = position.z;
+
+	vec4 V_ = vec4(samplePosition(x, y), 1.0);
+	vec3 V_x = samplePosition(x + 0.5, y);
+	vec3 V_y = samplePosition(x, y + 0.5);
+
+	vec3 n = normalize(cross(V_y - V_.xyz, V_x - V_.xyz));
+
     gl_Position = (perspectiveMatrix * modelViewMatrix) * V_;
 
     // Transforming The Normal To ModelView-Space
-    N = normalize(vec3(normalMatrix * normal));
+    N = normalize(vec3(normalMatrix * vec4(n, 1.0)));
 
     // Transforming The Vertex Position To ModelView-Space
     V = vec3(modelViewMatrix * V_);

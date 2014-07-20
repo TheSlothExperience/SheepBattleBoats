@@ -7,7 +7,7 @@
 Sea::Sea() {
 	seaWidth = 200;
 	seaHeight = 200;
-	tessellation = 4;
+	tessellation = 8;
 	numVertices = 6 * (seaWidth * tessellation * seaHeight * tessellation);
 	GLfloat* vertices = new GLfloat[numVertices * 3];
 
