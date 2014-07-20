@@ -12,6 +12,9 @@ GBuffer::GBuffer()
     m_fbo=0;
     m_depthTexture=0;
     m_finalTexture=0;
+
+    numTextures = 4;
+    numTemps = 3;
 }
 
 bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
@@ -25,10 +28,10 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
 
 	// Erzeuge 5 Texturen
-	glGenTextures(5, m_textures);
+	glGenTextures(numTextures, m_textures);
 
     //Erzeuge 5 temp texture
-    glGenTextures(5,m_tempTextures);
+    glGenTextures(numTemps, m_tempTextures);
 
 	// Depth
 	glGenTextures(1, &m_depthTexture);
@@ -36,7 +39,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	//Erzeuge die Finale Textur
 	glGenTextures(1,&m_finalTexture);
 
-	for (int i = 0 ; i < 5 ; i++) {
+	for (int i = 0 ; i < numTextures ; i++) {
 		glBindTexture(GL_TEXTURE_2D, m_textures[i]);
 
 		// Dummy-Aufruf, damit OpenGL weiß welches Texturformat wir
@@ -49,7 +52,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 		                       GL_TEXTURE_2D, m_textures[i], 0);
 	}
 
-    for (int i = 0 ; i < 5 ; i++) {
+    for (int i = 0 ; i < numTemps ; i++) {
         glBindTexture(GL_TEXTURE_2D, m_tempTextures[i]);
 
         // Dummy-Aufruf, damit OpenGL weiß welches Texturformat wir
@@ -58,7 +61,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
         glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         //Bind FBO
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i + 10,
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i + numTextures,
                                GL_TEXTURE_2D, m_tempTextures[i], 0);
     }
 
@@ -74,7 +77,7 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	             GL_RGBA, GL_FLOAT,NULL);
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, m_finalTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numTextures + numTemps, GL_TEXTURE_2D, m_finalTexture, 0);
 
 
 
@@ -98,8 +101,8 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 void GBuffer::startFrame(){
 	m_activeGBuffer = this;
     glBindBuffer(GL_FRAMEBUFFER,m_fbo);
-    GLenum DrawBuffers[]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5};
-    glDrawBuffers(6,DrawBuffers);
+    GLenum DrawBuffers[]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5,GL_COLOR_ATTACHMENT6,GL_COLOR_ATTACHMENT7};
+    glDrawBuffers(8,DrawBuffers);
 	glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
@@ -111,11 +114,9 @@ void GBuffer::bindGeometryPass(){
     GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0,
                           GL_COLOR_ATTACHMENT1,
                           GL_COLOR_ATTACHMENT2,
-                         GL_COLOR_ATTACHMENT3,
-                         GL_COLOR_ATTACHMENT4,
-                         GL_COLOR_ATTACHMENT5};
+                         GL_COLOR_ATTACHMENT3};
 
-    glDrawBuffers(6,drawBuffers);
+    glDrawBuffers(4,drawBuffers);
 	glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
@@ -154,7 +155,7 @@ void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
         glUniform1i(lightPassProgram->uniformLocation("depthTexture"),4);
     glBindTexture(GL_TEXTURE_2D,m_textures[3]);
 
-    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT5};
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0 + numTemps + numTextures};
 
     glDrawBuffers(1,drawBuffers);
 }
@@ -163,7 +164,7 @@ void GBuffer::drawToFinal() {
 	m_activeGBuffer = this;
     glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
 	glViewport(0,0, windowWidth, windowHeight);
-    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT5};
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0 + numTemps + numTextures};
     glDrawBuffers(1,drawBuffers);
 }
 
@@ -185,7 +186,7 @@ void GBuffer::tempTexture(int i){
     m_activeGBuffer = this;
     glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
     glViewport(0,0, windowWidth, windowHeight);
-    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0 + i + 10};
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0 + i + numTextures};
     glDrawBuffers(1,drawBuffers);
 }
 

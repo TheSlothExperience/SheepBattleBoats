@@ -42,6 +42,7 @@ private:
     GLuint m_depthTexture;
     GLuint m_finalTexture;
 
+	int numTextures, numTemps;
 	int windowWidth, windowHeight;
 };
 

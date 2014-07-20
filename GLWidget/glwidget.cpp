@@ -80,7 +80,8 @@ void GLWidget::paintGL()
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
 
-    //blurIntensity();
+    getSceneIntensity();
+    blurIntensity();
 
     paintSceneToCanvas();
 
