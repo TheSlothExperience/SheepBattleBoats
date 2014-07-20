@@ -67,6 +67,7 @@ public:
 	int shadowHeight() {return m_shadowHeight;}
 
 	void changeColor(float r, float g, float b, float a);
+
 };
 
 #endif

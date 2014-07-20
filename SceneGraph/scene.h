@@ -4,6 +4,8 @@
 #include "scenegraph.h"
 #include "lightnode.h"
 #include "camera.h"
+#include<levelobjectnode.h>
+#include<projectilenode.h>
 
 #include <stack>
 #include <map>
@@ -39,6 +41,9 @@ private:
 	int currentId = 0;
 	int nextId() {return currentId++;};
 
+    LevelObjectNode* mainBoat;
+    QList<SceneGraph*> levelObjAdresses;
+
 public:
 	Scene(QObject *parent = 0);
 	Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObject *parent = 0);
@@ -73,6 +78,9 @@ public:
     QModelIndex add3DModel(SceneGraph *node);
     QModelIndex addSea(SceneGraph *node);
 
+	LevelObjectNode *addLevelObj();
+    ProjectileNode *addProjectile(QVector3D shootingDir);
+
 	void lightsPass(QOpenGLShaderProgram *shader);
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
 	void computeSAT(QOpenGLShaderProgram *sat);
@@ -91,6 +99,16 @@ public:
 
 	void draw(Camera *camera);
     void DS_geometryPass(Camera *camera);
+
+    void initLevel();
+    void testCollisions();
+    void doMovements();
+    LevelObjectNode* getMainBoat(){return this->mainBoat;}
+    QList<SceneGraph*> getLvlObjAdresses(){return this->levelObjAdresses;}
+    void translateMotherSheep(QVector3D);
+    void rotateMotherSheep();
+    QVector3D convertToMotherSheepTranslation();
+    void behaviourExecutions();
 };
 
 #endif //SCENE_H

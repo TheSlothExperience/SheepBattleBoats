@@ -44,6 +44,9 @@ public:
 	bool insertChildren(int position, int count, int columns);
 	int row();
 
+    QQuaternion getRotation();
+    QVector3D getTranslation();
+
 	void setParent(SceneGraph *s);
 
 	void translate(double x, double y, double z);
@@ -59,9 +62,15 @@ public:
 	bool isLeaf() {return leaf;};
 	SceneGraph* add(Primitive *p);
 	SceneGraph* add(SceneGraph *s);;
+
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix);
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
 	virtual void drawGeometry(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
+
+    virtual void exeObjBehaviour();
+    virtual BoundingBox *getBB();
+
+    Primitive* getPrimitive(){return this->primitive;}
 };
 
 #endif //SCENE_H

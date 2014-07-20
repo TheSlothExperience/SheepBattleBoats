@@ -10,10 +10,11 @@ QMAKE_CXXFLAGS += -std=c++11
 SOURCES += main.cpp
 
 include(Camera/Camera.pri)
+include(SceneGraph/SceneGraph.pri)
 include(GLWidget/GLWidget.pri)
 include(Geometry/Geometry.pri)
-include(SceneGraph/SceneGraph.pri)
 include(Util/Util.pri)
+include(GameLogic/GameLogic.pri)
 
 
 OTHER_FILES += shaders/* \

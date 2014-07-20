@@ -233,3 +233,30 @@ void SceneGraph::translate(double x, double y, double z) {
 void SceneGraph::rotate(QQuaternion q) {
 	rotation = q * rotation;
 }
+
+QQuaternion SceneGraph::getRotation(){
+    QQuaternion temp=this->rotation;
+    return temp;
+}
+
+QVector3D SceneGraph::getTranslation(){
+    QVector3D temp=this->translation;
+    return temp;
+}
+//void SceneGraph::testCollisions(){
+
+//    if(leaf) {
+//    qDebug()<<"testCollision in scenegraph";
+//    } else {
+//        //Else, recurse into its children
+//        std::for_each(children.begin(), children.end(), [](SceneGraph *s){s->testCollisions();});
+//    }
+//}
+
+BoundingBox* SceneGraph::getBB(){
+    return primitive->getBB();
+}
+
+void SceneGraph::exeObjBehaviour(){
+//    qDebug()<<"exeObjBehaviour in SceneGraph";
+}
