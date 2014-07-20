@@ -16,7 +16,7 @@ LevelObjectNode::~LevelObjectNode(){
 
 
 void LevelObjectNode::draw(){
-
+    primitive->draw();
 }
 
 void LevelObjectNode::testCollisions(LevelObjectNode secondObject){
@@ -92,6 +92,8 @@ void LevelObjectNode::stopRotating(){
     }
 }
 
-void LevelObjectNode::executeObjectBehavior(){
-    primitive->exeObjBehaviour();
+void LevelObjectNode::exeObjBehaviour(){
+//    primitive->exeObjBehaviour();
+//    qDebug()<<"exeObjBehaviour in LevelNode";
+    move();
 }

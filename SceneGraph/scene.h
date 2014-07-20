@@ -4,6 +4,7 @@
 #include "scenegraph.h"
 #include "lightnode.h"
 #include<levelobjectnode.h>
+#include<projectilenode.h>
 
 #include <stack>
 #include <map>
@@ -40,7 +41,7 @@ private:
 	int nextId() {return currentId++;};
 
     LevelObjectNode* mainBoat;
-    QList<LevelObjectNode*> levelObjAdresses;
+    QList<SceneGraph*> levelObjAdresses;
 
 public:
 	Scene(QObject *parent = 0);
@@ -75,7 +76,7 @@ public:
 
     QModelIndex add3DModel(SceneGraph *node);
     LevelObjectNode *addLevelObj();
-    LevelObjectNode *addProjectile();
+    ProjectileNode *addProjectile(QVector3D shootingDir);
 
 
 
@@ -101,7 +102,7 @@ public:
     void testCollisions();
     void doMovements();
     LevelObjectNode* getMainBoat(){return this->mainBoat;}
-    QList<LevelObjectNode*> getLvlObjAdresses(){return this->levelObjAdresses;}
+    QList<SceneGraph*> getLvlObjAdresses(){return this->levelObjAdresses;}
     void translateMotherSheep(QVector3D);
     void rotateMotherSheep();
     QVector3D convertToMotherSheepTranslation();

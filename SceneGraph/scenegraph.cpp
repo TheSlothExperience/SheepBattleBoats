@@ -241,3 +241,11 @@ QVector3D SceneGraph::getTranslation(){
 //        std::for_each(children.begin(), children.end(), [](SceneGraph *s){s->testCollisions();});
 //    }
 //}
+
+BoundingBox* SceneGraph::getBB(){
+    return primitive->getBB();
+}
+
+void SceneGraph::exeObjBehaviour(){
+//    qDebug()<<"exeObjBehaviour in SceneGraph";
+}

@@ -101,6 +101,8 @@ private:
     bool dPressed=false;
     bool aPressed=false;
 
+    float shootingHeight;
+    bool shooting=false;
 public slots:
 	void addCube();
 	void addCone();
@@ -133,7 +135,7 @@ public slots:
 	void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
     void gameTick();
     void testCollisions();
-    void shoot();
+    void shoot(float shootingHeight);
 
 signals:
 	void updateGL();

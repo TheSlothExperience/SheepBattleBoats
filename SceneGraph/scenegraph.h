@@ -64,6 +64,8 @@ public:
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc);
 	virtual void draw(std::stack<QMatrix4x4> &MVStack, GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc);
 //    virtual void testCollisions();
+    virtual void exeObjBehaviour();
+    virtual BoundingBox *getBB();
 
     Primitive* getPrimitive(){return this->primitive;}
 };

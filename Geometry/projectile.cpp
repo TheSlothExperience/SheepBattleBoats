@@ -7,7 +7,7 @@
 Projectile::Projectile(QVector3D pos)
 {
 //    this->shootingDir=dir;
-    int tesselation = pow(2, 2) + 1;
+    int tesselation = pow(2, 8) + 1;
     int rings = tesselation;
     int sectors = tesselation;
 
@@ -105,7 +105,7 @@ void Projectile::draw(){
 }
 
 void Projectile::exeObjBehaviour(){
-    qDebug()<<"fly";
+//    qDebug()<<"fly";
 }
 
 BoundingBox* Projectile::getBB(){

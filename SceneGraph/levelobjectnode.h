@@ -22,7 +22,7 @@ public:
     ~LevelObjectNode();
     void draw();
     void testCollisions(LevelObjectNode);
-    BoundingBox *getBB();
+
 
     LevelObject getLvlObj();
     void move();
@@ -42,7 +42,9 @@ public:
 
     void stopVelocity();
     void stopRotating();
-    void executeObjectBehavior();
+//    void executeObjectBehavior();
+    void exeObjBehaviour();
+    BoundingBox* getBB();
 };
 
 #endif // LEVELOBJECTNODE_H

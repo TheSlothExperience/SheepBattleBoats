@@ -47,6 +47,7 @@ void MainWindow::initGameLogic(){
     connect(timer, SIGNAL(timeout()), this, SLOT(gameTick()));
     timer->start(100);
 
+
 //    for(int i=0;i<scene->getLvlObjAdresses().length();i++){
 //        qDebug()<<"lvlObj"+QString::number(i);
 //    }
@@ -55,6 +56,9 @@ void MainWindow::initGameLogic(){
 void MainWindow::gameTick(){
     testCollisions();
     doMovements();
+    if(shooting){
+        shootingHeight+=0.1;
+    }
     scene->behaviourExecutions();
     emit updateGL();
 }
@@ -352,9 +356,9 @@ void MainWindow::createActions() {
     addLvlObjAction ->setIcon(QIcon(":/img/add.png"));
     connect(addLvlObjAction , SIGNAL(triggered()),this,SLOT(addLvlObj()));
 
-    shootAction=new QAction(this);
-    shootAction->setShortcut(tr("Space"));
-    connect(shootAction,SIGNAL(triggered()),this,SLOT(shoot()));
+//    shootAction=new QAction(this);
+//    shootAction->setShortcut(tr("Space"));
+//    connect(shootAction,SIGNAL(triggered()),this,SLOT(shoot()));
 }
 
 void MainWindow::createMenus() {
@@ -415,7 +419,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
     } else if(event->key() == Qt::Key_D) {
         aPressed=true;
     }else if(event->key() == Qt::Key_Space) {
-        shoot();
+//        shootingHeight=0.0;
+//        shooting=true;
     }
 }
 
@@ -437,7 +442,12 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         dPressed=false;
     } else if(event->key() == Qt::Key_D) {
         aPressed=false;
+    }else if(event->key() == Qt::Key_Space) {
+//        shooting=false;
+        shoot(shootingHeight);
     }
+
+
 }
 
 
@@ -447,7 +457,6 @@ void MainWindow::addCube() {
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
 	emit updateGL();
 }
-
 void MainWindow::addCone(){
     QModelIndex idx = scene->addCone(currentNode, 10);
 	sceneOutliner->selectionModel()->setCurrentIndex(idx, QItemSelectionModel::Current | QItemSelectionModel::Select);
@@ -608,8 +617,11 @@ void MainWindow::load3DModel(){
 
 }
 
-void MainWindow::shoot(){
+void MainWindow::shoot(float shootingHeight){
     qDebug()<<"shoot";
-    scene->addProjectile();
+//    QQuaternion rot = scene->getMainBoat()->getRotation();
+   QVector3D temp=QVector3D(0.0,5.0,-1.0);
+//   temp=rot.rotatedVector(temp);
+    scene->addProjectile(temp);
 
 }

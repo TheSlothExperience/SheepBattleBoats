@@ -39,7 +39,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 
 	addLight();
 	lights.at(0)->translate(1.0, 3.0, 1.50);
-    levelObjAdresses= QList<LevelObjectNode*>();
+    levelObjAdresses= QList<SceneGraph*>();
 //	addTorus(rootNode, 8);
 }
 
@@ -331,15 +331,15 @@ LevelObjectNode* Scene::addLevelObj(){
     return s;
 }
 
-LevelObjectNode* Scene::addProjectile(){
+ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
     QVector3D temp=mainBoat->getBB()->position;
 
     qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
     Projectile *lvlObj = new Projectile(mainBoat->getBB()->position);
     std::string name("LevelObj ");
     int id = nextId();
-
-    LevelObjectNode *s = new LevelObjectNode(lvlObj,name);
+    name+=std::to_string(id);
+    ProjectileNode *s = new ProjectileNode(temp,shootingDir,lvlObj,name);
     QVector3D temp2 =mainBoat->getTranslation();
     s->translate(temp2.x(),temp2.y(),temp2.z());
     s->rotate(mainBoat->getRotation());
@@ -602,11 +602,11 @@ void Scene::testCollisions(){
 //    rootNode->testCollisions();
 }
 
-void Scene::doMovements(){
-    for(int i=0;i<levelObjAdresses.length();i++){
-        levelObjAdresses.at(i)->move();
-    }
-}
+//void Scene::doMovements(){
+//    for(int i=0;i<levelObjAdresses.length();i++){
+//        levelObjAdresses.at(i)->move();
+//    }
+//}
 QVector3D Scene::convertToMotherSheepTranslation(){
     return  mainBoat->getRotation().rotatedVector(mainBoat->getVelocity());
 }
@@ -622,7 +622,7 @@ void Scene::rotateMotherSheep(){
 
 void Scene::behaviourExecutions(){
     for(int i=0;i<levelObjAdresses.length();i++){
-        levelObjAdresses.at(i)->executeObjectBehavior();
+        levelObjAdresses.at(i)->exeObjBehaviour();
     }
 }
 
