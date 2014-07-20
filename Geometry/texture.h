@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <GL/gl.h>
-#include <QImage>
 
 class Texture
 {
@@ -12,16 +11,12 @@ public:
     Texture(GLenum textureTarget, const std::string& fileName);
     bool load();
     void bind(GLenum textureUnit);
+	GLuint getTexLocation();
 
 private:
     std::string fileName;
     GLenum textureTarget;
     GLuint textureObj;
-    QImage* image;
-    //blob
-//    Magick::Image* m_pImage;
-//    Magick::Blob m_blob;
-
 };
 
 #endif // TEXTURE_H
