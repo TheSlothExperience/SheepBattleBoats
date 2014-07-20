@@ -175,6 +175,10 @@ void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
     glActiveTexture(GL_TEXTURE0);
         glUniform1i(canvasProgram->uniformLocation("scene"),0);
     glBindTexture(GL_TEXTURE_2D,m_finalTexture);
+
+//    glActiveTexture(GL_TEXTURE1);
+//        glUniform1i(canvasProgram->uniformLocation("blurIntensity"),1);
+//    glBindTexture(GL_TEXTURE_2D,m_tempTextures[2]);
 }
 
 void GBuffer::tempTexture(int i){

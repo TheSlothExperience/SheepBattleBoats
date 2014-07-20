@@ -80,11 +80,9 @@ void GLWidget::paintGL()
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
 
-
-    getSceneIntensity();
     //blurIntensity();
 
-    //paintSceneToCanvas();
+    paintSceneToCanvas();
 
 }
 
@@ -184,15 +182,13 @@ void GLWidget::getSceneIntensity(){
 
 void GLWidget::blurIntensity(){
 
+    getSceneIntensity();
 
     //First pass, horizontal
     {
         Shaders::bind(shaders.gaussianBlurHProgram);
 
         gbuffer.tempTexture(1);
-        glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0,0, this->width(), this->height());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(0));
@@ -214,10 +210,6 @@ void GLWidget::blurIntensity(){
     {
         Shaders::bind(shaders.gaussianBlurVProgram);
         gbuffer.tempTexture(2);
-
-        glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0,0, this->width(), this->height());
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(1));

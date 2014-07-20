@@ -6,6 +6,7 @@ out vec3 color;
 
 uniform sampler2D scene;
 
+
 void main(){
-	color = texture(scene, UV).xyz;
+        gl_FragColor = vec4(texture(scene, UV).xyz,1.0);
 }

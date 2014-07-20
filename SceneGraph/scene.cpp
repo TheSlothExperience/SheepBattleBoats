@@ -44,7 +44,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 	addLight();
 	lights.at(0)->translate(1.0, 3.0, 1.50);
 	addTorus(rootNode, 8);
-	addSea(rootNode);
+
 }
 
 
