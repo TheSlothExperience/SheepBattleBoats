@@ -45,7 +45,7 @@ void MainWindow::initGameLogic(){
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameTick()));
-    timer->start(100);
+    timer->start(34);
 
 
 //    for(int i=0;i<scene->getLvlObjAdresses().length();i++){

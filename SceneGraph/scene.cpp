@@ -66,8 +66,7 @@ void Scene::initLevel(){
     temp->translate(0.0,0.0, -30.0);
     temp=addLevelObj();
     temp->translate(0.0,0.0, -40.0);
-
-
+	addSea(rootNode);
 }
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {

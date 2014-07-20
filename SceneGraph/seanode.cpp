@@ -36,7 +36,7 @@ SeaNode::SeaNode(Primitive *p, std::string name)
 	glBindTexture(GL_TEXTURE_3D, noiseTexture);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_R16, seaWidth, seaHeight, periodicity, 0, GL_RED, GL_FLOAT, (void*) noiseData);
@@ -77,7 +77,7 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 
 		struct timeval start;
 		gettimeofday(&start, NULL);
-		float seconds = start.tv_usec /10000.0;
+		float seconds = start.tv_usec / 10000000.0;
 		std::cout << seconds << std::endl;
 
 		glActiveTexture(GL_TEXTURE5);
