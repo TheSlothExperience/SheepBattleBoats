@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <sys/time.h>
 #include <GL/gl.h>
 
 
@@ -74,12 +75,18 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 
 		glUniform4fv(sh->uniformLocation("color"), 1, color);
 
+		struct timeval start;
+		gettimeofday(&start, NULL);
+		float seconds = start.tv_usec /10000.0;
+		std::cout << seconds << std::endl;
+
 		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_3D, noiseTexture);
 		glUniform1i(sh->uniformLocation("noiseTexture"), 5);
 
 		glUniform1i(sh->uniformLocation("seaWidth"), seaWidth);
 		glUniform1i(sh->uniformLocation("seaHeight"), seaHeight);
+		glUniform1f(sh->uniformLocation("time"), seconds);
 
 		this->primitive->draw();
 		Shaders::release(sh);
