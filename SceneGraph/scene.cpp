@@ -446,8 +446,6 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 		modelViewMatrixStack.push(modelViewMatrixStack.top());
 		modelViewMatrixStack.top() *= l->lightView();
 
-		GLuint colorLocation = shader->uniformLocation("color");
-
 		this->rootNode->drawGeometry(modelViewMatrixStack
 		                   , l->lightView()
 		                   , l->perspectiveMatrix()
@@ -465,7 +463,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 	Shaders::release(shader);
 }
 
-void Scene::computeSAT(QOpenGLShaderProgram *sat) {
+void Scene::computeSAT(QOpenGLShaderProgram *) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

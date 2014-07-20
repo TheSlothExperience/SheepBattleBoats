@@ -49,7 +49,7 @@ void LoadProgram(const char* Path, char** pSource, size_t* SourceSize)
 	fseek(pFileStream, 0, SEEK_SET);
 
 	*pSource = new char[*SourceSize + 1];
-	fread(*pSource, *SourceSize, 1, pFileStream);
+	if(fread(*pSource, *SourceSize, 1, pFileStream) == 0) cout << "ERROR READING CL PROGRAM" << endl;
 	fclose(pFileStream);
 	(*pSource)[*SourceSize] = '\0';
 }

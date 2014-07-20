@@ -59,7 +59,7 @@ SeaNode::~SeaNode() {
 	glDeleteTextures(1, &noiseTexture);
 }
 
-void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix) {
+void SeaNode::draw(std::stack<QMatrix4x4> &, QMatrix4x4, QMatrix4x4) {
 }
 
 void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
@@ -109,5 +109,5 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 	MVStack.pop();
 }
 
-void SeaNode::drawGeometry(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
+void SeaNode::drawGeometry(std::stack<QMatrix4x4> &, QMatrix4x4, QMatrix4x4, QOpenGLShaderProgram *) {
 }
