@@ -6,8 +6,8 @@
 #include <assert.h>
 
 #define POSITION_LOCATION    0
-#define TEX_COORD_LOCATION   1
-#define NORMAL_LOCATION      2
+#define TEX_COORD_LOCATION   2
+#define NORMAL_LOCATION      1
 
 
 Object3D::Object3D(){
@@ -292,9 +292,11 @@ void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> 
 
 }
 
-//RENDER THIS SHIAT
-void Object3D::draw(){
+void Object3D::draw() {
+}
 
+//RENDER THIS SHIAT
+void Object3D::draw(QOpenGLShaderProgram *sh){
     glBindVertexArray(vao);
     uint topology = withAdjacencies ? GL_TRIANGLES_ADJACENCY : GL_TRIANGLES;
 
@@ -304,7 +306,10 @@ void Object3D::draw(){
         assert(materialIndex<textures.size());
 
         if(textures[materialIndex]){
-            textures[materialIndex]->bind(GL_TEXTURE0);
+	        glActiveTexture(GL_TEXTURE0 + i);
+	        glBindTexture(GL_TEXTURE_2D, textures[materialIndex]->getTexLocation());
+	        glUniform1i(sh->uniformLocation("tex"), i);
+	        glUniform1i(sh->uniformLocation("texturep"), 1);
         }
 
         glDrawElementsBaseVertex(topology,
@@ -312,6 +317,7 @@ void Object3D::draw(){
                                  GL_UNSIGNED_INT,
                                  (void*)(sizeof(uint)*entries[i].baseIndex),
                                  entries[i].baseVertex);
+        glUniform1i(sh->uniformLocation("texturep"), 0);
     }
 
     glBindVertexArray(0);

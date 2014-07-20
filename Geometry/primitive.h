@@ -2,6 +2,7 @@
 #define PRIMITIVE_H
 
 #include <GL/gl.h>
+#include <QOpenGLShader>
 
 class Primitive
 {
@@ -12,6 +13,7 @@ protected:
 public:
     virtual ~Primitive() = 0;
     virtual void draw() = 0;
+	virtual void draw(QOpenGLShaderProgram *) {draw();}
 };
 
 inline Primitive::~Primitive() {}

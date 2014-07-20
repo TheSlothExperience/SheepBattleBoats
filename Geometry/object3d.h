@@ -180,7 +180,8 @@ class Object3D : public Primitive
 public:
     Object3D();
     ~Object3D();
-    void draw();
+	void draw();
+    void draw(QOpenGLShaderProgram *sh);
     bool loadMesh(const std::string& filename, bool withAdjacencies);
 
 private:
