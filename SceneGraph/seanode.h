@@ -15,6 +15,8 @@ class SeaNode : public SceneGraph
 {
 private:
 	GLuint noiseTexture;
+	GLuint causticTexture;
+	GLfloat *causticData;
 	GLfloat *noiseData;
 
 	int seaWidth;

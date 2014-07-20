@@ -55,7 +55,7 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurV.frag", shaders.gaussianBlurVProgram);
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurH.frag", shaders.gaussianBlurHProgram);
     loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.phongProgram);
-    loadShaders(":/shaders/waterGeometry.vert", ":/shaders/DS_geometryPass.frag", shaders.waterGeometryProgram);
+    loadShaders(":/shaders/waterGeometry.vert", ":/shaders/waterGeometry.frag", shaders.waterGeometryProgram);
 
 }
 

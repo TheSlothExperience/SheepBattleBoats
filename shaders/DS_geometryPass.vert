@@ -4,6 +4,7 @@ out vec3 N;
 out vec3 V;
 out vec2 texCoord0;
 out vec4 id4;
+out vec4 C;
 
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec4 normal;
@@ -15,6 +16,8 @@ uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
 
 uniform vec4 id;
+
+uniform vec4 color;
 
 //uniform vec3 lightPosition;
 
@@ -33,4 +36,6 @@ void main()
     texCoord0 = texCoords;
 
     id4 = id;
+
+    C = color;
 }

@@ -188,6 +188,74 @@ float raw_noise_3d( const float x, const float y, const float z ) {
 
 
 
+// 2D Scaled Multi-octave Simplex noise.
+//
+// Returned value will be between loBound and hiBound.
+float scaled_octave_noise_2d( const float octaves, const float persistence, const float scale, const float loBound, const float hiBound, const float x, const float y ) {
+    return octave_noise_2d(octaves, persistence, scale, x, y) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2;
+}
+
+
+// 3D Scaled Multi-octave Simplex noise.
+//
+// Returned value will be between loBound and hiBound.
+float scaled_octave_noise_3d( const float octaves, const float persistence, const float scale, const float loBound, const float hiBound, const float x, const float y, const float z ) {
+    return octave_noise_3d(octaves, persistence, scale, x, y, z) * (hiBound - loBound) / 2 + (hiBound + loBound) / 2;
+}
+
+
+
+// 2D Multi-octave Simplex noise.
+//
+// For each octave, a higher frequency/lower amplitude function will be added to the original.
+// The higher the persistence [0-1], the more of each succeeding octave will be added.
+float octave_noise_2d( const float octaves, const float persistence, const float scale, const float x, const float y ) {
+    float total = 0;
+    float frequency = scale;
+    float amplitude = 1;
+
+    // We have to keep track of the largest possible amplitude,
+    // because each octave adds more, and we need a value in [-1, 1].
+    float maxAmplitude = 0;
+
+    for( int i=0; i < octaves; i++ ) {
+        total += raw_noise_2d( x * frequency, y * frequency ) * amplitude;
+
+        frequency *= 2;
+        maxAmplitude += amplitude;
+        amplitude *= persistence;
+    }
+
+    return total / maxAmplitude;
+}
+
+
+// 3D Multi-octave Simplex noise.
+//
+// For each octave, a higher frequency/lower amplitude function will be added to the original.
+// The higher the persistence [0-1], the more of each succeeding octave will be added.
+float octave_noise_3d( const float octaves, const float persistence, const float scale, const float x, const float y, const float z ) {
+    float total = 0;
+    float frequency = scale;
+    float amplitude = 1;
+
+    // We have to keep track of the largest possible amplitude,
+    // because each octave adds more, and we need a value in [-1, 1].
+    float maxAmplitude = 0;
+
+    for( int i=0; i < octaves; i++ ) {
+        total += raw_noise_3d( x * frequency, y * frequency, z * frequency ) * amplitude;
+
+        frequency *= 2;
+        maxAmplitude += amplitude;
+        amplitude *= persistence;
+    }
+
+    return total / maxAmplitude;
+}
+
+
+
 
 int fastfloor( const float x ) { return x > 0 ? (int) x : (int) x - 1; }
 

@@ -32,6 +32,7 @@
         <file>shaders/xtoon.frag</file>
         <file>shaders/xtoon.vert</file>
         <file>shaders/waterGeometry.vert</file>
+        <file>shaders/waterGeometry.frag</file>
         <file>shaders/Reduce.cl</file>
     </qresource>
 </RCC>

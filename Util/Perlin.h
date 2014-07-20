@@ -17,6 +17,40 @@ float scaled_raw_noise_3d( const float loBound,
 float raw_noise_2d(const float x, const float y);
 float raw_noise_3d(const float x, const float y, const float z);
 
+// Multi-octave Simplex noise
+// For each octave, a higher frequency/lower amplitude function will be added to the original.
+// The higher the persistence [0-1], the more of each succeeding octave will be added.
+float octave_noise_2d(const float octaves,
+                    const float persistence,
+                    const float scale,
+                    const float x,
+                    const float y);
+float octave_noise_3d(const float octaves,
+                    const float persistence,
+                    const float scale,
+                    const float x,
+                    const float y,
+                    const float z);
+
+
+// Scaled Multi-octave Simplex noise
+// The result will be between the two parameters passed.
+float scaled_octave_noise_2d(  const float octaves,
+                            const float persistence,
+                            const float scale,
+                            const float loBound,
+                            const float hiBound,
+                            const float x,
+                            const float y);
+float scaled_octave_noise_3d(  const float octaves,
+                            const float persistence,
+                            const float scale,
+                            const float loBound,
+                            const float hiBound,
+                            const float x,
+                            const float y,
+                            const float z);
+
 
 //Some helpful stuff
 int fastfloor(const float x);
