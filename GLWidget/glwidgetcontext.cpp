@@ -23,6 +23,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaders.gaussianBlurHProgram = new QOpenGLShaderProgram();
 	shaders.phongProgram = new QOpenGLShaderProgram();
 	shaders.waterGeometryProgram = new QOpenGLShaderProgram();
+    shaders.intensityProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -57,6 +58,8 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.phongProgram);
     loadShaders(":/shaders/waterGeometry.vert", ":/shaders/waterGeometry.frag", shaders.waterGeometryProgram);
 
+    loadShaders(":/shaders/identity.vert", ":/shaders/intensity.frag",shaders.intensityProgram);
+
 }
 
 //-----------------------------------------------------------------------
@@ -72,6 +75,7 @@ QOpenGLShaderProgram *Shaders::geometryPassProgram = NULL;
 QOpenGLShaderProgram *Shaders::lightPassProgram = NULL;
 QOpenGLShaderProgram *Shaders::phongProgram = NULL;
 QOpenGLShaderProgram *Shaders::waterGeometryProgram = NULL;
+QOpenGLShaderProgram *Shaders::intensityProgram = NULL;
 
 void Shaders::bind(QOpenGLShaderProgram *sp) {
 	if(sp == last) {

@@ -2,6 +2,7 @@
 #define PRIMITIVE_H
 
 #include <GL/gl.h>
+#include <QOpenGLShader>
 #include<boundingbox.h>
 
 class Primitive
@@ -15,6 +16,7 @@ protected:
 public:
     virtual ~Primitive() = 0;
     virtual void draw() = 0;
+	virtual void draw(QOpenGLShaderProgram *) {draw();}
     virtual void exeObjBehaviour() {}
     virtual BoundingBox* getBB() {return this->bb;}
 };

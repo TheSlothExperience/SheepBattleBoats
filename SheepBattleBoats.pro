@@ -8,6 +8,8 @@ TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++11 \
                   -Wno-deprecated-declarations
 
+LIBS+= -L/usr/local/lib -lassimp
+
 SOURCES += main.cpp
 
 include(Camera/Camera.pri)
@@ -25,8 +27,6 @@ OTHER_FILES += shaders/* \
     shaders/toonborder.frag \
     shaders/xtoon.vert \
     shaders/xtoon.frag \
-    shaders/bloom.vert \
-    shaders/bloom.frag \
     shaders/intensity.frag
 
 RESOURCES += SheepBattleBoats.qrc

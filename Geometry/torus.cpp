@@ -90,7 +90,7 @@ void Torus::draw() {
 	//Draw the indexed vertices
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
 	for(int i = 0; i < parts; i++) {
-		glDrawElements(GL_TRIANGLE_STRIP, idxPerPart, GL_UNSIGNED_SHORT, (GLvoid*) (sizeof(GLshort)*i*idxPerPart));
+        glDrawElements(GL_TRIANGLE_STRIP, idxPerPart, GL_UNSIGNED_SHORT, (GLvoid*) (sizeof(GLshort)*i*idxPerPart));
 	}
 
 	glDisableVertexAttribArray(0);

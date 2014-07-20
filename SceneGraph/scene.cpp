@@ -328,7 +328,9 @@ QModelIndex Scene::addLight() {
 
 QModelIndex Scene::add3DModel(SceneGraph *node){
     beginResetModel();
-    Primitive *object3d = new Object3D();
+    Object3D*object3d = new Object3D();
+    object3d->loadMesh("/home/sebas/Downloads/Sheep/sheep.obj",false);
+    object3d->draw();
     std::string name("Object ");
     int id = nextId();
     name += std::to_string(id);

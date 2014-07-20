@@ -33,7 +33,7 @@ void main()
 
 
     //Weitergabe der Texturkoordinaten
-    texCoord0 = texCoords;
+    texCoord0 = vec2(texCoords.x, 1.0 - texCoords.y);
 
     id4 = id;
 

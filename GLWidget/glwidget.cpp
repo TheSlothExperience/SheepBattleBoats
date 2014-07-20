@@ -80,7 +80,11 @@ void GLWidget::paintGL()
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
 
+    getSceneIntensity();
+    blurIntensity();
+
     paintSceneToCanvas();
+
 }
 
 /*
@@ -145,6 +149,11 @@ void GLWidget::paintSceneToCanvas() {
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gbuffer.bindFinalPass(shaders.canvasProgram);
 
+    //blurred Intensity to da Vader
+    glActiveTexture(GL_TEXTURE1);
+    glUniform1i(shaders.canvasProgram->uniformLocation("blurredIntensity"),1);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(2));
+
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glEnableVertexAttribArray(0);
@@ -156,6 +165,98 @@ void GLWidget::paintSceneToCanvas() {
 
     Shaders::release(shaders.canvasProgram);
 }
+
+void GLWidget::getSceneIntensity(){
+
+    Shaders::bind(shaders.intensityProgram);
+
+    gbuffer.tempTexture(0);
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(shaders.intensityProgram->uniformLocation("scene"),0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.getFinalLocation());
+
+    //Draw our nifty, pretty quad
+    glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+    glDisableVertexAttribArray(0);
+    Shaders::release(shaders.intensityProgram);
+}
+
+void GLWidget::blurIntensity(){
+
+    getSceneIntensity();
+
+    //First pass, horizontal
+    {
+        Shaders::bind(shaders.gaussianBlurHProgram);
+
+        gbuffer.tempTexture(1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(0));
+        glUniform1i(shaders.gaussianBlurHProgram->uniformLocation("moments"), 0);
+
+        //Draw our nifty, pretty quad
+        glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+        glDisableVertexAttribArray(0);
+
+        Shaders::release(shaders.gaussianBlurHProgram);
+    }
+
+    //Second pass, vertical into the shadow map
+    {
+        Shaders::bind(shaders.gaussianBlurVProgram);
+        gbuffer.tempTexture(2);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(1));
+        glUniform1i(shaders.gaussianBlurVProgram->uniformLocation("moments"), 0);
+
+        //Draw our nifty, pretty quad
+        glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+        glDisableVertexAttribArray(0);
+
+        Shaders::release(shaders.gaussianBlurVProgram);
+    }
+
+}
+
+//void GLWidget::loadCubemap(){
+
+//        unsigned int tex;
+//        glGenTextures(1,&tex);
+//        glBindTexture(GL_TEXTURE_CUBE_MAP,tex);
+
+//        for(int i=0;i<6;i++)
+//        {
+
+//            QImage img;  //<- load 6 jpg
+
+//            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,img->w,img->h,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,img->pixels);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+//        }
+//        glBindTexture(GL_TEXTURE_CUBE_MAP,0);
+//        return tex;
+
+
+//}
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
 	//Send all the lighting information and shadowmaps

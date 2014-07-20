@@ -23,6 +23,8 @@ struct Shaders {
 	static QOpenGLShaderProgram *phongProgram;
 	static QOpenGLShaderProgram *waterGeometryProgram;
 
+    static QOpenGLShaderProgram *intensityProgram;
+
 	static void bind(QOpenGLShaderProgram *sp);
 	static void release(QOpenGLShaderProgram *sp);
 

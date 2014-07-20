@@ -23,8 +23,6 @@
         <file>shaders/DS_geometryPass.vert</file>
         <file>shaders/DS_lightPass.vert</file>
         <file>shaders/DS_lightPass.frag</file>
-        <file>shaders/bloom.vert</file>
-        <file>shaders/bloom.frag</file>
         <file>shaders/storeDepth.frag</file>
         <file>shaders/storeDepth.vert</file>
         <file>shaders/gaussianBlurH.frag</file>
@@ -34,5 +32,6 @@
         <file>shaders/waterGeometry.vert</file>
         <file>shaders/waterGeometry.frag</file>
         <file>shaders/Reduce.cl</file>
+        <file>shaders/intensity.frag</file>
     </qresource>
 </RCC>
