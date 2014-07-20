@@ -235,28 +235,28 @@ void GLWidget::blurIntensity(){
 
 }
 
-void GLWidget::loadCubemap(){
+//void GLWidget::loadCubemap(){
 
-        unsigned int tex;
-        glGenTextures(1,&tex);
-        glBindTexture(GL_TEXTURE_CUBE_MAP,tex);
+//        unsigned int tex;
+//        glGenTextures(1,&tex);
+//        glBindTexture(GL_TEXTURE_CUBE_MAP,tex);
 
-        for(int i=0;i<6;i++)
-        {
+//        for(int i=0;i<6;i++)
+//        {
 
-            QImage img;  //<- load 6 jpg
+//            QImage img;  //<- load 6 jpg
 
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,img->w,img->h,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,img->pixels);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-        }
-        glBindTexture(GL_TEXTURE_CUBE_MAP,0);
-        return tex;
+//            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,img->w,img->h,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,img->pixels);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+//        }
+//        glBindTexture(GL_TEXTURE_CUBE_MAP,0);
+//        return tex;
 
 
-}
+//}
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
 	//Send all the lighting information and shadowmaps

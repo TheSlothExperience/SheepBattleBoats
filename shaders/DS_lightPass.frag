@@ -8,7 +8,7 @@ uniform sampler2D posTexture;
 uniform sampler2D colorTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D depthTexture;
-uniform sampler2D depthTexture2;
+
 
 uniform float selected;
 uniform vec4 activeColor;
@@ -26,36 +26,36 @@ uniform mat4 lightBias;
 
 uniform mat4 inverseCameraMatrix;
 
-float intensity(vec4 color){
-    return sqrt((color.x*color.x)+(color.y*color.y)+(color.z*color.z));
-}
+float sobelize(sampler2D tex){
 
-vec3 simpleEdgeDetector(float step, vec2 center, vec4 outputColor){
+    vec4 sumX = vec4(0.0);
+    vec4 sumY = vec4(0.0);
 
-    int radius = 20;
-    float centerIntensity = intensity(texture2D(colorTexture,center));
-    int darker = 0;
-    float maxIntensity = centerIntensity;
-    for(int i = -radius; i<=radius;i++){
+    float G = 0.0;
 
-        for(int j = -radius; j<=radius; j++){
+    float offsetX = 1.0 / textureSize(tex, 0).x;
+    float offsetY = 1.0 / textureSize(tex, 0).y;
 
-            vec2 currentLocation = center + vec2(i*step,j*step);
-            float currentIntensity = intensity(texture2D(colorTexture,currentLocation));
-            if(currentIntensity <centerIntensity){
-                maxIntensity = currentIntensity;
-            }
-        }
-    }
+    // sobelx : -1,0,1; -2,0,2 ; -1,0,1
+    sumX += texture(tex, vec2(UV.x + offsetX, UV.y + offsetX)) * -1;
+    sumX += texture(tex, vec2(UV.x + offsetX, UV.y)) * -2;
+    sumX += texture(tex, vec2(UV.x + offsetX, UV.y - offsetX)) * -1;
 
-    if((maxIntensity - centerIntensity)>0.01*radius){
+    sumX += texture(tex, vec2(UV.x - offsetX, UV.y + offsetX)) * 1;
+    sumX += texture(tex, vec2(UV.x - offsetX, UV.y)) * 2;
+    sumX += texture(tex, vec2(UV.x - offsetX, UV.y - offsetX)) * 1;
 
-        if(darker / (radius*radius) < (1-(1/radius))){
-            return vec3(0.0,0.0,0.0);
-        }
-    }
+        //sobely: -1,-2,-1; 0,0,0; 1,2,1
+        sumY += texture(tex, vec2(UV.x + offsetY, UV.y + offsetY)) * 1;
+        sumY += texture(tex, vec2(UV.x + offsetY, UV.y - offsetY)) * -1;
 
-    return outputColor.xyz;
+        sumY += texture(tex, vec2(UV.x + 0, UV.y + offsetY)) * 2;
+        sumY += texture(tex, vec2(UV.x + 0, UV.y - offsetY)) * -2;
+
+        sumY += texture(tex, vec2(UV.x - offsetY, UV.y + offsetY)) * 1;
+        sumY += texture(tex, vec2(UV.x - offsetY, UV.y - offsetY)) * -1;
+
+    return G = sqrt(sumX*sumX + sumY*sumY);
 }
 
 //Stuff for variance shadow maps -------------------------
@@ -97,16 +97,21 @@ void main(){
     float a = V_.a;
     vec3 N=vec3(texture(normalTexture,UV));
 
+    float coarseDetail = 2.0;
+    float minDistance = 0.5;
+    vec3 focusPoint = vec3(0.0,0.0,5.0);
+    float detail = 1 - log(V.z/minDistance)/log(coarseDetail);
+
     vec3 E = normalize(-V); // we are in Eye Coordinates, so EyePos is (0,0,0)
     int i;
+
         const float A = 0.1;
         const float B = 0.4;
         const float C = 0.7;
         const float D = 1.0;
 
 	outputColor = vec4(0.0);
-	float diffuse = 0.0;
-
+        float diffuse = 0.0;
 	for(i = 0; i < numLights; i++) {
 
 		vec3 L = normalize(lightPositions[i] - V);
@@ -154,11 +159,8 @@ void main(){
 		}
 		// -----------------------------------------------------------------------------
 
-
-
-		diffuse += visibility * max(0.0,dot(N,L));
-
-		float specular = max(0.0,dot(N,H));
+                diffuse += visibility * max(0.0,dot(N,L));
+                float specular = max(0.0,dot(N,H));
                 specular =  visibility * pow(specular,30.0);
 
 		//Stylized transformation for spekular highlights
@@ -183,6 +185,10 @@ void main(){
         else if(diffuse < C) diffuse = C;
         else diffuse = D;
 
-	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
-	outputColor += diffuse*color;
+        if(sobelize(normalTexture)>0.2 || sobelize(depthTexture)>0.2){
+            color = vec4(0.0,0.0,1.0,1.0);
+        }
+
+        gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
+        outputColor += diffuse*color;
 }
