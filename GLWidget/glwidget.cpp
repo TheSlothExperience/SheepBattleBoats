@@ -80,8 +80,12 @@ void GLWidget::paintGL()
     //Use of the Textures to Render to the Magic Quad
     DSLightPass();
 
-    //paintSceneToCanvas();
+
     getSceneIntensity();
+    //blurIntensity();
+
+    //paintSceneToCanvas();
+
 }
 
 /*
@@ -161,13 +165,8 @@ void GLWidget::paintSceneToCanvas() {
 void GLWidget::getSceneIntensity(){
 
     Shaders::bind(shaders.intensityProgram);
-    glBindFramebuffer(GL_FRAMEBUFFER,0);
-    glClearColor(8.0f, 8.0f, 8.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0,0, this->width(), this->height());
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    gbuffer.bindFinalPass(shaders.intensityProgram);
+    gbuffer.tempTexture(0);
 
     glUniform2f(shaders.intensityProgram->uniformLocation("pixelSize"),1.0/(float) this->width(),1.0/(float) this->height());
 
@@ -180,6 +179,61 @@ void GLWidget::getSceneIntensity(){
 
     glDisableVertexAttribArray(0);
     Shaders::release(shaders.intensityProgram);
+}
+
+void GLWidget::blurIntensity(){
+
+
+    //First pass, horizontal
+    {
+        Shaders::bind(shaders.gaussianBlurHProgram);
+
+        gbuffer.tempTexture(1);
+        glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0,0, this->width(), this->height());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(0));
+        glUniform1i(shaders.gaussianBlurHProgram->uniformLocation("moments"), 0);
+
+        //Draw our nifty, pretty quad
+        glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+        glDisableVertexAttribArray(0);
+
+        Shaders::release(shaders.gaussianBlurHProgram);
+    }
+
+    //Second pass, vertical into the shadow map
+    {
+        Shaders::bind(shaders.gaussianBlurVProgram);
+        gbuffer.tempTexture(2);
+
+        glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0,0, this->width(), this->height());
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(1));
+        glUniform1i(shaders.gaussianBlurVProgram->uniformLocation("moments"), 0);
+
+        //Draw our nifty, pretty quad
+        glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3*2);
+
+        glDisableVertexAttribArray(0);
+
+        Shaders::release(shaders.gaussianBlurVProgram);
+    }
+
 }
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {

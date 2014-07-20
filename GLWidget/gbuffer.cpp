@@ -27,6 +27,9 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	// Erzeuge 5 Texturen
 	glGenTextures(5, m_textures);
 
+    //Erzeuge 5 temp texture
+    glGenTextures(5,m_tempTextures);
+
 	// Depth
 	glGenTextures(1, &m_depthTexture);
 
@@ -45,6 +48,19 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
 		                       GL_TEXTURE_2D, m_textures[i], 0);
 	}
+
+    for (int i = 0 ; i < 5 ; i++) {
+        glBindTexture(GL_TEXTURE_2D, m_tempTextures[i]);
+
+        // Dummy-Aufruf, damit OpenGL weiß welches Texturformat wir
+        // anlegen möchten (alternativ auch GL_RGBA16F)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        //Bind FBO
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i + 10,
+                               GL_TEXTURE_2D, m_tempTextures[i], 0);
+    }
 
 	// depth
 	glBindTexture(GL_TEXTURE_2D, m_depthTexture);
@@ -161,6 +177,18 @@ void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
     glBindTexture(GL_TEXTURE_2D,m_finalTexture);
 }
 
+void GBuffer::tempTexture(int i){
+    m_activeGBuffer = this;
+    glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
+    glViewport(0,0, windowWidth, windowHeight);
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0 + i + 10};
+    glDrawBuffers(1,drawBuffers);
+}
+
+GLuint GBuffer::getTempTexture(int i){
+
+    return m_tempTextures[i];
+}
 
 //void GBuffer::BindForReading(){
 //    glBindFramebuffer(GL_READ_FRAMEBUFFER,m_fbo);
