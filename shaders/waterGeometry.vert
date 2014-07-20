@@ -15,9 +15,14 @@ uniform mat4 perspectiveMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 normalMatrix;
 
+uniform int seaWidth;
+uniform int seaHeight;
+
+uniform vec4 id;
+
 void main()
 {
-	vec2 UV = position.xz;
+	vec2 UV = position.xz / vec2(seaWidth, seaHeight);
 	float height = texture2D(noiseTexture, UV);
 	vec4 V_ = vec4(position.x, height, position.z, 1.0);
     gl_Position = (perspectiveMatrix * modelViewMatrix) * V_;

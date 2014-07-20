@@ -47,9 +47,7 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 }
 
 void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
-	GBuffer::activeGBuffer()->drawToFinal();
-	Shaders::bind(Shaders::phongProgram);
-	Scene::passLights(cameraMatrix, Shaders::phongProgram);
+	QOpenGLShaderProgram *sh = Shaders::waterGeometryProgram;
 	MVStack.push(MVStack.top());
 
 	MVStack.top().translate(this->translation);
@@ -61,24 +59,32 @@ void SeaNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMa
 
 	//If the node is a leaf, draw its contents
 	if(leaf) {
-		glUniformMatrix4fv(Shaders::phongProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
-		glUniformMatrix4fv(Shaders::phongProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
-		glUniformMatrix4fv(Shaders::phongProgram->uniformLocation("normalMatrix"), 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
+		Shaders::bind(sh);
+		glUniformMatrix4fv(sh->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
+		glUniformMatrix4fv(sh->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
+		glUniformMatrix4fv(sh->uniformLocation("normalMatrix"), 1, GL_FALSE, MVStack.top().inverted().transposed().constData());
 		int r = (id & 0x000000FF) >>  0;
 		int g = (id & 0x0000FF00) >>  8;
 		int b = (id & 0x00FF0000) >> 16;
-		glUniform4f(Shaders::phongProgram->uniformLocation("id"), r/255.0f, g/255.0f, b/255.0f, 1.0f);
+		glUniform4f(sh->uniformLocation("id"), r/255.0f, g/255.0f, b/255.0f, 1.0f);
 
-		glUniform4fv(Shaders::phongProgram->uniformLocation("color"), 1, color);
+		glUniform4fv(sh->uniformLocation("color"), 1, color);
+
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, noiseTexture);
+		glUniform1i(sh->uniformLocation("noiseTexture"), 5);
+
+		glUniform1i(sh->uniformLocation("seaWidth"), seaWidth);
+		glUniform1i(sh->uniformLocation("seaHeight"), seaHeight);
 
 		this->primitive->draw();
+		Shaders::release(sh);
 	} else {
 		//Else, recurse into its children
 		std::for_each(children.begin(), children.end(), [&MVStack, cameraMatrix, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, cameraMatrix, projectionMatrix, shader);});
 	}
 
 	MVStack.pop();
-	Shaders::release(Shaders::phongProgram);
 }
 
 void SeaNode::drawGeometry(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
