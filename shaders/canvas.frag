@@ -9,9 +9,8 @@ out vec4 color;
 
 uniform sampler2D scene;
 uniform sampler2D blurredIntensity;
-uniform samplerCube cubemap;
-
 
 void main(){
+
         color = vec4(texture(scene, UV).xyz+texture(blurredIntensity,UV).xyz,1.0);
 }

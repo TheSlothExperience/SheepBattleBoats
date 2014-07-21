@@ -60,6 +60,7 @@ private:
 
 	Shaders shaders;
 
+	void drawSkyBox();
     void renderScene();
     void shadowMapsPass();
 	void passShadowMaps(QOpenGLShaderProgram *shader, int texOffset);
@@ -82,6 +83,9 @@ private:
     GLuint canvasQuad;
     GLuint activeLocation;
     GLuint activeColorLocation;
+
+	GLuint cubeMapLocation;
+	GLuint skyBox;
 
     GLuint perspectiveMatLocation;
     GLuint modelViewMatLocation;
