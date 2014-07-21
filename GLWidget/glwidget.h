@@ -48,6 +48,7 @@ public:
 	void setSATShadows(bool set) {satShadowsp = set;}
      void set8bit(bool set) {bitify = set;}
      void setScope(bool set) {scopify = set;}
+     void setCrossHatch(bool set){crossify = set;}
 
 private:
     int tesselationLevel;
@@ -107,6 +108,7 @@ private:
 
     bool bitify;
     bool scopify;
+    bool crossify;
 
 
 protected:

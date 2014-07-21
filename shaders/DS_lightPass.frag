@@ -89,6 +89,7 @@ float stepmix(float edge0, float edge1, float E, float x){
 	return mix(edge0,edge1,T);
 }
 
+
 void main(){
 
 	vec4 color=vec4(texture(colorTexture,UV));
@@ -196,5 +197,5 @@ void main(){
 	}
 
 	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
-	outputColor += diffuse*color;
+        outputColor += diffuse*color;
 }

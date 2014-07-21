@@ -76,6 +76,7 @@ private:
 	QCheckBox *satShadowCheckBox;
     QCheckBox *set8bitCheckBox;
     QCheckBox *setScopeCheckBox;
+    QCheckBox *setCrossHatchCheckBox;
 	QSlider *redSlider;
 	QSlider *blueSlider;
 	QSlider *greenSlider;
@@ -121,6 +122,7 @@ public slots:
 	void setSATShadows(bool set);
     void set8bit(bool set);
     void setScope(bool set);
+    void setCrossHatch(bool set);
 
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);

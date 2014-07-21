@@ -2,7 +2,7 @@
 
 #include "object3d.h"
 #include <vector>
-
+#include <iostream>
 #include <assert.h>
 
 #define POSITION_LOCATION    0
@@ -46,12 +46,14 @@ bool Object3D::loadMesh(const std::string& filename, bool withAdjacencies){
     glGenVertexArrays(1,&vao);
     glBindVertexArray(vao);
 
+
     glGenBuffers((sizeof(buffers)/sizeof(buffers[0])),buffers);
 
     bool loaded = false;
 
     pScene = importer.ReadFile(filename.c_str(),aiProcess_Triangulate |aiProcess_GenSmoothNormals
                                               | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+
     if(pScene){
 
         loaded = initFromScene(pScene,filename);
@@ -131,21 +133,6 @@ bool Object3D::initFromScene(const aiScene *pScene, const std::string &filename)
     return true;
 }
 
-static uint getOppositeindex(const aiFace& face, const Edge& e){
-
-    for (uint i = 0 ; i < 3 ; i++) {
-        uint Index = face.mIndices[i];
-
-        if (Index != e.a && Index != e.b) {
-            return Index;
-        }
-    }
-
-    assert(0);
-
-    return 0;
-}
-
 bool Object3D::initMesh(const aiMesh *paiMesh,
                         std::vector<QVector3D>& positions,
                         std::vector<QVector3D>& normals,
@@ -205,14 +192,18 @@ bool Object3D::initMaterials(const aiScene *pScene, const std::string &filename)
         if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString Path;
 
+
             if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
                 std::string p(Path.data);
+
+                std::cout << "path "<<Path.data<<std::endl;
 
                 if (p.substr(0, 2) == ".\\") {
                     p = p.substr(2, p.size() - 2);
                 }
 
                 std::string FullPath = dir + "/" + p;
+
 
                 textures[i] = new Texture(GL_TEXTURE_2D, FullPath.c_str());
 
@@ -236,7 +227,7 @@ bool Object3D::initMaterials(const aiScene *pScene, const std::string &filename)
 
 
 void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> indices){
-   int c = 0;
+
     // Step 1 - find the two triangles that share edge
     for (uint i=0; i<paiMesh->mNumFaces;i++){
         const aiFace& face = paiMesh->mFaces[i];
@@ -280,7 +271,7 @@ void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> 
             Neighbors n = indexMap[e];
             uint otherTri = n.getOther(i);
             std::cout<< "index" << otherTri << std::endl;
-            assert(otherTri != -1);
+            assert(otherTri != (uint) -1);
 
             const Face& otherFace = uniqueFaces[otherTri];
             uint oppositeIndex = otherFace.getOppositeIndex(e);

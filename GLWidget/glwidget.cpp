@@ -208,6 +208,7 @@ void GLWidget::paintSceneToCanvas() {
 
     glUniform1i(shaders.canvasProgram->uniformLocation("bitify"),bitify);
     glUniform1i(shaders.canvasProgram->uniformLocation("scopify"),scopify);
+    glUniform1i(shaders.canvasProgram->uniformLocation("crossify"),crossify);
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);

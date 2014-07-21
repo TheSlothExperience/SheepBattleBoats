@@ -232,12 +232,16 @@ void MainWindow::createColorDock() {
     setScopeCheckBox = new QCheckBox("Scope");
     connect(setScopeCheckBox, SIGNAL(toggled(bool)), this, SLOT(setScope(bool)));
 
+    setCrossHatchCheckBox = new QCheckBox("Cross Hatch");
+    connect(setCrossHatchCheckBox, SIGNAL(toggled(bool)), this , SLOT(setCrossHatch(bool)));
+
 
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
 	layout->addWidget(satShadowCheckBox);
     layout->addWidget(set8bitCheckBox);
     layout->addWidget(setScopeCheckBox);
+    layout->addWidget(setCrossHatchCheckBox);
 	layout->addWidget(redSlider);
 	layout->addWidget(greenSlider);
 	layout->addWidget(blueSlider);
@@ -530,6 +534,10 @@ void MainWindow::set8bit(bool set){
 
 void MainWindow::setScope(bool set){
     mapWidgets([=](GLWidget *w){w->setScope(set);});
+}
+
+void MainWindow::setCrossHatch(bool set){
+    mapWidgets([=](GLWidget *w){w->setCrossHatch(set);});
 }
 
 
