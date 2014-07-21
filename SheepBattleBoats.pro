@@ -16,6 +16,7 @@ include(Camera/Camera.pri)
 include(SceneGraph/SceneGraph.pri)
 include(GLWidget/GLWidget.pri)
 include(Geometry/Geometry.pri)
+include(Lights/Lights.pri)
 include(Util/Util.pri)
 include(GameLogic/GameLogic.pri)
 
