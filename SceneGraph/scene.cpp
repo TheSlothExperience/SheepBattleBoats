@@ -15,6 +15,7 @@
 #include "levelobject.h"
 #include "projectile.h"
 #include "collisiondetection.h"
+#include "parallelLight.h"
 
 #include "glwidget.h"
 #include "glwidgetcontext.h"
@@ -315,7 +316,7 @@ QModelIndex Scene::addLight() {
 	std::string name("Light ");
 	int id = nextId();
 	name += std::to_string(id);
-	LightNode *s = new LightNode(light, name);
+	LightNode *s = new ParallelLight(light, name);
 	s->setId(id);
 	identifier[id] = s;
 

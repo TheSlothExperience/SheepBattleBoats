@@ -1,12 +1,14 @@
 #define GL_GLEXT_PROTOTYPES
 
-#include "lightnode.h"
+#include "parallelLight.h"
+
 #include <iostream>
 #include <GL/gl.h>
 
-LightNode::LightNode(Primitive *p, std::string name)
-	: SceneGraph(p, name)
+ParallelLight::ParallelLight(Primitive *p, std::string name)
+	: LightNode(p, name)
 {
+	std::cout << "Creating ParallelLight" << std::endl;
 	m_shadowWidth = 512;
 	m_shadowHeight = 512;
 
@@ -77,14 +79,14 @@ LightNode::LightNode(Primitive *p, std::string name)
 
 }
 
-LightNode::~LightNode() {
+ParallelLight::~ParallelLight() {
 }
 
-QVector3D LightNode::getPosition() {
+QVector3D ParallelLight::getPosition() {
 	return translation;
 }
 
-void LightNode::changeColor(float r, float g, float b, float a) {
+void ParallelLight::changeColor(float r, float g, float b, float a) {
 	color[0] = r;
 	color[1] = g;
 	color[2] = b;
@@ -92,16 +94,6 @@ void LightNode::changeColor(float r, float g, float b, float a) {
 }
 
 
-void LightNode::lightPass() {
+void ParallelLight::lightPass() {
 
 }
-
-//void LightNode::testCollisions(){
-
-//    if(leaf) {
-//    qDebug()<<"testCollision in lightNode";
-//    } else {
-//        //Else, recurse into its children
-//        std::for_each(children.begin(), children.end(), [](SceneGraph *s){s->testCollisions();});
-//    }
-//}

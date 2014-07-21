@@ -14,7 +14,7 @@
 
 class LightNode : public SceneGraph
 {
-private:
+protected:
 
 	QVector4D lightColor;
 	GLuint fbo;
@@ -27,13 +27,13 @@ private:
 
 public:
 	LightNode(Primitive *p, std::string name);
-	~LightNode();
+	virtual ~LightNode();
 
-	QVector3D getPosition();
-	QVector4D getLightColor() {return lightColor;}
-	void setLightColor(QVector4D lc) {lightColor = lc;}
+	virtual QVector3D getPosition();
+	virtual QVector4D getLightColor() {return lightColor;}
+	virtual void setLightColor(QVector4D lc) {lightColor = lc;}
 
-	QMatrix4x4 lightView() {
+	virtual QMatrix4x4 lightView() {
 		QMatrix4x4 view = QMatrix4x4();
 		float x = translation.x();
 		float z = translation.z();
@@ -49,7 +49,7 @@ public:
 		return view;
 	}
 
-	QMatrix4x4 perspectiveMatrix() {
+	virtual QMatrix4x4 perspectiveMatrix() {
 		QMatrix4x4 persp = QMatrix4x4();
 		//float aspect = 1024.0 / 768.0;
 		//persp.perspective(45, 1024.0 / 768.0, 0.1, 100);
@@ -57,14 +57,14 @@ public:
 		persp.ortho(-5, 5, -5, 5, -100, 100);
 		return persp;
 	}
-	void lightPass();
-	GLuint shadowFBO() {return fbo;}
-	GLuint shadowMoments() {return moments;}
-	GLuint shadowMomentsTemp() {return momentsTemp;}
-	GLuint getShadowMap() {return shadowMap;}
+	virtual void lightPass();
+	virtual GLuint shadowFBO() {return fbo;}
+	virtual GLuint shadowMoments() {return moments;}
+	virtual GLuint shadowMomentsTemp() {return momentsTemp;}
+	virtual GLuint getShadowMap() {return shadowMap;}
 
-	int shadowWidth() {return m_shadowWidth;}
-	int shadowHeight() {return m_shadowHeight;}
+	virtual int shadowWidth() {return m_shadowWidth;}
+	virtual int shadowHeight() {return m_shadowHeight;}
 
 	void changeColor(float r, float g, float b, float a);
 

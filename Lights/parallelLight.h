@@ -1,5 +1,5 @@
-#ifndef LIGHTNODE_H
-#define LIGHTNODE_H
+#ifndef PARALLELLIGHT_H
+#define PARALLELLIGHT_H
 
 #include <vector>
 #include <stack>
@@ -9,25 +9,14 @@
 #include <QVector3D>
 
 #include "primitive.h"
-#include "scenegraph.h"
+#include "lightnode.h"
 
 
-class LightNode : public SceneGraph
+class ParallelLight : public LightNode
 {
-private:
-
-	QVector4D lightColor;
-	GLuint fbo;
-	GLuint shadowMap;
-	GLuint moments;
-	GLuint momentsTemp;
-	GLuint depthBuffer;
-	int m_shadowWidth;
-	int m_shadowHeight;
-
 public:
-	LightNode(Primitive *p, std::string name);
-	~LightNode();
+	ParallelLight(Primitive *p, std::string name);
+	~ParallelLight();
 
 	QVector3D getPosition();
 	QVector4D getLightColor() {return lightColor;}
@@ -51,9 +40,6 @@ public:
 
 	QMatrix4x4 perspectiveMatrix() {
 		QMatrix4x4 persp = QMatrix4x4();
-		//float aspect = 1024.0 / 768.0;
-		//persp.perspective(45, 1024.0 / 768.0, 0.1, 100);
-		//persp.ortho(-aspect, aspect, -1, 1, -100, 100);
 		persp.ortho(-5, 5, -5, 5, -100, 100);
 		return persp;
 	}
