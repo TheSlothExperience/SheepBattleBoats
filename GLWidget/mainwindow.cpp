@@ -116,19 +116,19 @@ void MainWindow::setupGL() {
 	//Create the widgets
 	perspectiveGLWidget = new GLWidget(this, glWidgetContext);
 	widgetList.push_back(perspectiveGLWidget);
-    perspectiveGLWidget->setPerspectiveCamera(0, 1, 5);
+	perspectiveGLWidget->setPerspectiveCamera(0, 1, 5);
 
-	frontGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(frontGLWidget);
-	frontGLWidget->setOrthoCamera(0, 0, 3);
+	//frontGLWidget = new GLWidget(this, glWidgetContext);
+	//widgetList.push_back(frontGLWidget);
+	//frontGLWidget->setOrthoCamera(0, 0, 3);
 
-	topGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(topGLWidget);
-	topGLWidget->setOrthoCamera(0, 3, 0);
+	//topGLWidget = new GLWidget(this, glWidgetContext);
+	//widgetList.push_back(topGLWidget);
+	//topGLWidget->setOrthoCamera(0, 3, 0);
 
-	rightGLWidget = new GLWidget(this, glWidgetContext);
-	widgetList.push_back(rightGLWidget);
-	rightGLWidget->setOrthoCamera(3, 0, 0);
+	//rightGLWidget = new GLWidget(this, glWidgetContext);
+	//widgetList.push_back(rightGLWidget);
+	//rightGLWidget->setOrthoCamera(3, 0, 0);
 
 	perspectiveGLWidget->makeCurrent();
 	perspectiveGLWidget->initializeGL();
@@ -182,25 +182,25 @@ void MainWindow::setupGL() {
 		});
 
 	//Add the four viewports to the screen in splitters
-	topSplitter = new QSplitter(this);
-	topSplitter->addWidget(perspectiveGLWidget);
-	topSplitter->addWidget(frontGLWidget);
+	//topSplitter = new QSplitter(this);
+	//topSplitter->addWidget(perspectiveGLWidget);
+	//topSplitter->addWidget(frontGLWidget);
 
-	bottomSplitter = new QSplitter(this);
-	bottomSplitter->addWidget(topGLWidget);
-	bottomSplitter->addWidget(rightGLWidget);
+	//bottomSplitter = new QSplitter(this);
+	//bottomSplitter->addWidget(topGLWidget);
+	//bottomSplitter->addWidget(rightGLWidget);
 
-	sideSplitter = new QSplitter(this);
-	sideSplitter->setOrientation(Qt::Vertical);
-	sideSplitter->addWidget(topSplitter);
-	sideSplitter->addWidget(bottomSplitter);
+	//sideSplitter = new QSplitter(this);
+	//sideSplitter->setOrientation(Qt::Vertical);
+	//sideSplitter->addWidget(topSplitter);
+	//sideSplitter->addWidget(bottomSplitter);
 
-	frontGLWidget->hide();
-	bottomSplitter->hide();
+	//frontGLWidget->hide();
+	//bottomSplitter->hide();
 	perspectiveGLWidget->setActive();
 	activeViewport = perspectiveGLWidget;
 
-	setCentralWidget(sideSplitter);
+	setCentralWidget(perspectiveGLWidget);
 }
 
 void MainWindow::createColorDock() {
@@ -280,9 +280,9 @@ void MainWindow::createActions() {
 	resetCameraAction = new QAction("&Reset", this);
     resetCameraAction->setIcon(QIcon(":/img/cam_home.png"));
 	connect(resetCameraAction, SIGNAL(triggered()), perspectiveGLWidget, SLOT(resetCamera()));
-	connect(resetCameraAction, SIGNAL(triggered()), topGLWidget, SLOT(resetCamera()));
-	connect(resetCameraAction, SIGNAL(triggered()), frontGLWidget, SLOT(resetCamera()));
-	connect(resetCameraAction, SIGNAL(triggered()), rightGLWidget, SLOT(resetCamera()));
+	//connect(resetCameraAction, SIGNAL(triggered()), topGLWidget, SLOT(resetCamera()));
+	//connect(resetCameraAction, SIGNAL(triggered()), frontGLWidget, SLOT(resetCamera()));
+	//connect(resetCameraAction, SIGNAL(triggered()), rightGLWidget, SLOT(resetCamera()));
 
 	singleViewAction = new QAction("&Single Viewport", this);
 	singleViewAction->setShortcut(tr("Ctrl+1"));
@@ -550,9 +550,9 @@ void MainWindow::setQuadView() {
 
 void MainWindow::setActiveViewport(GLWidget *active) {
 	perspectiveGLWidget->setActive(false);
-	topGLWidget->setActive(false);
-	frontGLWidget->setActive(false);
-	rightGLWidget->setActive(false);
+	//topGLWidget->setActive(false);
+	//frontGLWidget->setActive(false);
+	//rightGLWidget->setActive(false);
 
 	activeViewport = active;
 	active->setActive(true);
@@ -560,18 +560,18 @@ void MainWindow::setActiveViewport(GLWidget *active) {
 
 void MainWindow::setCameraInteraction() {
 	perspectiveGLWidget->setCameraActive(true);
-	topGLWidget->setCameraActive(true);
-	frontGLWidget->setCameraActive(true);
-	rightGLWidget->setCameraActive(true);
+	//topGLWidget->setCameraActive(true);
+	//frontGLWidget->setCameraActive(true);
+	//rightGLWidget->setCameraActive(true);
 
 	statusbar->showMessage("Camera movement activate!", 2000);
 }
 
 void MainWindow::setObjectInteraction() {
 	perspectiveGLWidget->setCameraActive(false);
-	topGLWidget->setCameraActive(false);
-	frontGLWidget->setCameraActive(false);
-	rightGLWidget->setCameraActive(false);
+	//topGLWidget->setCameraActive(false);
+	//frontGLWidget->setCameraActive(false);
+	//rightGLWidget->setCameraActive(false);
 
 	statusbar->showMessage("Moving dem objects.", 2000);
 }
