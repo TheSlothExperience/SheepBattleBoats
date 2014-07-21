@@ -3,7 +3,7 @@
 
 void PrintBuildLog(cl_program Program, cl_device_id Device)
 {
-	cl_build_status buildStatus;
+    cl_build_status buildStatus;
 	clGetProgramBuildInfo(Program, Device, CL_PROGRAM_BUILD_STATUS, sizeof(cl_build_status), &buildStatus, NULL);
 	if(buildStatus == CL_SUCCESS)
 		return;
@@ -49,7 +49,7 @@ void LoadProgram(const char* Path, char** pSource, size_t* SourceSize)
 	fseek(pFileStream, 0, SEEK_SET);
 
 	*pSource = new char[*SourceSize + 1];
-	fread(*pSource, *SourceSize, 1, pFileStream);
+	if(fread(*pSource, *SourceSize, 1, pFileStream) == 0) cout << "ERROR READING CL PROGRAM" << endl;
 	fclose(pFileStream);
 	(*pSource)[*SourceSize] = '\0';
 }

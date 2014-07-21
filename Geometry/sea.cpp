@@ -5,73 +5,81 @@
 #include <iostream>
 
 Sea::Sea() {
-	static GLfloat vertices[6 * 50 * 50 * 3];
+	seaWidth = 200;
+	seaHeight = 200;
+	tessellation = 8;
+	numVertices = 6 * (seaWidth * tessellation * seaHeight * tessellation);
+	GLfloat* vertices = new GLfloat[numVertices * 3];
 
-	static GLfloat normals[6 * 50 * 50 * 3];
+	GLfloat* normals = new GLfloat[numVertices * 3];
 
-	for(int z = 0; z < 50; z++) {
-		int z_off = z - 25;
-		for(int x = 0; x < 50; x++) {
-			int x_off = x - 25;
-			vertices[18*(z * 50 + x) + 0] = x_off;
-			vertices[18*(z * 50 + x) + 1] = 0.0;
-			vertices[18*(z * 50 + x) + 2] = z_off;
+	int span = seaWidth * tessellation;
+	for(int z = 0; z < seaHeight * tessellation; z++) {
+		float z_off = z / tessellation - (seaHeight / 2);
+		for(int x = 0; x < seaWidth * tessellation; x++) {
+			float x_off = x / tessellation - (seaWidth / 2);
+			vertices[18*(z * span + x) + 0] = x_off;
+			vertices[18*(z * span + x) + 1] = 0.0;
+			vertices[18*(z * span + x) + 2] = z_off;
 
-			vertices[18*(z * 50 + x) + 3 + 0] = x_off;
-			vertices[18*(z * 50 + x) + 3 + 1] = 0.0;
-			vertices[18*(z * 50 + x) + 3 + 2] = z_off + 1.0;
+			vertices[18*(z * span + x) + 3 + 0] = x_off;
+			vertices[18*(z * span + x) + 3 + 1] = 0.0;
+			vertices[18*(z * span + x) + 3 + 2] = z_off + 1.0;
 
-			vertices[18*(z * 50 + x) + 6 + 0] = x_off + 1.0;
-			vertices[18*(z * 50 + x) + 6 + 1] = 0.0;
-			vertices[18*(z * 50 + x) + 6 + 2] = z_off;
+			vertices[18*(z * span + x) + 6 + 0] = x_off + 1.0;
+			vertices[18*(z * span + x) + 6 + 1] = 0.0;
+			vertices[18*(z * span + x) + 6 + 2] = z_off;
 
-			vertices[18*(z * 50 + x) + 9 + 0] = x_off + 1.0;
-			vertices[18*(z * 50 + x) + 9 + 1] = 0.0;
-			vertices[18*(z * 50 + x) + 9 + 2] = z_off;
+			vertices[18*(z * span + x) + 9 + 0] = x_off + 1.0;
+			vertices[18*(z * span + x) + 9 + 1] = 0.0;
+			vertices[18*(z * span + x) + 9 + 2] = z_off;
 
-			vertices[18*(z * 50 + x) + 12 + 0] = x_off;
-			vertices[18*(z * 50 + x) + 12 + 1] = 0.0;
-			vertices[18*(z * 50 + x) + 12 + 2] = z_off + 1.0;
+			vertices[18*(z * span + x) + 12 + 0] = x_off;
+			vertices[18*(z * span + x) + 12 + 1] = 0.0;
+			vertices[18*(z * span + x) + 12 + 2] = z_off + 1.0;
 
-			vertices[18*(z * 50 + x) + 15 + 0] = x_off + 1.0;
-			vertices[18*(z * 50 + x) + 15 + 1] = 0.0;
-			vertices[18*(z * 50 + x) + 15 + 2] = z_off + 1.0;
+			vertices[18*(z * span + x) + 15 + 0] = x_off + 1.0;
+			vertices[18*(z * span + x) + 15 + 1] = 0.0;
+			vertices[18*(z * span + x) + 15 + 2] = z_off + 1.0;
 
-			normals[18*(z * 50 + x) + 0] = 0.0;
-			normals[18*(z * 50 + x) + 1] = 1.0;
-			normals[18*(z * 50 + x) + 2] = 0.0;
+			normals[18*(z * span + x) + 0] = 0.0;
+			normals[18*(z * span + x) + 1] = 1.0;
+			normals[18*(z * span + x) + 2] = 0.0;
 
-			normals[18*(z * 50 + x) + 3 + 0] = 0.0;
-			normals[18*(z * 50 + x) + 3 + 1] = 1.0;
-			normals[18*(z * 50 + x) + 3 + 2] = 0.0;
+			normals[18*(z * span + x) + 3 + 0] = 0.0;
+			normals[18*(z * span + x) + 3 + 1] = 1.0;
+			normals[18*(z * span + x) + 3 + 2] = 0.0;
 
-			normals[18*(z * 50 + x) + 6 + 0] = 0.0;
-			normals[18*(z * 50 + x) + 6 + 1] = 1.0;
-			normals[18*(z * 50 + x) + 6 + 2] = 0.0;
+			normals[18*(z * span + x) + 6 + 0] = 0.0;
+			normals[18*(z * span + x) + 6 + 1] = 1.0;
+			normals[18*(z * span + x) + 6 + 2] = 0.0;
 
-			normals[18*(z * 50 + x) + 9 + 0] = 0.0;
-			normals[18*(z * 50 + x) + 9 + 1] = 1.0;
-			normals[18*(z * 50 + x) + 9 + 2] = 0.0;
+			normals[18*(z * span + x) + 9 + 0] = 0.0;
+			normals[18*(z * span + x) + 9 + 1] = 1.0;
+			normals[18*(z * span + x) + 9 + 2] = 0.0;
 
-			normals[18*(z * 50 + x) + 12 + 0] = 0.0;
-			normals[18*(z * 50 + x) + 12 + 1] = 1.0;
-			normals[18*(z * 50 + x) + 12 + 2] = 0.0;
+			normals[18*(z * span + x) + 12 + 0] = 0.0;
+			normals[18*(z * span + x) + 12 + 1] = 1.0;
+			normals[18*(z * span + x) + 12 + 2] = 0.0;
 
-			normals[18*(z * 50 + x) + 15 + 0] = 0.0;
-			normals[18*(z * 50 + x) + 15 + 1] = 1.0;
-			normals[18*(z * 50 + x) + 15 + 2] = 0.0;
+			normals[18*(z * span + x) + 15 + 0] = 0.0;
+			normals[18*(z * span + x) + 15 + 1] = 1.0;
+			normals[18*(z * span + x) + 15 + 2] = 0.0;
 		}
 	}
 
 	glGenBuffers(1, &vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, numVertices * 3 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenBuffers(1, &normalBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, numVertices * 3 * sizeof(GLfloat), normals, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	delete[] vertices;
+	delete[] normals;
 }
 
 Sea::~Sea() {
@@ -90,7 +98,7 @@ void Sea::draw() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * 50 * 50);
+	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);

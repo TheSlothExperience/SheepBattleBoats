@@ -27,11 +27,12 @@ protected:
 	std::vector<SceneGraph* > children;
 	GLfloat color[4];
     bool markedDead=false;
+	QQuaternion rotationOffset;
 
 public:
     SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
     SceneGraph(Primitive *p, SceneGraph *parent = 0);
-    SceneGraph(Primitive *p, std::string name);
+	SceneGraph(Primitive *p, std::string name, QQuaternion rotationOffset = QQuaternion());
 	virtual ~SceneGraph();
 
 	SceneGraph* parent();
@@ -76,9 +77,7 @@ public:
 
     Primitive* getPrimitive(){return this->primitive;}
 
-
-//signals:
-//    void deleteNode(SceneGraph* nodeAdress);
+	QVector3D getPosition() {return getBB()->position;}
 };
 
 #endif //SCENE_H

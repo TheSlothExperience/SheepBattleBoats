@@ -5,7 +5,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SheepBattleBoats
 TEMPLATE = app
 
-QMAKE_CXXFLAGS += -std=c++11
+CONFIG += qt warn_on qt3d
+
+QMAKE_CXXFLAGS += -std=c++11 \
+                  -Wno-deprecated-declarations
+
+LIBS+= -L/usr/local/lib -lassimp
 
 SOURCES += main.cpp
 
@@ -28,6 +33,9 @@ OTHER_FILES += shaders/* \
     shaders/bloom.frag \
     shaders/intensity.frag \
     shaders/particles.frag \
-    shaders/particles.vert
+    shaders/particles.vert \
+    shaders/bloom.vert \
+    shaders/bloom.frag \
+    shaders/intensity.frag
 
 RESOURCES += SheepBattleBoats.qrc

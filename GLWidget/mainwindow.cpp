@@ -42,17 +42,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 void MainWindow::initGameLogic(){
-
     initLevel();
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameTick()));
     timer->start(34);
-
-
-//    for(int i=0;i<scene->getLvlObjAdresses().length();i++){
-//        qDebug()<<"lvlObj"+QString::number(i);
-//    }
 }
 
 void MainWindow::gameTick(){
@@ -99,6 +93,7 @@ void MainWindow::doMovements(){
 
     QVector3D newTranslation= scene->convertToMotherSheepTranslation();
     scene->translateMotherSheep(newTranslation);
+    scene->translateSea(newTranslation);
     scene->rotateMotherSheep();
     activeViewport->translateBoardCamera(newTranslation,scene->getMainBoat()->getPosition());
 }
@@ -620,23 +615,22 @@ void MainWindow::changedColor() {
 
 void MainWindow::load3DModel(){
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load 3D Model"), ".", tr("test(*.obj)"));
-    QFileInfo info(fileName);
-    std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
-    if(!fileName.isEmpty()) {
-        FILE *fp;
-        fp = fopen(fileName.toLocal8Bit().data(), "r");
+//    QString fileName = QFileDialog::getOpenFileName(this, tr("Load 3D Model"), ".", tr("test(*.obj)"));
+//    QFileInfo info(fileName);
+//    std::cout << "File: " << fileName.toLocal8Bit().data() << std::endl;
+//    if(!fileName.isEmpty()) {
+//        FILE *fp;
+//        fp = fopen(fileName.toLocal8Bit().data(), "r");
 
 
 
-        fclose(fp);
-        emit updateGL();
-    }
+//        fclose(fp);
+//        emit updateGL();
+//    }
 
 }
 
 void MainWindow::shoot(){
-    qDebug()<<"shoot";
     if(!shooting){
         shooting=true;
         shootingLatency=0;
@@ -646,5 +640,4 @@ void MainWindow::shoot(){
         scene->addProjectile(temp);
 
     }
-
 }

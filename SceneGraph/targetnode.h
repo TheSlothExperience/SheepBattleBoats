@@ -1,9 +1,7 @@
 #ifndef TARGETNODE_H
 #define TARGETNODE_H
 
-#include"levelobjectnode.h"
 #include"scenegraph.h"
-#include"levelobject.h"
 #include"boundingbox.h"
 
 
@@ -14,10 +12,8 @@ public:
     TargetNode(Primitive *p, std::string name);
     ~TargetNode();
     void draw();
-    void testCollisions(LevelObjectNode);
+    void testCollisions(SceneGraph);
 
-
-    LevelObject getLvlObj();
     void move();
 
     void exeObjBehaviour();

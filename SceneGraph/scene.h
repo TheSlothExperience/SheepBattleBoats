@@ -3,8 +3,9 @@
 
 #include "scenegraph.h"
 #include "lightnode.h"
+#include "seanode.h"
 #include "camera.h"
-#include "levelobjectnode.h"
+#include "sheepnode.h"
 #include "projectilenode.h"
 #include "particleexplosionnode.h"
 #include "particleexplosionnode2.h"
@@ -39,11 +40,11 @@ private:
 	QVector4D lightPosition;
 	std::stack<QMatrix4x4> modelViewMatrixStack;
 
-
+	SeaNode *sea;
 	int currentId = 0;
     int nextId() {return currentId++;}
 
-    LevelObjectNode* mainBoat;
+    SheepNode* mainBoat;
     QList<SceneGraph*> levelObjAdresses;
     int points=0;
 
@@ -78,7 +79,7 @@ public:
     QModelIndex add3DModel(SceneGraph *node);
     QModelIndex addSea(SceneGraph *node);
 
-	LevelObjectNode *addLevelObj();
+	SheepNode *addMainSheep();
     ProjectileNode *addProjectile(QVector3D shootingDir);
     ParticleExplosionNode* addParticleExplosionNode(QVector3D pos);
     ParticleExplosionNode2* addParticleExplosionNode2(QVector3D pos);
@@ -107,9 +108,10 @@ public:
     void initLevel();
     void testCollisions();
     void doMovements();
-    LevelObjectNode* getMainBoat(){return this->mainBoat;}
+    SheepNode* getMainBoat(){return this->mainBoat;}
     QList<SceneGraph*> getLvlObjAdresses(){return this->levelObjAdresses;}
     void translateMotherSheep(QVector3D);
+    void translateSea(QVector3D);
     void rotateMotherSheep();
     QVector3D convertToMotherSheepTranslation();
     void behaviourExecutions();

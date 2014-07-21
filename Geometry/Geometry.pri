@@ -8,10 +8,9 @@ HEADERS  += Geometry/primitive.h \
 			Geometry/sphere.h \
 			Geometry/torus.h \
 			Geometry/light.h \
-			Geometry/sea.h \
 			Geometry/object3d.h \
-            Geometry/levelobject.h \
-            Geometry/mothersheep.h \
+            Geometry/texture.h \
+			Geometry/sea.h \
             Geometry/projectile.h \
     Geometry/particlegenerator.h \
     Geometry/target.h
@@ -22,10 +21,9 @@ SOURCES  += Geometry/cube.cpp \
 			Geometry/sphere.cpp \
 			Geometry/torus.cpp \
 			Geometry/light.cpp \
-			Geometry/sea.cpp \
             Geometry/object3d.cpp \
-            Geometry/levelobject.cpp \
-            Geometry/mothersheep.cpp \
+            Geometry/texture.cpp \
+			Geometry/sea.cpp \
             Geometry/projectile.cpp \
     Geometry/particlegenerator.cpp \
     Geometry/target.cpp

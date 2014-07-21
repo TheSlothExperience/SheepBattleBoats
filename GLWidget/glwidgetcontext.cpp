@@ -23,7 +23,9 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaders.gaussianBlurHProgram = new QOpenGLShaderProgram();
 	shaders.phongProgram = new QOpenGLShaderProgram();
     shaders.particleProgram= new QOpenGLShaderProgram();
-
+	shaders.waterGeometryProgram = new QOpenGLShaderProgram();
+    shaders.intensityProgram = new QOpenGLShaderProgram();
+    shaders.skyBoxProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -57,8 +59,42 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurH.frag", shaders.gaussianBlurHProgram);
     loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.phongProgram);
     loadShaders(":/shaders/particles.vert", ":/shaders/particles.frag", shaders.particleProgram);
-
+    loadShaders(":/shaders/waterGeometry.vert", ":/shaders/waterGeometry.frag", shaders.waterGeometryProgram);
+    loadShaders(":/shaders/identity.vert", ":/shaders/intensity.frag",shaders.intensityProgram);
+    loadShaders(":/shaders/skyBox.vert", ":/shaders/skyBox.frag",shaders.skyBoxProgram);
 }
+
+//-----------------------------------------------------------------------
+QOpenGLShaderProgram* Shaders::last = NULL;
+
+QOpenGLShaderProgram *Shaders::shaderProgram = NULL;
+QOpenGLShaderProgram *Shaders::canvasProgram = NULL;
+QOpenGLShaderProgram *Shaders::quadviewProgram = NULL;
+QOpenGLShaderProgram *Shaders::storeDepthProgram = NULL;
+QOpenGLShaderProgram *Shaders::gaussianBlurHProgram = NULL;
+QOpenGLShaderProgram *Shaders::gaussianBlurVProgram = NULL;
+QOpenGLShaderProgram *Shaders::geometryPassProgram = NULL;
+QOpenGLShaderProgram *Shaders::lightPassProgram = NULL;
+QOpenGLShaderProgram *Shaders::phongProgram = NULL;
+QOpenGLShaderProgram *Shaders::waterGeometryProgram = NULL;
+QOpenGLShaderProgram *Shaders::intensityProgram = NULL;
+QOpenGLShaderProgram *Shaders::skyBoxProgram = NULL;
+QOpenGLShaderProgram *Shaders::particleProgram = NULL;
+
+void Shaders::bind(QOpenGLShaderProgram *sp) {
+	if(sp == last) {
+		return;
+	} else {
+		if(last) last->release();
+		sp->bind();
+		last = sp;
+	}
+}
+
+void Shaders::release(QOpenGLShaderProgram *sp) {
+	last = sp;
+}
+//-------------------------------------------------------------------
 
 
 void GLWidgetContext::paintGL()
@@ -227,35 +263,4 @@ void GLWidgetContext::loadShaders(QString vstring, QString fstring, QString tcst
 	}
 
 	prog->link();
-}
-
-
-
-//-----------------------------------------------------------------------
-QOpenGLShaderProgram* Shaders::last = NULL;
-
-QOpenGLShaderProgram *Shaders::shaderProgram = NULL;
-QOpenGLShaderProgram *Shaders::canvasProgram = NULL;
-QOpenGLShaderProgram *Shaders::quadviewProgram = NULL;
-QOpenGLShaderProgram *Shaders::storeDepthProgram = NULL;
-QOpenGLShaderProgram *Shaders::gaussianBlurHProgram = NULL;
-QOpenGLShaderProgram *Shaders::gaussianBlurVProgram = NULL;
-QOpenGLShaderProgram *Shaders::geometryPassProgram = NULL;
-QOpenGLShaderProgram *Shaders::lightPassProgram = NULL;
-QOpenGLShaderProgram *Shaders::phongProgram = NULL;
-QOpenGLShaderProgram *Shaders::particleProgram = NULL;
-
-
-void Shaders::bind(QOpenGLShaderProgram *sp) {
-	if(sp == last) {
-		return;
-	} else {
-		if(last) last->release();
-		sp->bind();
-		last = sp;
-	}
-}
-
-void Shaders::release(QOpenGLShaderProgram *sp) {
-	last = sp;
 }

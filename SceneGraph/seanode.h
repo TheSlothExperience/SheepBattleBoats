@@ -14,10 +14,19 @@
 class SeaNode : public SceneGraph
 {
 private:
+	GLuint noiseTexture;
+	GLfloat *noiseData;
+
+	int seaWidth;
+	int seaHeight;
+	float periodicity;
 
 public:
 	SeaNode(Primitive *p, std::string name);
 	~SeaNode();
+
+	int getSeaWidth() {return seaWidth;}
+	int getSeaHeight() {return seaHeight;}
 
 	void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix);
 	void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);

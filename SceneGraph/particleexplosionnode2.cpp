@@ -98,16 +98,9 @@ void ParticleExplosionNode2::updateParticles(float deltaTime){
            Particle& particle = particles[i];
 
            particle.time += deltaTime;
-//            qDebug()<<"lifetime over?"<<particle.time;
            if ( particle.time > particle.lifeTime)
            {
-//               if ( m_pParticleEmitter != NULL ){
-//                qDebug()<<"lifetime over";
                    emitParticle(particle);
-//               }
-//               else {
-//                   RandomizeParticle(particle);
-//               }
            }
 
            float lifeRatio = particle.time/ particle.lifeTime;
@@ -135,7 +128,6 @@ void ParticleExplosionNode2::randomizeParticles(){
 //erzeugt n Partikel zu Beginn
 void ParticleExplosionNode2::emitParticles()
 {
-    qDebug()<<"emitParticles";
     for ( unsigned int i = 0; i < nParticles; ++i )
     {
         emitParticle(particles[i]);
@@ -146,14 +138,11 @@ void ParticleExplosionNode2::emitParticles()
 
 void ParticleExplosionNode2::emitParticle( Particle& particle )
 {
-    qDebug()<<"emit particle";
 
         float x = (((rand()%1000)/1000.0)*maxWidth)-(maxWidth/2.0);
-
         float y = (((rand()%1000)/1000.0)*maxHeight)-(maxHeight/2.0);
         float z = (((rand()%1000)/1000.0)*maxDepth)-(maxDepth/2.0);
 
-        qDebug()<<x<<"  "<<y<<"  "<<z;
         float lifetime = (((rand()%1000)/1000.0)*maxLifeTime);
 
         float speed = (((rand()%1000)/1000.0)*maxSpeed);

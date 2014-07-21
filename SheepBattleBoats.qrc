@@ -12,8 +12,15 @@
         <file>img/view-dual.png</file>
         <file>img/viewports.png</file>
         <file>img/view-single.png</file>
+        <file>img/skybox/right.png</file>
+        <file>img/skybox/left.png</file>
+        <file>img/skybox/top.png</file>
+        <file>img/skybox/bottom.png</file>
+        <file>img/skybox/front.png</file>
+        <file>img/skybox/back.png</file>
         <file>img/group.png</file>
         <file>img/sprites/explosion1.png</file>
+
         <file>shaders/phong.frag</file>
         <file>shaders/phong.vert</file>
         <file>shaders/canvas.frag</file>
@@ -24,16 +31,24 @@
         <file>shaders/DS_geometryPass.vert</file>
         <file>shaders/DS_lightPass.vert</file>
         <file>shaders/DS_lightPass.frag</file>
-        <file>shaders/bloom.vert</file>
-        <file>shaders/bloom.frag</file>
         <file>shaders/storeDepth.frag</file>
         <file>shaders/storeDepth.vert</file>
         <file>shaders/gaussianBlurH.frag</file>
         <file>shaders/gaussianBlurV.frag</file>
         <file>shaders/xtoon.frag</file>
         <file>shaders/xtoon.vert</file>
+        <file>shaders/waterGeometry.vert</file>
+        <file>shaders/waterGeometry.frag</file>
+        <file>shaders/skyBox.vert</file>
+        <file>shaders/skyBox.frag</file>
         <file>shaders/Reduce.cl</file>
         <file>shaders/particles.frag</file>
         <file>shaders/particles.vert</file>
+        <file>shaders/intensity.frag</file>
+
+
+        <file>models/sheep.mtl</file>
+        <file>models/sheep.obj</file>
+        <file>models/sheep.jpg</file>
     </qresource>
 </RCC>

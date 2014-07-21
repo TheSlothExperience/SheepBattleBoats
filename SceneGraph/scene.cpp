@@ -12,7 +12,6 @@
 #include "sea.h"
 #include "seanode.h"
 #include "Reduction.h"
-#include "levelobject.h"
 #include "projectile.h"
 #include "collisiondetection.h"
 #include "particlegenerator.h"
@@ -56,14 +55,14 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 }
 
 void Scene::initLevel(){
-    LevelObjectNode *temp=addLevelObj();
+    SheepNode *temp = addMainSheep();
     mainBoat=temp;
 
     addTargetNode()->translate(0.0,2.0, -20.0);
     addTargetNode()->translate(0.0,2.0, -30.0);
     addTargetNode()->translate(0.0,2.0, -40.0);
 
-
+    addSea(rootNode);
 }
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
@@ -325,7 +324,9 @@ QModelIndex Scene::addLight() {
 
 QModelIndex Scene::add3DModel(SceneGraph *node){
     beginResetModel();
-    Primitive *object3d = new Object3D();
+    Object3D*object3d = new Object3D();
+    object3d->loadMesh(":/models/sheep.obj",false);
+    object3d->draw();
     std::string name("Object ");
     int id = nextId();
     name += std::to_string(id);
@@ -340,13 +341,15 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
 
 QModelIndex Scene::addSea(SceneGraph *node){
     beginResetModel();
-    Primitive *sea = new Sea();
-    std::string name("Sea of Moist Seaness ");
+    Primitive *seaP = new Sea();
+    std::string name("Sea of Moist Wetness ");
     int id = nextId();
     name += std::to_string(id);
-    SeaNode *s = new SeaNode(sea, name);
+    SeaNode *s = new SeaNode(seaP, name);
     s->setId(id);
     identifier[id] = s;
+
+    sea = s;
 
     node->add(s);
     endResetModel();
@@ -361,25 +364,29 @@ void Scene::draw(Camera *camera) {
 	modelViewMatrixStack.pop();
 }
 
-LevelObjectNode* Scene::addLevelObj(){
-
-    LevelObject *lvlObj = new LevelObject();
-    std::string name("LevelObj ");
+SheepNode* Scene::addMainSheep(){
+    beginResetModel();
+    QQuaternion around = QQuaternion(cos(1.57), sin(1.57) * QVector3D(0.0, 1.0, 0.0));
+    Object3D*object3d = new Object3D();
+    object3d->loadMesh(":/models/sheep.obj",false);
+    object3d->draw();
+    std::string name("Master Sheep ");
     int id = nextId();
 
-    LevelObjectNode *s = new LevelObjectNode(lvlObj,name);
+    SheepNode *s = new SheepNode(object3d,name, around.normalized());
     s->setId(id);
     identifier[id] = s;
 
+    mainBoat = s;
     rootNode->add(s);
     levelObjAdresses.append(s);
     return s;
+    endResetModel();
 }
 
 ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
     QVector3D temp=mainBoat->getBB()->position;
 
-//    qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
     Projectile *lvlObj = new Projectile(temp);
     std::string name("Projectile ");
     int id = nextId();
@@ -482,8 +489,6 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 		modelViewMatrixStack.push(modelViewMatrixStack.top());
 		modelViewMatrixStack.top() *= l->lightView();
 
-		GLuint colorLocation = shader->uniformLocation("color");
-
 		this->rootNode->drawGeometry(modelViewMatrixStack
 		                   , l->lightView()
 		                   , l->perspectiveMatrix()
@@ -501,7 +506,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 	Shaders::release(shader);
 }
 
-void Scene::computeSAT(QOpenGLShaderProgram *sat) {
+void Scene::computeSAT(QOpenGLShaderProgram *) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -669,16 +674,12 @@ void Scene::testCollisions(){
             bool boatInvolved=mainBoat==levelObjAdresses.at(i)||mainBoat==levelObjAdresses.at(j);
             if(CollisionDetecion::isCollision(bb1,bb2)==1
                     && !boatInvolved){
-//                addParticleExplosionNode();
-                qDebug()<<"fette kollision";
                 levelObjAdresses.at(i)->reactToCollision();
                 levelObjAdresses.at(j)->reactToCollision();
                 addParticleExplosionNode((bb1->position-bb2->position)+bb1->position);
                 addParticleExplosionNode2((bb1->position-bb2->position)+bb1->position);
             }else{
-                //               qDebug()<<"no Colission";
             }
-
         }
     }
     int adressCount= levelObjAdresses.length();
@@ -687,12 +688,8 @@ void Scene::testCollisions(){
             SceneGraph* adress=levelObjAdresses.at(i);
             adress->parent()->removeChildren(adress->row(),1);
             levelObjAdresses.removeAt(i);
-            qDebug()<<"delete an object";
             points+=100;
             qDebug()<<"Aktuelle Punktzahl: "<<points;
-
-
-
         }
     }
 }
@@ -703,6 +700,10 @@ QVector3D Scene::convertToMotherSheepTranslation(){
 
 void Scene::translateMotherSheep(QVector3D dir){
     mainBoat->translate(dir.x(),dir.y(),dir.z());
+}
+
+void Scene::translateSea(QVector3D dir){
+    sea->translate(dir.x(),dir.y(),dir.z());
 }
 
 void Scene::rotateMotherSheep(){
