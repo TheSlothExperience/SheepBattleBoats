@@ -22,7 +22,7 @@ void ProjectileNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatr
 }
 
 void ProjectileNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
-    qDebug()<<"Kugel";
+//    qDebug()<<"Kugel";
 
     Shaders::bind(shader);
     MVStack.push(MVStack.top());

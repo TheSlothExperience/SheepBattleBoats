@@ -1,5 +1,6 @@
 #define GL_GLEXT_PROTOTYPES
 #include "gbuffer.h"
+#include <iostream>
 
 GBuffer* GBuffer::m_activeGBuffer = NULL;
 
@@ -81,10 +82,17 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 void GBuffer::startFrame(){
 	m_activeGBuffer = this;
-    glBindBuffer(GL_FRAMEBUFFER,m_fbo);
-    GLenum DrawBuffers[]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5};
-    glDrawBuffers(6,DrawBuffers);
-	glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
+    glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
+
+    GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0,
+                          GL_COLOR_ATTACHMENT1,
+                          GL_COLOR_ATTACHMENT2,
+                         GL_COLOR_ATTACHMENT3,
+                         GL_COLOR_ATTACHMENT4,
+                         GL_COLOR_ATTACHMENT5};
+
+    glDrawBuffers(6,drawBuffers);
+    glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
@@ -100,8 +108,6 @@ void GBuffer::bindGeometryPass(){
                          GL_COLOR_ATTACHMENT5};
 
     glDrawBuffers(6,drawBuffers);
-	glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void GBuffer::bindStencilPass(){

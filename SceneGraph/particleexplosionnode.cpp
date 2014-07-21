@@ -43,35 +43,31 @@ ParticleExplosionNode::~ParticleExplosionNode(){}
 
 
 void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
-
-
-qDebug()<<"Penis";
-        GBuffer::activeGBuffer()->drawToFinal();
-    Shaders::bind(Shaders::particleProgram);
+	//If the node is a leaf, draw its contents
+	if(leaf) {
+		GBuffer::activeGBuffer()->drawToFinal();
+		Shaders::bind(Shaders::particleProgram);
 //    Scene::passLights(cameraMatrix, Shaders::phongProgram);
-    MVStack.push(MVStack.top());
+		MVStack.push(MVStack.top());
 
-    MVStack.top().translate(this->translation);
+		MVStack.top().translate(this->translation);
 
-    //Convert the quat to a matrix, may be a performance leak.
-    QMatrix4x4 tempRot;
-    tempRot.rotate(this->rotation.normalized());
-    MVStack.top() *= tempRot;
+		//Convert the quat to a matrix, may be a performance leak.
+		QMatrix4x4 tempRot;
+		tempRot.rotate(this->rotation.normalized());
+		MVStack.top() *= tempRot;
 
-    //If the node is a leaf, draw its contents
-    if(leaf) {
+		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
+		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
+		drawParticles();
 
-        glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
-        glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
-        drawParticles();
-
-    } else {
-        //Else, recurse into its children
-        std::for_each(children.begin(), children.end(), [&MVStack, cameraMatrix, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, cameraMatrix, projectionMatrix, shader);});
-    }
-
-    MVStack.pop();
-    Shaders::release(Shaders::particleProgram);
+		MVStack.pop();
+		Shaders::release(Shaders::particleProgram);
+		GBuffer::activeGBuffer()->bindGeometryPass();
+	} else {
+		//Else, recurse into its children
+		std::for_each(children.begin(), children.end(), [&MVStack, cameraMatrix, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, cameraMatrix, projectionMatrix, shader);});
+	}
 }
 
 
