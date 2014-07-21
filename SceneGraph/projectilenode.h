@@ -6,22 +6,22 @@
 class ProjectileNode: public SceneGraph
 {
 private:
-    const int MAX_TICKSTOLIVE=500;
-    float livedTicks=0.0;
-    const float gravity=-2.0;
-    QVector3D shootDir;
-    QVector3D startPos;
-    void setNewPosition(QVector3D newPos);
+	const int MAX_TICKSTOLIVE=500;
+	float livedTicks=0.0;
+	const float gravity=-2.0;
+	QVector3D shootDir;
+	QVector3D startPos;
+	void setNewPosition(QVector3D newPos);
 
 public:
-    ProjectileNode(QVector3D startPos,QVector3D shootingDir,Primitive *p, std::string name);
-    ~ProjectileNode();
-    void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix);
-    void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
+	ProjectileNode(QVector3D startPos,QVector3D shootingDir,Primitive *p, std::string name);
+	~ProjectileNode();
+	void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix);
+	void draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader);
 
-    void exeObjBehaviour();
-    BoundingBox* getBB();
-    void reactToCollision();
+	void exeObjBehaviour();
+	BoundingBox* getBB();
+	void reactToCollision();
 
 };
 
