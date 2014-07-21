@@ -409,7 +409,7 @@ ParticleExplosionNode* Scene::addParticleExplosionNode(QVector3D pos){
     s->setId(id);
     identifier[id] = s;
     rootNode->add(s);
-    levelObjAdresses.append(s);
+//    levelObjAdresses.append(s);
     return s;
 }
 

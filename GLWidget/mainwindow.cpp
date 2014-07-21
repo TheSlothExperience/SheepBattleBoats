@@ -35,9 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
 	setFocus();
 
     initGameLogic();
-    for(int i=0;i<100;i++){
-        qDebug()<<(rand()%(100))/100.0;
-    }
+//    for(int i=0;i<100;i++){
+//        qDebug()<<(rand()%(100))/100.0;
+//    }
 }
 
 
@@ -644,6 +644,7 @@ void MainWindow::shoot(){
         QVector3D temp=QVector3D(0.0,5.0,-4.0);
         temp=rot.rotatedVector(temp);
         scene->addProjectile(temp);
+        scene->addParticleExplosionNode(QVector3D(-1.0,0.0,-5.0));
     }
 
 }
