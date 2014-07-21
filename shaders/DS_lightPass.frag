@@ -190,7 +190,10 @@ void main(){
 	else if(diffuse < C) diffuse = C;
 	else diffuse = D;
 
-	if(sobelize(normalTexture)>0.4 || sobelize(depthTexture)>0.05){
+        float depthEdge = sobelize(depthTexture);
+        float normalEdge = sobelize(normalTexture);
+
+        if(normalEdge>0.4  || depthEdge>0.05 ){
                 //color = color * vec4(vec3(0.3), 1.0);
                 color = vec4(0.0,1.0,1.0,1.0);
 	}
