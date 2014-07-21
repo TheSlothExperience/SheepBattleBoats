@@ -11,6 +11,7 @@ public:
 	void resize(double width, double height);
 	void rotate(QQuaternion q);
 	void zoom(double) {}
+    void setpointOfInterest(QVector3D){}
 };
 
 #endif

@@ -57,7 +57,7 @@ public:
 	}
 	virtual void resize(double width, double height) = 0;
 	virtual void zoom(double z) = 0;
-
+    virtual void setpointOfInterest(QVector3D){}
 };
 
 #endif

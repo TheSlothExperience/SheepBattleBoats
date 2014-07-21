@@ -16,6 +16,7 @@
 #include "projectile.h"
 #include "collisiondetection.h"
 #include "particlegenerator.h"
+#include "target.h"
 
 #include "glwidget.h"
 #include "glwidgetcontext.h"
@@ -57,16 +58,10 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 void Scene::initLevel(){
     LevelObjectNode *temp=addLevelObj();
     mainBoat=temp;
-//    temp=addLevelObj();
-//    temp->translate(1.0, 0.0, 0.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -10.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -20.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -30.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -40.0);
+
+    addTargetNode()->translate(0.0,2.0, -20.0);
+    addTargetNode()->translate(0.0,2.0, -30.0);
+    addTargetNode()->translate(0.0,2.0, -40.0);
 
 
 }
@@ -413,6 +408,32 @@ ParticleExplosionNode* Scene::addParticleExplosionNode(QVector3D pos){
     return s;
 }
 
+ParticleExplosionNode2* Scene::addParticleExplosionNode2(QVector3D pos){
+    ParticleGenerator *lvlObj = new ParticleGenerator();
+    std::string name("Particle ");
+    int id = nextId();
+    name+=std::to_string(id);
+    ParticleExplosionNode2 *s = new ParticleExplosionNode2(pos,lvlObj,name);
+    s->setId(id);
+    identifier[id] = s;
+    rootNode->add(s);
+    levelObjAdresses.append(s);
+    return s;
+}
+
+TargetNode* Scene::addTargetNode(){
+    Target* lvlObj= new Target();
+    std::string name("Target ");
+    int id = nextId();
+    name+=std::to_string(id);
+    TargetNode *s = new TargetNode(lvlObj,name);
+    s->setId(id);
+    identifier[id] = s;
+    rootNode->add(s);
+    levelObjAdresses.append(s);
+    return s;
+}
+
 void Scene::DS_geometryPass(Camera *camera){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= camera->getCameraMatrix();
@@ -653,6 +674,7 @@ void Scene::testCollisions(){
                 levelObjAdresses.at(i)->reactToCollision();
                 levelObjAdresses.at(j)->reactToCollision();
                 addParticleExplosionNode((bb1->position-bb2->position)+bb1->position);
+                addParticleExplosionNode2((bb1->position-bb2->position)+bb1->position);
             }else{
                 //               qDebug()<<"no Colission";
             }
@@ -693,7 +715,3 @@ void Scene::behaviourExecutions(){
         levelObjAdresses.at(i)->exeObjBehaviour();
     }
 }
-
-//void Scene::deleteNodeAdress(SceneGraph *nodeAdress){
-//    qDebug()<<nodeAdress;
-//}

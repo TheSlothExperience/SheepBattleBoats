@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdio>
 #include <QTimer>
+#include "gamestate.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -34,10 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
 
+    setCameraInteraction();
+
     initGameLogic();
-//    for(int i=0;i<100;i++){
-//        qDebug()<<(rand()%(100))/100.0;
-//    }
 }
 
 
@@ -60,7 +60,7 @@ void MainWindow::gameTick(){
     doMovements();
     if(shooting){
         shootingLatency++;
-        if(shootingLatency>50){
+        if(shootingLatency>20){
             shooting=false;
         }
     }
@@ -76,7 +76,7 @@ void MainWindow::doMovements(){
 
     //"Vor und zurück"
     if(wPressed){
-        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.002));
+        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.008));
 
     }else if(sPressed){
         if(scene->getMainBoat()->getVelocity().z()<0){
@@ -100,7 +100,7 @@ void MainWindow::doMovements(){
     QVector3D newTranslation= scene->convertToMotherSheepTranslation();
     scene->translateMotherSheep(newTranslation);
     scene->rotateMotherSheep();
-    activeViewport->translateBoardCamera(newTranslation);
+    activeViewport->translateBoardCamera(newTranslation,scene->getMainBoat()->getPosition());
 }
 MainWindow::~MainWindow()
 {
@@ -331,7 +331,7 @@ void MainWindow::createActions() {
 	interactionGroup = new QActionGroup(this);
 	interactionGroup->addAction(cameraModeAction);
 	interactionGroup->addAction(objectModeAction);
-	objectModeAction->setChecked(true);
+    cameraModeAction->setChecked(true);
 
 
 	addCubeAction = new QAction(this);
@@ -529,7 +529,7 @@ void MainWindow::setSATShadows(bool set){
 void MainWindow::showAboutBox() {
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("About Hello Cube!");
-	msgBox.setText("Written by Sebas!");
+    msgBox.setText("Written by Sebas, Darius, Daniel!");
 	msgBox.exec();
 }
 

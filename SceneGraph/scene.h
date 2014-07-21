@@ -7,6 +7,8 @@
 #include "levelobjectnode.h"
 #include "projectilenode.h"
 #include "particleexplosionnode.h"
+#include "particleexplosionnode2.h"
+#include "targetnode.h"
 
 #include <stack>
 #include <map>
@@ -71,17 +73,16 @@ public:
 	QModelIndex addCone(SceneGraph *node, int tesselationLevel);
 	QModelIndex addSphere(SceneGraph *node, int tesselationLevel);
 	QModelIndex addTorus(SceneGraph *node, int tesselationLevel);
-
 	QModelIndex addGroup(SceneGraph *node);
-
 	QModelIndex addLight();
-
     QModelIndex add3DModel(SceneGraph *node);
     QModelIndex addSea(SceneGraph *node);
 
 	LevelObjectNode *addLevelObj();
     ProjectileNode *addProjectile(QVector3D shootingDir);
     ParticleExplosionNode* addParticleExplosionNode(QVector3D pos);
+    ParticleExplosionNode2* addParticleExplosionNode2(QVector3D pos);
+    TargetNode* addTargetNode();
 
 	void lightsPass(QOpenGLShaderProgram *shader);
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);

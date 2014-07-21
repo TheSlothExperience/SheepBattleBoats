@@ -28,8 +28,6 @@ public:
     void move();
 
     //get and set
-//    QVector3D getAcc(){return this->a;}
-//    void setAcc(QVector3D a){this->a=a;}
     QVector3D getVelocity(){return this->v;}
     void setVelocity(QVector3D v){this->v=v;}
     void increaseVelocity(QVector3D v);
@@ -46,6 +44,7 @@ public:
     void exeObjBehaviour();
     BoundingBox* getBB();
     void reactToCollision();
+    QVector3D getPosition();
 };
 
 #endif // LEVELOBJECTNODE_H

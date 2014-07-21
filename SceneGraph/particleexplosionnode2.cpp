@@ -2,10 +2,12 @@
 
 #include "gbuffer.h"
 #include "particleexplosionnode.h"
+#include "particleexplosionnode2.h"
 #include "glwidgetcontext.h"
 #include "math.h";
 #include <iostream>
-ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::string name)
+
+ParticleExplosionNode2::ParticleExplosionNode2(QVector3D pos,Primitive *p,std::string name)
     :SceneGraph(p,name)
 {
     this->emitterPos=pos;
@@ -35,46 +37,46 @@ ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::str
 }
 
 
-ParticleExplosionNode::~ParticleExplosionNode(){}
+ParticleExplosionNode2::~ParticleExplosionNode2(){}
 
 
 
-void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
-	//If the node is a leaf, draw its contents
-	if(leaf) {
-		GBuffer::activeGBuffer()->drawToFinal();
-		Shaders::bind(Shaders::particleProgram);
+void ParticleExplosionNode2::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
+    //If the node is a leaf, draw its contents
+    if(leaf) {
+        GBuffer::activeGBuffer()->drawToFinal();
+        Shaders::bind(Shaders::particleProgram);
 //    Scene::passLights(cameraMatrix, Shaders::phongProgram);
-		MVStack.push(MVStack.top());
+        MVStack.push(MVStack.top());
 
-		MVStack.top().translate(this->translation);
+        MVStack.top().translate(this->translation);
 
-		//Convert the quat to a matrix, may be a performance leak.
-		QMatrix4x4 tempRot;
-		tempRot.rotate(this->rotation.normalized());
-		MVStack.top() *= tempRot;
+        //Convert the quat to a matrix, may be a performance leak.
+        QMatrix4x4 tempRot;
+        tempRot.rotate(this->rotation.normalized());
+        MVStack.top() *= tempRot;
 
-		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
-		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
+        glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
+        glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, sprite);
-		glUniform1i(Shaders::particleProgram->uniformLocation("sprite"), 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, sprite);
+        glUniform1i(Shaders::particleProgram->uniformLocation("sprite"), 0);
 
-		drawParticles();
+        drawParticles();
 
-		MVStack.pop();
-		Shaders::release(Shaders::particleProgram);
-		GBuffer::activeGBuffer()->bindGeometryPass();
-	} else {
-		//Else, recurse into its children
-		std::for_each(children.begin(), children.end(), [&MVStack, cameraMatrix, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, cameraMatrix, projectionMatrix, shader);});
-	}
+        MVStack.pop();
+        Shaders::release(Shaders::particleProgram);
+        GBuffer::activeGBuffer()->bindGeometryPass();
+    } else {
+        //Else, recurse into its children
+        std::for_each(children.begin(), children.end(), [&MVStack, cameraMatrix, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, cameraMatrix, projectionMatrix, shader);});
+    }
 }
 
 
 
-void ParticleExplosionNode::exeObjBehaviour(){
+void ParticleExplosionNode2::exeObjBehaviour(){
 
     emmiterLifetime+= 0.1;
     if(emmiterLifetime>=emmiterMaxLifetime){
@@ -84,21 +86,28 @@ void ParticleExplosionNode::exeObjBehaviour(){
     updateParticles( 0.1);
 }
 
-void ParticleExplosionNode::reactToCollision(){}
-BoundingBox* ParticleExplosionNode::getBB(){}
+void ParticleExplosionNode2::reactToCollision(){}
+BoundingBox* ParticleExplosionNode2::getBB(){}
 
 
 
-void ParticleExplosionNode::updateParticles(float deltaTime){
+void ParticleExplosionNode2::updateParticles(float deltaTime){
 
     for ( unsigned int i = 0; i < particles.size(); ++i )
        {
            Particle& particle = particles[i];
 
            particle.time += deltaTime;
+//            qDebug()<<"lifetime over?"<<particle.time;
            if ( particle.time > particle.lifeTime)
            {
-               emitParticle(particle);
+//               if ( m_pParticleEmitter != NULL ){
+//                qDebug()<<"lifetime over";
+                   emitParticle(particle);
+//               }
+//               else {
+//                   RandomizeParticle(particle);
+//               }
            }
 
            float lifeRatio = particle.time/ particle.lifeTime;
@@ -112,34 +121,39 @@ void ParticleExplosionNode::updateParticles(float deltaTime){
        buildVertexBuffer();
 }
 
-float ParticleExplosionNode::lerp(float a, float b, float ratio){
+float ParticleExplosionNode2::lerp(float a, float b, float ratio){
     return a*(1-ratio)+b*ratio;
 }
 
 
 
 //
-void ParticleExplosionNode::randomizeParticles(){
+void ParticleExplosionNode2::randomizeParticles(){
 
 }
 
 //erzeugt n Partikel zu Beginn
-void ParticleExplosionNode::emitParticles()
+void ParticleExplosionNode2::emitParticles()
 {
+    qDebug()<<"emitParticles";
     for ( unsigned int i = 0; i < nParticles; ++i )
     {
         emitParticle(particles[i]);
     }
+
 }
 
 
-void ParticleExplosionNode::emitParticle( Particle& particle )
+void ParticleExplosionNode2::emitParticle( Particle& particle )
 {
+    qDebug()<<"emit particle";
+
         float x = (((rand()%1000)/1000.0)*maxWidth)-(maxWidth/2.0);
 
         float y = (((rand()%1000)/1000.0)*maxHeight)-(maxHeight/2.0);
         float z = (((rand()%1000)/1000.0)*maxDepth)-(maxDepth/2.0);
 
+        qDebug()<<x<<"  "<<y<<"  "<<z;
         float lifetime = (((rand()%1000)/1000.0)*maxLifeTime);
 
         float speed = (((rand()%1000)/1000.0)*maxSpeed);
@@ -155,7 +169,7 @@ void ParticleExplosionNode::emitParticle( Particle& particle )
 
 }
 
-void ParticleExplosionNode::buildVertexBuffer(){
+void ParticleExplosionNode2::buildVertexBuffer(){
 
     QVector3D x=QVector3D(0.2, 0, 0);
     QVector3D y=QVector3D( 0, 0.2, 0 );
@@ -255,7 +269,7 @@ void ParticleExplosionNode::buildVertexBuffer(){
 }
 
 
-void ParticleExplosionNode::drawParticles() {
+void ParticleExplosionNode2::drawParticles() {
     //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glEnableVertexAttribArray(0);
