@@ -67,8 +67,7 @@ void Scene::initLevel(){
     temp->translate(0.0,0.0, -30.0);
     temp=addLevelObj();
     temp->translate(0.0,0.0, -40.0);
-
-
+	addSea(rootNode);
 }
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
@@ -330,7 +329,9 @@ QModelIndex Scene::addLight() {
 
 QModelIndex Scene::add3DModel(SceneGraph *node){
     beginResetModel();
-    Primitive *object3d = new Object3D();
+    Object3D*object3d = new Object3D();
+    object3d->loadMesh("/home/sebas/Downloads/Sheep/sheep.obj",false);
+    object3d->draw();
     std::string name("Object ");
     int id = nextId();
     name += std::to_string(id);
@@ -346,7 +347,7 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
 QModelIndex Scene::addSea(SceneGraph *node){
     beginResetModel();
     Primitive *sea = new Sea();
-    std::string name("Sea of Moist Seaness ");
+    std::string name("Sea of Moist Wetness ");
     int id = nextId();
     name += std::to_string(id);
     SeaNode *s = new SeaNode(sea, name);
@@ -384,7 +385,6 @@ LevelObjectNode* Scene::addLevelObj(){
 ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
     QVector3D temp=mainBoat->getBB()->position;
 
-//    qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
     Projectile *lvlObj = new Projectile(temp);
     std::string name("Projectile ");
     int id = nextId();
@@ -461,8 +461,6 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 		modelViewMatrixStack.push(modelViewMatrixStack.top());
 		modelViewMatrixStack.top() *= l->lightView();
 
-		GLuint colorLocation = shader->uniformLocation("color");
-
 		this->rootNode->drawGeometry(modelViewMatrixStack
 		                   , l->lightView()
 		                   , l->perspectiveMatrix()
@@ -480,7 +478,7 @@ void Scene::lightsPass(QOpenGLShaderProgram *shader) {
 	Shaders::release(shader);
 }
 
-void Scene::computeSAT(QOpenGLShaderProgram *sat) {
+void Scene::computeSAT(QOpenGLShaderProgram *) {
 	for(auto l : lights) {
 		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -647,16 +645,12 @@ void Scene::testCollisions(){
 
             bool boatInvolved=mainBoat==levelObjAdresses.at(i)||mainBoat==levelObjAdresses.at(j);
             if(CollisionDetecion::isCollision(bb1,bb2)==1
-                    && !boatInvolved){
-//                addParticleExplosionNode();
-                qDebug()<<"fette kollision";
-                levelObjAdresses.at(i)->reactToCollision();
-                levelObjAdresses.at(j)->reactToCollision();
-                addParticleExplosionNode((bb1->position-bb2->position)+bb1->position);
-            }else{
-                //               qDebug()<<"no Colission";
+               && !boatInvolved){
+	            levelObjAdresses.at(i)->reactToCollision();
+	            levelObjAdresses.at(j)->reactToCollision();
+	            addParticleExplosionNode((bb1->position-bb2->position)+bb1->position);
+            } else {
             }
-
         }
     }
     int adressCount= levelObjAdresses.length();
@@ -665,12 +659,8 @@ void Scene::testCollisions(){
             SceneGraph* adress=levelObjAdresses.at(i);
             adress->parent()->removeChildren(adress->row(),1);
             levelObjAdresses.removeAt(i);
-            qDebug()<<"delete an object";
             points+=100;
             qDebug()<<"Aktuelle Punktzahl: "<<points;
-
-
-
         }
     }
 }
@@ -693,7 +683,3 @@ void Scene::behaviourExecutions(){
         levelObjAdresses.at(i)->exeObjBehaviour();
     }
 }
-
-//void Scene::deleteNodeAdress(SceneGraph *nodeAdress){
-//    qDebug()<<nodeAdress;
-//}

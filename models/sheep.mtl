@@ -1,0 +1,12 @@
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl Material_#25
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.781177 0.787451 0.718431
+Ks 0.350980 0.333333 0.329412
+Ni 1.000000
+d 0.810000
+illum 2
+map_Kd Sheep_diffuse.jpg

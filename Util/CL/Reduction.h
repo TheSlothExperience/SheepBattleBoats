@@ -24,7 +24,6 @@ public:
 
 private:
 	Reduction();
-	Reduction(Reduction const&){};
 	static Reduction* m_instance;
 
 	cl_context			clContext;

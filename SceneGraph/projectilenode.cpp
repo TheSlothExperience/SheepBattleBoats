@@ -10,7 +10,6 @@ ProjectileNode::ProjectileNode(QVector3D startPos,QVector3D shootingDir,Primitiv
 	this->startPos=startPos;
 	this->name=name;
 	this->shootDir=shootingDir;
-	qDebug()<<"sDirX: "+QString::number(shootDir.x())+"sDirY: "+QString::number(shootDir.y())+"sDirZ: "+QString::number(shootDir.z());
 }
 
 ProjectileNode::~ProjectileNode(){

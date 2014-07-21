@@ -179,7 +179,7 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, 
 
 		glUniform4fv(shader->uniformLocation("color"), 1, color);
 
-		this->primitive->draw();
+		this->primitive->draw(shader);
 	} else {
 		//Else, recurse into its children
 		std::for_each(children.begin(), children.end(), [&MVStack, cameraMatrix, projectionMatrix, shader](SceneGraph *s){s->draw(MVStack, cameraMatrix, projectionMatrix, shader);});
@@ -243,22 +243,10 @@ QVector3D SceneGraph::getTranslation(){
     QVector3D temp=this->translation;
     return temp;
 }
-//void SceneGraph::testCollisions(){
-
-//    if(leaf) {
-//    qDebug()<<"testCollision in scenegraph";
-//    } else {
-//        //Else, recurse into its children
-//        std::for_each(children.begin(), children.end(), [](SceneGraph *s){s->testCollisions();});
-//    }
-//}
 
 BoundingBox* SceneGraph::getBB(){
     return primitive->getBB();
 }
 
 void SceneGraph::exeObjBehaviour(){
-//    qDebug()<<"exeObjBehaviour in SceneGraph";
-
 }
-

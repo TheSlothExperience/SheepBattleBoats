@@ -25,7 +25,10 @@ public:
     void bindStencilPass();
     void bindLightPass( QOpenGLShaderProgram *lightPassProgram);
     void bindFinalPass(QOpenGLShaderProgram *canvasProgram);
+	void tempTexture(int i);
+    GLuint getTempTexture(int i);
 	void drawToFinal();
+	GLuint getFinalLocation() {return m_finalTexture;}
 //    void setReadBuffer(GBUFFER_TEXTURE_TYPE texType);
 
 	static GBuffer *activeGBuffer();
@@ -35,9 +38,11 @@ private:
 
     GLuint m_fbo;
     GLuint m_textures[5];
+    GLuint m_tempTextures[5];
     GLuint m_depthTexture;
     GLuint m_finalTexture;
 
+	int numTextures, numTemps;
 	int windowWidth, windowHeight;
 };
 

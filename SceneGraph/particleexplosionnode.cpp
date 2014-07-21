@@ -8,14 +8,12 @@
 ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::string name)
 	:SceneGraph(p,name)
 {
-	qDebug()<<"constructor of ParticleExplosionNode";
 	this->emitterPos=pos;
 	nParticles=30;
 	for(int i=0;i<nParticles;i++){
 		Particle temp=Particle();
 		particles.push_back(temp);
 	}
-	qDebug()<<"Anzahl der Partikel in der Liste: "<<particles.size();
 	//erzeugt ale Partikel
 	emitParticles();
 	buildVertexBuffer();
@@ -24,7 +22,6 @@ ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::str
 	QImage tex;
 	QString fileQT = QString(fileName.c_str());
 
-	std::cout << "Loaded sprite with width " << tex.width() << std::endl;
 	tex.load(fileQT);
 	tex = QGLWidget::convertToGLFormat(tex);
 
@@ -46,7 +43,6 @@ void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cam
 	if(leaf) {
 		GBuffer::activeGBuffer()->drawToFinal();
 		Shaders::bind(Shaders::particleProgram);
-//    Scene::passLights(cameraMatrix, Shaders::phongProgram);
 		MVStack.push(MVStack.top());
 
 		MVStack.top().translate(this->translation);
@@ -98,16 +94,9 @@ void ParticleExplosionNode::updateParticles(float deltaTime){
 		Particle& particle = particles[i];
 
 		particle.time += deltaTime;
-//            qDebug()<<"lifetime over?"<<particle.time;
 		if ( particle.time > particle.lifeTime)
 		{
-//               if ( m_pParticleEmitter != NULL ){
-//                qDebug()<<"lifetime over";
 			emitParticle(particle);
-//               }
-//               else {
-//                   RandomizeParticle(particle);
-//               }
 		}
 
 		float lifeRatio = particle.time/ particle.lifeTime;
@@ -135,25 +124,20 @@ void ParticleExplosionNode::randomizeParticles(){
 //erzeugt n Partikel zu Beginn
 void ParticleExplosionNode::emitParticles()
 {
-	qDebug()<<"emitParticles";
 	for ( unsigned int i = 0; i < nParticles; ++i )
 	{
 		emitParticle(particles[i]);
 	}
-
 }
 
 
 void ParticleExplosionNode::emitParticle( Particle& particle )
 {
-	qDebug()<<"emit particle";
-
 	float x = (((rand()%1000)/1000.0)*maxWidth)-(maxWidth/2.0);
 
 	float y = (((rand()%1000)/1000.0)*maxHeight)-(maxHeight/2.0);
 	float z = (((rand()%1000)/1000.0)*maxDepth)-(maxDepth/2.0);
 
-	qDebug()<<x<<"  "<<y<<"  "<<z;
 	float lifetime = (((rand()%1000)/1000.0)*maxLifeTime);
 
 	float speed = (((rand()%1000)/1000.0)*maxSpeed);
@@ -164,16 +148,13 @@ void ParticleExplosionNode::emitParticle( Particle& particle )
 
 	particle.lifeTime= lifetime;
 	particle.time= 0;
-
-
-
 }
 
 void ParticleExplosionNode::buildVertexBuffer(){
 
-	QVector3D x=QVector3D(0.2, 0, 0);
-	QVector3D y=QVector3D( 0, 0.2, 0 );
-	QVector3D z=QVector3D( 0, 0 ,1.0 );
+	QVector3D x = QVector3D(0.2, 0, 0);
+	QVector3D y = QVector3D( 0, 0.2, 0 );
+	QVector3D z = QVector3D( 0, 0 ,1.0 );
 
 	QQuaternion cameraRotation;
 

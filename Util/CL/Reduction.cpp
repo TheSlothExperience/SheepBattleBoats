@@ -145,8 +145,8 @@ void Reduction::computeSATGLTexture(GLuint src, GLuint temp, GLuint dest, int wi
 		err = clSetKernelArg(reduceHorizontalTransposeKernel, 4, width * sizeof(cl_float4), NULL);
 		checkCL(err, "passing temp");
 
-		size_t global_work_size[] = {std::min(width / 2, 512), 1};
-		size_t local_work_size[] = {std::min(width / 2, 512), 1};
+		size_t global_work_size[] = {(size_t) std::min(width / 2, 512), 1};
+		size_t local_work_size[] = {(size_t) std::min(width / 2, 512), 1};
 		for(int i = 0; i < height; i++) {
 			err = clSetKernelArg(reduceHorizontalTransposeKernel, 5, sizeof(int), &i);
 			checkCL(err, "passing row");
@@ -168,8 +168,8 @@ void Reduction::computeSATGLTexture(GLuint src, GLuint temp, GLuint dest, int wi
 		err = clSetKernelArg(reduceHorizontalTransposeKernel, 4, height * sizeof(cl_float4), NULL);
 		checkCL(err, "passing temp");
 
-		size_t global_work_sizeV[] = {std::min(height / 2, 512), 1};
-		size_t local_work_sizeV[] = {std::min(height /2, 512), 1};
+		size_t global_work_sizeV[] = {(size_t) std::min(height / 2, 512), 1};
+		size_t local_work_sizeV[] = {(size_t) std::min(height /2, 512), 1};
 		for(int i = 0; i < width; i++) {
 			err = clSetKernelArg(reduceHorizontalTransposeKernel, 5, sizeof(int), &i);
 			checkCL(err, "passing row");
