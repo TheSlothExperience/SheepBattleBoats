@@ -321,26 +321,23 @@ unsigned int GLWidget::loadCubemap(){
 	glBindTexture(GL_TEXTURE_CUBE_MAP,tex);
 
 	std::string fileName[6];
-	fileName[0] = "/home/sebas/Projects/Grapa/SheepBattleBoats/img/skybox/right.bmp";
-	fileName[1] = "/home/sebas/Projects/Grapa/SheepBattleBoats/img/skybox/left.bmp";
-	fileName[2] = "/home/sebas/Projects/Grapa/SheepBattleBoats/img/skybox/bottom.bmp";
-	fileName[3] = "/home/sebas/Projects/Grapa/SheepBattleBoats/img/skybox/top.bmp";
-	fileName[4] = "/home/sebas/Projects/Grapa/SheepBattleBoats/img/skybox/front.bmp";
-	fileName[5] = "/home/sebas/Projects/Grapa/SheepBattleBoats/img/skybox/back.bmp";
+	fileName[0] = ":/img/skybox/right.png";
+	fileName[1] = ":/img/skybox/left.png";
+	fileName[2] = ":/img/skybox/bottom.png";
+	fileName[3] = ":/img/skybox/top.png";
+	fileName[4] = ":/img/skybox/front.png";
+	fileName[5] = ":/img/skybox/back.png";
 
 	for(int i=0;i<6;i++)
 	{
 
 		if(!fileName[i].empty()){
-			//std::cout << fileName << std::endl;
 			QImage tex;
 			QString fileQT = QString(fileName[i].c_str());
 			tex.load(fileQT);
-			//std::cout << "Loading facture texture " << fileName[i] << " with: "
-			//           << "(" << tex.width() << ", " << tex.height() << ")" << std::endl;
 			tex = QGLWidget::convertToGLFormat(tex);
 
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,tex.width(),tex.height(),0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,tex.bits());
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,tex.width(),tex.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,tex.bits());
 			glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
