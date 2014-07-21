@@ -95,13 +95,3 @@ void LightNode::changeColor(float r, float g, float b, float a) {
 void LightNode::lightPass() {
 
 }
-
-//void LightNode::testCollisions(){
-
-//    if(leaf) {
-//    qDebug()<<"testCollision in lightNode";
-//    } else {
-//        //Else, recurse into its children
-//        std::for_each(children.begin(), children.end(), [](SceneGraph *s){s->testCollisions();});
-//    }
-//}
