@@ -5,6 +5,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = SheepBattleBoats
 TEMPLATE = app
 
+CONFIG += qt warn_on qt3d
+
 QMAKE_CXXFLAGS += -std=c++11 \
                   -Wno-deprecated-declarations
 
