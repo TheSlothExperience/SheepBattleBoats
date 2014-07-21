@@ -95,6 +95,8 @@ void main(){
 	vec4 V_=vec4(texture(posTexture,UV));
 	vec3 V = V_.xyz;
 	float a = V_.a;
+	if(a < 0.1) discard;
+
 	vec3 N=vec3(texture(normalTexture,UV));
 
 	float coarseDetail = 2.0;

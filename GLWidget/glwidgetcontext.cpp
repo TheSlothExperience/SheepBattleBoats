@@ -24,6 +24,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaders.phongProgram = new QOpenGLShaderProgram();
 	shaders.waterGeometryProgram = new QOpenGLShaderProgram();
     shaders.intensityProgram = new QOpenGLShaderProgram();
+    shaders.skyBoxProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -59,6 +60,7 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/waterGeometry.vert", ":/shaders/waterGeometry.frag", shaders.waterGeometryProgram);
 
     loadShaders(":/shaders/identity.vert", ":/shaders/intensity.frag",shaders.intensityProgram);
+    loadShaders(":/shaders/skyBox.vert", ":/shaders/skyBox.frag",shaders.skyBoxProgram);
 
 }
 
@@ -76,6 +78,7 @@ QOpenGLShaderProgram *Shaders::lightPassProgram = NULL;
 QOpenGLShaderProgram *Shaders::phongProgram = NULL;
 QOpenGLShaderProgram *Shaders::waterGeometryProgram = NULL;
 QOpenGLShaderProgram *Shaders::intensityProgram = NULL;
+QOpenGLShaderProgram *Shaders::skyBoxProgram = NULL;
 
 void Shaders::bind(QOpenGLShaderProgram *sp) {
 	if(sp == last) {
