@@ -75,6 +75,7 @@ private:
 	QDockWidget *colorDock;
 	QCheckBox *satShadowCheckBox;
     QCheckBox *set8bitCheckBox;
+    QCheckBox *setScopeCheckBox;
 	QSlider *redSlider;
 	QSlider *blueSlider;
 	QSlider *greenSlider;
@@ -119,6 +120,7 @@ public slots:
 	void addLight();
 	void setSATShadows(bool set);
     void set8bit(bool set);
+    void setScope(bool set);
 
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);

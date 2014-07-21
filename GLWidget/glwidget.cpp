@@ -207,6 +207,7 @@ void GLWidget::paintSceneToCanvas() {
     glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(2));
 
     glUniform1i(shaders.canvasProgram->uniformLocation("bitify"),bitify);
+    glUniform1i(shaders.canvasProgram->uniformLocation("scopify"),scopify);
 
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);

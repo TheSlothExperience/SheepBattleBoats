@@ -47,6 +47,7 @@ public:
 
 	void setSATShadows(bool set) {satShadowsp = set;}
      void set8bit(bool set) {bitify = set;}
+     void setScope(bool set) {scopify = set;}
 
 private:
     int tesselationLevel;
@@ -105,6 +106,7 @@ private:
     void RenderFPS();
 
     bool bitify;
+    bool scopify;
 
 
 protected:
