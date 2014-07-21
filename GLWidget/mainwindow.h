@@ -5,7 +5,6 @@
 #include <QtGui>
 #include <QtWidgets>
 #include <vector>
-
 #include "glwidget.h"
 #include "glwidgetcontext.h"
 
@@ -75,6 +74,7 @@ private:
 
 	QDockWidget *colorDock;
 	QCheckBox *satShadowCheckBox;
+    QCheckBox *set8bitCheckBox;
 	QSlider *redSlider;
 	QSlider *blueSlider;
 	QSlider *greenSlider;
@@ -104,6 +104,7 @@ private:
 
     float shootingHeight;
     bool shooting=false;
+
 public slots:
 	void addCube();
 	void addCone();
@@ -117,6 +118,7 @@ public slots:
 
 	void addLight();
 	void setSATShadows(bool set);
+    void set8bit(bool set);
 
 	void translateNode(double x, double y, double z);
 	void rotateNode(QQuaternion *q);

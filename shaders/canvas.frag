@@ -9,8 +9,17 @@ out vec4 color;
 
 uniform sampler2D scene;
 uniform sampler2D blurredIntensity;
+uniform int bitify;
 
 void main(){
 
-        color = vec4(texture(scene, UV).xyz+texture(blurredIntensity,UV).xyz,1.0);
+    vec2 coord = UV;
+    if(bitify == 1){
+        vec2 size = textureSize(scene,0);
+        float dx = 15.0 * (1.0 / size.x);
+        float dy = 10.0 * (1.0 / size.y);
+        coord = vec2(dx*floor(UV.x/dx),dy*floor(UV.y/dy));
+    }
+
+        color = vec4(texture(scene, coord).xyz+texture(blurredIntensity,coord).xyz,1.0);
 }

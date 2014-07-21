@@ -226,10 +226,14 @@ void MainWindow::createColorDock() {
 	satShadowCheckBox = new QCheckBox("SAT shadows");
 	connect(satShadowCheckBox, SIGNAL(toggled(bool)), this, SLOT(setSATShadows(bool)));
 
+    set8bitCheckBox = new QCheckBox("8Bit");
+    connect(set8bitCheckBox, SIGNAL(toggled(bool)), this , SLOT(set8bit(bool)));
+
 
 	QWidget *contents = new QWidget;
 	QVBoxLayout *layout = new QVBoxLayout(contents);
 	layout->addWidget(satShadowCheckBox);
+    layout->addWidget(set8bitCheckBox);
 	layout->addWidget(redSlider);
 	layout->addWidget(greenSlider);
 	layout->addWidget(blueSlider);
@@ -514,6 +518,10 @@ void MainWindow::changeActiveId(int id){
 
 void MainWindow::setSATShadows(bool set){
 	mapWidgets([=](GLWidget *w){w->setSATShadows(set);});
+}
+
+void MainWindow::set8bit(bool set){
+    mapWidgets([=](GLWidget *w){w->set8bit(set);});
 }
 
 

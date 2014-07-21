@@ -206,6 +206,8 @@ void GLWidget::paintSceneToCanvas() {
     glUniform1i(shaders.canvasProgram->uniformLocation("blurredIntensity"),1);
     glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(2));
 
+    glUniform1i(shaders.canvasProgram->uniformLocation("bitify"),bitify);
+
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glEnableVertexAttribArray(0);
@@ -399,6 +401,7 @@ void GLWidget::shadowMapsPass() {
         std::cout << "no scene yet" << std::endl;
     }
 }
+
 
 void GLWidget::resizeGL(int width, int height)
 {

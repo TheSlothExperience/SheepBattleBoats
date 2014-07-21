@@ -46,6 +46,7 @@ public:
 	void rotateCamera(float angle);
 
 	void setSATShadows(bool set) {satShadowsp = set;}
+     void set8bit(bool set) {bitify = set;}
 
 private:
     int tesselationLevel;
@@ -102,6 +103,9 @@ private:
     void DSGeometryPass();
     void DSLightPass();
     void RenderFPS();
+
+    bool bitify;
+
 
 protected:
     void paintGL();
