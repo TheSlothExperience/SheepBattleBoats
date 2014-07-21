@@ -4,13 +4,7 @@
 #include "particleexplosionnode.h"
 #include "glwidgetcontext.h"
 #include "math.h";
-
-
-
-
-
-
-
+#include <iostream>
 ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::string name)
     :SceneGraph(p,name)
 {
@@ -26,6 +20,20 @@ ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::str
     emitParticles();
     buildVertexBuffer();
 
+    std::string fileName = ":/img/sprites/explosion1.png";
+    QImage tex;
+    QString fileQT = QString(fileName.c_str());
+
+    std::cout << "Loaded sprite with width " << tex.width() << std::endl;
+    tex.load(fileQT);
+    tex = QGLWidget::convertToGLFormat(tex);
+
+    glGenTextures(1, &sprite);
+    glBindTexture(GL_TEXTURE_2D, sprite);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.width(), tex.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.bits());
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
@@ -50,6 +58,11 @@ void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cam
 
 		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
 		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, sprite);
+		glUniform1i(Shaders::particleProgram->uniformLocation("sprite"), 0);
+
 		drawParticles();
 
 		MVStack.pop();

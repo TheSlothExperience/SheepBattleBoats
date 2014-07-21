@@ -24,7 +24,8 @@ private:
     void drawParticles();
     void emitParticles();
     void randomizeParticles();
-    int minWidth= 0.0;
+
+	int minWidth= 0.0;
     int maxWidth= 1.0;
     int minHeight= 0.0;
     int maxHeight= 1.0;
@@ -37,6 +38,8 @@ private:
     float emmiterLifetime=0.0;
     float emmiterMaxLifetime=5.0;
     QVector3D force= QVector3D(0, -2.81f, 0);
+
+	GLuint sprite;
 
 public:
     ParticleExplosionNode(QVector3D pos, Primitive *p, std::string name);
