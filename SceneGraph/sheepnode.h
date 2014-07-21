@@ -5,7 +5,7 @@
 #include<levelobject.h>
 #include<boundingbox.h>
 
-class LevelObjectNode :public SceneGraph
+class SheepNode : public SceneGraph
 {
 private :
 	//Movement Parameters
@@ -16,13 +16,10 @@ private :
 	const QVector3D MAX_VELOCITY=QVector3D(0.0,0.0,0.3);
 public:
 
-	LevelObjectNode(Primitive *p, std::string name);
-	~LevelObjectNode();
-	void draw();
-	void testCollisions(LevelObjectNode);
+	SheepNode(Primitive *p, std::string name);
+	~SheepNode();
+	void testCollisions(SheepNode);
 
-
-	LevelObject getLvlObj();
 	void move();
 
 	QVector3D getVelocity(){return this->v;}

@@ -55,19 +55,10 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 }
 
 void Scene::initLevel(){
-    LevelObjectNode *temp=addLevelObj();
+    SheepNode *temp = addMainSheep();
     mainBoat=temp;
-//    temp=addLevelObj();
-//    temp->translate(1.0, 0.0, 0.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -10.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -20.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -30.0);
-    temp=addLevelObj();
-    temp->translate(0.0,0.0, -40.0);
-	addSea(rootNode);
+
+    addSea(rootNode);
 }
 
 QModelIndex Scene::index(int row, int column, const QModelIndex &parent) const {
@@ -369,19 +360,23 @@ void Scene::draw(Camera *camera) {
 	modelViewMatrixStack.pop();
 }
 
-LevelObjectNode* Scene::addLevelObj(){
-
-    LevelObject *lvlObj = new LevelObject();
-    std::string name("LevelObj ");
+SheepNode* Scene::addMainSheep(){
+    beginResetModel();
+    Object3D*object3d = new Object3D();
+    object3d->loadMesh(":/models/sheep.obj",false);
+    object3d->draw();
+    std::string name("Master Sheep ");
     int id = nextId();
 
-    LevelObjectNode *s = new LevelObjectNode(lvlObj,name);
+    SheepNode *s = new SheepNode(object3d,name);
     s->setId(id);
     identifier[id] = s;
 
+    mainBoat = s;
     rootNode->add(s);
     levelObjAdresses.append(s);
     return s;
+    endResetModel();
 }
 
 ProjectileNode* Scene::addProjectile(QVector3D shootingDir){

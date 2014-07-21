@@ -134,6 +134,20 @@ bool Object3D::initFromScene(const aiScene *pScene, const std::string &filename)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[INDEX_BUFFER]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices[0])*indices.size(),&indices[0],GL_STATIC_DRAW);
 
+    float maxFloat=std::numeric_limits<float>::max();
+    float minFloat=std::numeric_limits<float>::min();
+    QVector3D min=QVector3D(maxFloat,maxFloat,maxFloat);
+    QVector3D max=QVector3D(minFloat,minFloat,minFloat);
+    for(auto v : positions) {
+	    if(v[0]>max[0]) max[0]=v[0];
+	    if(v[0]<min[0]) min[0]=v[0];
+	    if(v[1]>max[1]) max[1]=v[1];
+	    if(v[1]<min[1]) min[1]=v[1];
+	    if(v[2]>max[2]) max[2]=v[2];
+	    if(v[2]<min[2]) min[2]=v[2];
+    }
+    bb =  new BoundingBox(QVector3D(0,0,0),min,max);
+
     //after init go further to materials
     return true;
 }

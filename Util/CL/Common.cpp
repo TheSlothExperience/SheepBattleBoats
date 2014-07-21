@@ -3,7 +3,7 @@
 
 void PrintBuildLog(cl_program Program, cl_device_id Device)
 {
-	cl_build_status buildStatus;
+    cl_build_status buildStatus;
 	clGetProgramBuildInfo(Program, Device, CL_PROGRAM_BUILD_STATUS, sizeof(cl_build_status), &buildStatus, NULL);
 	if(buildStatus == CL_SUCCESS)
 		return;

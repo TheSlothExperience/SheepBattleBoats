@@ -1,6 +1,6 @@
-#include <levelobjectnode.h>
+#include <sheepnode.h>
 
-LevelObjectNode::LevelObjectNode(Primitive *p, std::string name)
+SheepNode::SheepNode(Primitive *p, std::string name)
 	:SceneGraph(p, name)
 {
 	this->name=name;
@@ -9,19 +9,14 @@ LevelObjectNode::LevelObjectNode(Primitive *p, std::string name)
 	this->moving=false;
 }
 
-LevelObjectNode::~LevelObjectNode(){
+SheepNode::~SheepNode(){
 
 }
 
-
-void LevelObjectNode::draw(){
-	primitive->draw();
+void SheepNode::testCollisions(SheepNode secondObject){
 }
 
-void LevelObjectNode::testCollisions(LevelObjectNode secondObject){
-}
-
-BoundingBox* LevelObjectNode::getBB(){
+BoundingBox* SheepNode::getBB(){
 	BoundingBox* a=primitive->getBB();
 	a->position=translation;
 
@@ -29,10 +24,10 @@ BoundingBox* LevelObjectNode::getBB(){
 }
 
 //Movement of other Objects
-void LevelObjectNode::move(){
+void SheepNode::move(){
 }
 
-void LevelObjectNode::increaseVelocity(QVector3D vTobeAdded){
+void SheepNode::increaseVelocity(QVector3D vTobeAdded){
 	v+=vTobeAdded;
 	if(v.z()>MAX_VELOCITY.z()){
 		v=MAX_VELOCITY;
@@ -42,7 +37,7 @@ void LevelObjectNode::increaseVelocity(QVector3D vTobeAdded){
 	}
 }
 
-void LevelObjectNode::changeSteeringValue(float angleTobeAdded){
+void SheepNode::changeSteeringValue(float angleTobeAdded){
 	rotationAngle+=angleTobeAdded;
 	if(rotationAngle>MAX_ROTATION){
 		rotationAngle=MAX_ROTATION;
@@ -53,7 +48,7 @@ void LevelObjectNode::changeSteeringValue(float angleTobeAdded){
 	}
 }
 
-void LevelObjectNode::stopVelocity(){
+void SheepNode::stopVelocity(){
 	if(v.z()>0.003){
 		increaseVelocity(QVector3D(0.0,0.0,-0.0030));
 	}else if(v.z()<-0.003){
@@ -64,7 +59,7 @@ void LevelObjectNode::stopVelocity(){
 	}
 }
 
-void LevelObjectNode::stopRotating(){
+void SheepNode::stopRotating(){
 	if(rotationAngle>0.02){
 		changeSteeringValue(-0.02);
 	}else if(rotationAngle<-0.02){
@@ -75,10 +70,10 @@ void LevelObjectNode::stopRotating(){
 	}
 }
 
-void LevelObjectNode::exeObjBehaviour(){
+void SheepNode::exeObjBehaviour(){
 	move();
 }
 
-void LevelObjectNode::reactToCollision(){
+void SheepNode::reactToCollision(){
 	setDeadmark(true);
 }
