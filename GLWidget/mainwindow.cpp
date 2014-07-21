@@ -90,6 +90,7 @@ void MainWindow::doMovements(){
 
     QVector3D newTranslation= scene->convertToMotherSheepTranslation();
     scene->translateMotherSheep(newTranslation);
+    scene->translateSea(newTranslation);
     scene->rotateMotherSheep();
     activeViewport->translateBoardCamera(newTranslation);
 }

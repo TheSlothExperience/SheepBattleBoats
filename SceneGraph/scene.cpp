@@ -346,13 +346,15 @@ QModelIndex Scene::add3DModel(SceneGraph *node){
 
 QModelIndex Scene::addSea(SceneGraph *node){
     beginResetModel();
-    Primitive *sea = new Sea();
+    Primitive *seaP = new Sea();
     std::string name("Sea of Moist Wetness ");
     int id = nextId();
     name += std::to_string(id);
-    SeaNode *s = new SeaNode(sea, name);
+    SeaNode *s = new SeaNode(seaP, name);
     s->setId(id);
     identifier[id] = s;
+
+    sea = s;
 
     node->add(s);
     endResetModel();
@@ -671,6 +673,10 @@ QVector3D Scene::convertToMotherSheepTranslation(){
 
 void Scene::translateMotherSheep(QVector3D dir){
     mainBoat->translate(dir.x(),dir.y(),dir.z());
+}
+
+void Scene::translateSea(QVector3D dir){
+    sea->translate(dir.x(),dir.y(),dir.z());
 }
 
 void Scene::rotateMotherSheep(){

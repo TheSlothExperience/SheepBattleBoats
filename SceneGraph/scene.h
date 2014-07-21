@@ -3,6 +3,7 @@
 
 #include "scenegraph.h"
 #include "lightnode.h"
+#include "seanode.h"
 #include "camera.h"
 #include "levelobjectnode.h"
 #include "projectilenode.h"
@@ -37,7 +38,7 @@ private:
 	QVector4D lightPosition;
 	std::stack<QMatrix4x4> modelViewMatrixStack;
 
-
+	SeaNode *sea;
 	int currentId = 0;
     int nextId() {return currentId++;}
 
@@ -109,6 +110,7 @@ public:
     LevelObjectNode* getMainBoat(){return this->mainBoat;}
     QList<SceneGraph*> getLvlObjAdresses(){return this->levelObjAdresses;}
     void translateMotherSheep(QVector3D);
+    void translateSea(QVector3D);
     void rotateMotherSheep();
     QVector3D convertToMotherSheepTranslation();
     void behaviourExecutions();
