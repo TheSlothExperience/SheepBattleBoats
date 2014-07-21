@@ -644,7 +644,7 @@ void MainWindow::shoot(){
         QVector3D temp=QVector3D(0.0,5.0,-4.0);
         temp=rot.rotatedVector(temp);
         scene->addProjectile(temp);
-        scene->addParticleExplosionNode(QVector3D(-1.0,0.0,-5.0));
+
     }
 
 }

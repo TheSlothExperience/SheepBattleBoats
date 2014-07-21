@@ -7,17 +7,8 @@
 
 
 
-int minWidth= 0.0;
-int maxWidth= 5.0;
-int minHeight= 0.0;
-int maxHeight= 5.0;
-int minDepth= 0.0;
-int maxDepth= 5.0;
-int minLifeTime=30.0;
-int maxLifeTime=60.0;
-int minSpeed=1;
-int maxSpeed=5;
-QVector3D force= QVector3D(0, -9.81f, 0);
+
+
 
 
 ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::string name)
@@ -25,7 +16,7 @@ ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::str
 {
     qDebug()<<"constructor of ParticleExplosionNode";
     this->emitterPos=pos;
-    nParticles=1;
+    nParticles=30;
     for(int i=0;i<nParticles;i++){
         Particle temp=Particle();
         particles.push_back(temp);
@@ -73,7 +64,13 @@ void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cam
 
 
 void ParticleExplosionNode::exeObjBehaviour(){
-    updateParticles();
+
+    emmiterLifetime+= 0.1;
+    if(emmiterLifetime>=emmiterMaxLifetime){
+
+        setDeadmark(true);
+    }
+    updateParticles( 0.1);
 }
 
 void ParticleExplosionNode::reactToCollision(){}
@@ -81,32 +78,34 @@ BoundingBox* ParticleExplosionNode::getBB(){}
 
 
 
-void ParticleExplosionNode::updateParticles(){
-//    lifetime
-//    for ( unsigned int i = 0; i < particles.size(); ++i )
-//       {
-//           Particle& particle = particles[i];
+void ParticleExplosionNode::updateParticles(float deltaTime){
 
-//           particle.time += 1;
-//           if ( particle.time > particle.lifeTime)
-//           {
-////               if ( m_pParticleEmitter != NULL ){
-//                   emitParticle(particle);
-////               }
-////               else {
-////                   RandomizeParticle(particle);
-////               }
-//           }
+    for ( unsigned int i = 0; i < particles.size(); ++i )
+       {
+           Particle& particle = particles[i];
 
-//           float lifeRatio = particle.time/ particle.lifeTime;
-//           particle.velocity+= ( force * 1);
-//           particle.pos += ( particle.velocity * 1);
-//           particle.alpha=  lifeRatio ;
-//           particle.rotate= lerp(0.0f, 720.0f, lifeRatio );
-//           particle.size = lerp( 5.0f, 0.0f, lifeRatio );
-//       }
+           particle.time += deltaTime;
+//            qDebug()<<"lifetime over?"<<particle.time;
+           if ( particle.time > particle.lifeTime)
+           {
+//               if ( m_pParticleEmitter != NULL ){
+//                qDebug()<<"lifetime over";
+                   emitParticle(particle);
+//               }
+//               else {
+//                   RandomizeParticle(particle);
+//               }
+           }
 
-//       buildVertexBuffer(cameraMatrix);
+           float lifeRatio = particle.time/ particle.lifeTime;
+           particle.velocity+= ( force * 0.01);
+           particle.pos += ( particle.velocity * 0.1);
+           particle.alpha=  lifeRatio ;
+           particle.rotate= lerp(0.0f, 720.0f, lifeRatio );
+           particle.size = lerp( 1.0f, 0.0f, lifeRatio );
+       }
+
+       buildVertexBuffer();
 }
 
 float ParticleExplosionNode::lerp(float a, float b, float ratio){
@@ -136,15 +135,15 @@ void ParticleExplosionNode::emitParticle( Particle& particle )
 {
     qDebug()<<"emit particle";
 
-        float x = (rand()%maxWidth)*1.0-(maxWidth/2.0);
+        float x = (((rand()%1000)/1000.0)*maxWidth)-(maxWidth/2.0);
 
-        float y = rand()%maxHeight*1.0-(maxHeight/2.0);
-        float z = rand()%maxDepth*1.0-(maxDepth/2.0);
+        float y = (((rand()%1000)/1000.0)*maxHeight)-(maxHeight/2.0);
+        float z = (((rand()%1000)/1000.0)*maxDepth)-(maxDepth/2.0);
 
-        float lifetime = rand()%(maxLifeTime-minLifeTime)+minLifeTime;
+        qDebug()<<x<<"  "<<y<<"  "<<z;
+        float lifetime = (((rand()%1000)/1000.0)*maxLifeTime);
 
-        float speed = rand()%(maxSpeed-minSpeed)+minSpeed;
-
+        float speed = (((rand()%1000)/1000.0)*maxSpeed);
         QVector3D vector( x, y, z );
 
         particle.pos= vector + emitterPos;
@@ -159,8 +158,8 @@ void ParticleExplosionNode::emitParticle( Particle& particle )
 
 void ParticleExplosionNode::buildVertexBuffer(){
 
-    QVector3D x=QVector3D(0.5, 0, 0);
-    QVector3D y=QVector3D( 0, 0.5, 0 );
+    QVector3D x=QVector3D(0.2, 0, 0);
+    QVector3D y=QVector3D( 0, 0.2, 0 );
     QVector3D z=QVector3D( 0, 0 ,1.0 );
 
     QQuaternion cameraRotation;

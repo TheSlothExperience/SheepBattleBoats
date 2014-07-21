@@ -409,7 +409,7 @@ ParticleExplosionNode* Scene::addParticleExplosionNode(QVector3D pos){
     s->setId(id);
     identifier[id] = s;
     rootNode->add(s);
-//    levelObjAdresses.append(s);
+    levelObjAdresses.append(s);
     return s;
 }
 
@@ -652,6 +652,7 @@ void Scene::testCollisions(){
                 qDebug()<<"fette kollision";
                 levelObjAdresses.at(i)->reactToCollision();
                 levelObjAdresses.at(j)->reactToCollision();
+                addParticleExplosionNode((bb1->position-bb2->position)+bb1->position);
             }else{
                 //               qDebug()<<"no Colission";
             }
@@ -667,6 +668,7 @@ void Scene::testCollisions(){
             qDebug()<<"delete an object";
             points+=100;
             qDebug()<<"Aktuelle Punktzahl: "<<points;
+
 
 
         }
