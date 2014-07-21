@@ -154,6 +154,10 @@ void GLWidget::paintSceneToCanvas() {
     glUniform1i(shaders.canvasProgram->uniformLocation("blurredIntensity"),1);
     glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(2));
 
+    glActiveTexture(GL_TEXTURE2);
+    glUniform1i(shaders.canvasProgram->uniformLocation("cubemap"),2);
+    glBindTexture(GL_TEXTURE_2D, loadCubemap());
+
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glEnableVertexAttribArray(0);
@@ -235,28 +239,46 @@ void GLWidget::blurIntensity(){
 
 }
 
-//void GLWidget::loadCubemap(){
+unsigned int GLWidget::loadCubemap(){
 
-//        unsigned int tex;
-//        glGenTextures(1,&tex);
-//        glBindTexture(GL_TEXTURE_CUBE_MAP,tex);
+        unsigned int tex;
+        glGenTextures(1,&tex);
+        glBindTexture(GL_TEXTURE_CUBE_MAP,tex);
 
-//        for(int i=0;i<6;i++)
-//        {
+        std::string fileName[6];
+        fileName[0] = "/home/darius/Dokumente/SheepBattleBoats/SheepBattleBoats/img/skybox/right.bmp";
+        fileName[1] = "/home/darius/Dokumente/SheepBattleBoats/SheepBattleBoats/img/skybox/left.bmp";
+        fileName[2] = "/home/darius/Dokumente/SheepBattleBoats/SheepBattleBoats/img/skybox/bottom.bmp";
+        fileName[3] = "/home/darius/Dokumente/SheepBattleBoats/SheepBattleBoats/img/skybox/top.bmp";
+        fileName[4] = "/home/darius/Dokumente/SheepBattleBoats/SheepBattleBoats/img/skybox/front.bmp";
+        fileName[5] = "/home/darius/Dokumente/SheepBattleBoats/SheepBattleBoats/img/skybox/back.bmp";
 
-//            QImage img;  //<- load 6 jpg
+        for(int i=0;i<6;i++)
+        {
 
-//            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,img->w,img->h,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,img->pixels);
-//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-//            glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-//        }
-//        glBindTexture(GL_TEXTURE_CUBE_MAP,0);
-//        return tex;
+            if(!fileName[i].empty()){
+//                std::cout << fileName << std::endl;
+                QImage tex;
+                QString fileQT = QString(fileName[i].c_str());
+                tex.load(fileQT);
+//                std::cout << "Loading facture texture " << fileName[i] << " with: "
+//                          << "(" << tex.width() << ", " << tex.height() << ")" << std::endl;
+                tex = QGLWidget::convertToGLFormat(tex);
 
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i,0,GL_RGBA,tex.width(),tex.height(),0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,tex.bits());
+                glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
-//}
+            } else {
+                std::cout << "Error loading texture '" << fileName[i] << std::endl;
+                return 0;
+            }
+        }
+        glBindTexture(GL_TEXTURE_CUBE_MAP,0);
+        return tex;
+}
 
 void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int texOffset) {
 	//Send all the lighting information and shadowmaps

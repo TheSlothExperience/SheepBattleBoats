@@ -186,7 +186,8 @@ void main(){
 	else diffuse = D;
 
 	if(sobelize(normalTexture)>0.4 || sobelize(depthTexture)>0.05){
-		color = color * vec4(vec3(0.3), 1.0);
+                //color = color * vec4(vec3(0.3), 1.0);
+                color = vec4(0.0,1.0,1.0,1.0);
 	}
 
 	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;

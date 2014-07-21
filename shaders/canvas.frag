@@ -1,13 +1,17 @@
 #version 440 core
 
+layout(location = 0) in vec3 position;
+
 in vec2 UV;
 
-out vec3 color;
+out vec4 color;
 
 uniform sampler2D scene;
 uniform sampler2D blurredIntensity;
+uniform samplerCube cubemap;
 
 
 void main(){
-        gl_FragColor = vec4(texture(scene, UV).xyz+texture(blurredIntensity,UV).xyz,1.0);
+        color = textureCube(cubemap,position);
+        //vec4(texture(scene, UV).xyz+texture(blurredIntensity,UV).xyz,1.0)
 }

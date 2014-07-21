@@ -66,6 +66,7 @@ private:
     void paintSceneToCanvas();
     void getSceneIntensity();
     void blurIntensity();
+    unsigned int loadCubemap();
 
     GLuint fbo;
     GLuint renderTex;
