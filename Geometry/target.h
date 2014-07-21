@@ -1,10 +1,12 @@
-#ifndef LEVELOBJECT_H
-#define LEVELOBJECT_H
+#ifndef TARGET_H
+#define TARGET_H
+
 #include <primitive.h>
 #include<boundingbox.h>
 
-class LevelObject: public Primitive
+class Target: public Primitive
 {
+
 private:
     GLuint indexBufferObject;
 //    int count;
@@ -15,16 +17,12 @@ private:
     int idxPerPart;
 
 
-
-
 public:
-    LevelObject();
-    ~LevelObject();
+    Target();
+    ~Target();
     bool intersect();
     void draw();
     BoundingBox *getBB();
-
-
 };
 
-#endif // LEVELOBJECT_H
+#endif // TARGET_H

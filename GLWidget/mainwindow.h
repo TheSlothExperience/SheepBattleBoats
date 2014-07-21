@@ -104,7 +104,7 @@ private:
     bool dPressed=false;
     bool aPressed=false;
 
-    float shootingHeight;
+    int shootingLatency;
     bool shooting=false;
 
 public slots:
@@ -114,7 +114,7 @@ public slots:
 	void addSphere();
 	void addTorus();
     void add3DModel();
-    void addLvlObj();
+//    void addLvlObj();
 
 	void addGroup();
 
@@ -143,7 +143,7 @@ public slots:
 	void changeCurrentNode(const QModelIndex &current, const QModelIndex &previous);
     void gameTick();
     void testCollisions();
-    void shoot(float shootingHeight);
+    void shoot();
 
 signals:
 	void updateGL();

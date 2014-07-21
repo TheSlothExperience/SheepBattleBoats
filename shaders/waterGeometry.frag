@@ -131,7 +131,7 @@ void main(){
 	vec3 noi = vec3(sn);
 	diffuseOut = C + vec4(noi, 0.0);
 
-	normalOut = vec4(normalize(N), 1.0);
+	normalOut = vec4(normalize(N), 0.0);
 	depthOut = vec4(gl_FragCoord.z);
 	textCoordOut = vec4(texCoord0,0.0, 1.0);
 }

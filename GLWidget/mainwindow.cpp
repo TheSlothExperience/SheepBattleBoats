@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdio>
 #include <QTimer>
+#include "gamestate.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -34,30 +35,28 @@ MainWindow::MainWindow(QWidget *parent)
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
 
-    initGameLogic();
+    setCameraInteraction();
 
+    initGameLogic();
 }
 
 
 void MainWindow::initGameLogic(){
-
     initLevel();
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameTick()));
     timer->start(34);
-
-
-//    for(int i=0;i<scene->getLvlObjAdresses().length();i++){
-//        qDebug()<<"lvlObj"+QString::number(i);
-//    }
 }
 
 void MainWindow::gameTick(){
     testCollisions();
     doMovements();
     if(shooting){
-        shootingHeight+=0.1;
+        shootingLatency++;
+        if(shootingLatency>20){
+            shooting=false;
+        }
     }
     scene->behaviourExecutions();
     emit updateGL();
@@ -71,18 +70,22 @@ void MainWindow::doMovements(){
 
     //"Vor und zurück"
     if(wPressed){
-        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.02));
+        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,-0.008));
 
     }else if(sPressed){
-        scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.02));
+        if(scene->getMainBoat()->getVelocity().z()<0){
+            scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.004));
+        }else{
+            scene->getMainBoat()->increaseVelocity(QVector3D(0.0,0.0,0.001));
+        }
     }else{
         scene->getMainBoat()->stopVelocity();
     }
 
     if(dPressed){
-        scene->getMainBoat()->changeSteeringValue(0.04);
+        scene->getMainBoat()->changeSteeringValue(0.02);
     }else if(aPressed){
-        scene->getMainBoat()->changeSteeringValue(-0.04);
+        scene->getMainBoat()->changeSteeringValue(-0.02);
     }else{
         scene->getMainBoat()->stopRotating();
     }
@@ -90,8 +93,9 @@ void MainWindow::doMovements(){
 
     QVector3D newTranslation= scene->convertToMotherSheepTranslation();
     scene->translateMotherSheep(newTranslation);
+    scene->translateSea(newTranslation);
     scene->rotateMotherSheep();
-    activeViewport->translateBoardCamera(newTranslation);
+    activeViewport->translateBoardCamera(newTranslation,scene->getMainBoat()->getPosition());
 }
 MainWindow::~MainWindow()
 {
@@ -334,7 +338,7 @@ void MainWindow::createActions() {
 	interactionGroup = new QActionGroup(this);
 	interactionGroup->addAction(cameraModeAction);
 	interactionGroup->addAction(objectModeAction);
-	objectModeAction->setChecked(true);
+    cameraModeAction->setChecked(true);
 
 
 	addCubeAction = new QAction(this);
@@ -369,9 +373,9 @@ void MainWindow::createActions() {
     add3DModelAction->setIcon(QIcon(":/img/add.png"));
     connect(add3DModelAction, SIGNAL(triggered()),this,SLOT(add3DModel()));
 
-    addLvlObjAction = new QAction(this);
-    addLvlObjAction ->setIcon(QIcon(":/img/add.png"));
-    connect(addLvlObjAction , SIGNAL(triggered()),this,SLOT(addLvlObj()));
+//    addLvlObjAction = new QAction(this);
+//    addLvlObjAction ->setIcon(QIcon(":/img/add.png"));
+//    connect(addLvlObjAction , SIGNAL(triggered()),this,SLOT(addLvlObj()));
 
 //    shootAction=new QAction(this);
 //    shootAction->setShortcut(tr("Space"));
@@ -461,7 +465,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
         aPressed=false;
     }else if(event->key() == Qt::Key_Space) {
 //        shooting=false;
-        shoot(shootingHeight);
+        shoot();
     }
 
 
@@ -514,11 +518,11 @@ void MainWindow::add3DModel(){
     emit updateGL();
 }
 
-void MainWindow::addLvlObj(){
-    QModelIndex idx = scene->add3DModel(currentNode);
-    sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
-    emit updateGL();
-}
+//void MainWindow::addLvlObj(){
+//    QModelIndex idx = scene->add3DModel(currentNode);
+//    sceneOutliner->selectionModel()->setCurrentIndex(idx,QItemSelectionModel::Current | QItemSelectionModel::Select);
+//    emit updateGL();
+//}
 
 void MainWindow::changeActiveId(int id){
 	mapWidgets([=](GLWidget *w){w->changeActiveId(id);});
@@ -544,7 +548,7 @@ void MainWindow::setCrossHatch(bool set){
 void MainWindow::showAboutBox() {
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("About Hello Cube!");
-	msgBox.setText("Written by Sebas!");
+    msgBox.setText("Written by Sebas, Darius, Daniel!");
 	msgBox.exec();
 }
 
@@ -650,11 +654,14 @@ void MainWindow::load3DModel(){
 
 }
 
-void MainWindow::shoot(float shootingHeight){
-    qDebug()<<"shoot";
-//    QQuaternion rot = scene->getMainBoat()->getRotation();
-   QVector3D temp=QVector3D(0.0,5.0,-1.0);
-//   temp=rot.rotatedVector(temp);
-    scene->addProjectile(temp);
+void MainWindow::shoot(){
+    if(!shooting){
+        shooting=true;
+        shootingLatency=0;
+        QQuaternion rot = scene->getMainBoat()->getRotation();
+        QVector3D temp=QVector3D(0.0,5.0,-4.0);
+        temp=rot.rotatedVector(temp);
+        scene->addProjectile(temp);
 
+    }
 }
