@@ -26,6 +26,8 @@ OTHER_FILES += shaders/* \
     shaders/xtoon.frag \
     shaders/bloom.vert \
     shaders/bloom.frag \
-    shaders/intensity.frag
+    shaders/intensity.frag \
+    shaders/particles.frag \
+    shaders/particles.vert
 
 RESOURCES += SheepBattleBoats.qrc

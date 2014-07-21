@@ -11,7 +11,6 @@ public:
     Projectile(QVector3D pos);
     ~Projectile();
     void draw();
-    void exeObjBehaviour();
     BoundingBox *getBB();
 };
 

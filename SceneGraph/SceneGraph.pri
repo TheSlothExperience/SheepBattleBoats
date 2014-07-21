@@ -6,11 +6,13 @@ HEADERS += SceneGraph/scene.h \
 		   SceneGraph/seanode.h \
 		   SceneGraph/lightnode.h \
            SceneGraph/levelobjectnode.h \
-           SceneGraph/projectilenode.h
+           SceneGraph/projectilenode.h \
+    SceneGraph/particleexplosionnode.h
 
 SOURCES += SceneGraph/scene.cpp \
 		   SceneGraph/scenegraph.cpp \
 		   SceneGraph/seanode.cpp \
 		   SceneGraph/lightnode.cpp \
            SceneGraph/levelobjectnode.cpp \
-           SceneGraph/projectilenode.cpp
+           SceneGraph/projectilenode.cpp \
+    SceneGraph/particleexplosionnode.cpp

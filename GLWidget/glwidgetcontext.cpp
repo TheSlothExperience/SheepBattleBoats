@@ -22,6 +22,8 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaders.gaussianBlurVProgram = new QOpenGLShaderProgram();
 	shaders.gaussianBlurHProgram = new QOpenGLShaderProgram();
 	shaders.phongProgram = new QOpenGLShaderProgram();
+    shaders.particleProgram= new QOpenGLShaderProgram();
+
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -54,6 +56,7 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurV.frag", shaders.gaussianBlurVProgram);
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurH.frag", shaders.gaussianBlurHProgram);
     loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.phongProgram);
+    loadShaders(":/shaders/particles.vert", ":/shaders/particles.frag", shaders.particleProgram);
 
 }
 
@@ -240,6 +243,8 @@ QOpenGLShaderProgram *Shaders::gaussianBlurVProgram = NULL;
 QOpenGLShaderProgram *Shaders::geometryPassProgram = NULL;
 QOpenGLShaderProgram *Shaders::lightPassProgram = NULL;
 QOpenGLShaderProgram *Shaders::phongProgram = NULL;
+QOpenGLShaderProgram *Shaders::particleProgram = NULL;
+
 
 void Shaders::bind(QOpenGLShaderProgram *sp) {
 	if(sp == last) {

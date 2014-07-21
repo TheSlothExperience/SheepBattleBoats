@@ -15,6 +15,7 @@
 #include "levelobject.h"
 #include "projectile.h"
 #include "collisiondetection.h"
+#include "particlegenerator.h"
 
 #include "glwidget.h"
 #include "glwidgetcontext.h"
@@ -385,7 +386,7 @@ ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
 
 //    qDebug()<<"tempx: "+QString::number(temp.x())+"tempy: "+QString::number(temp.y())+"tempz: "+QString::number(temp.z());
     Projectile *lvlObj = new Projectile(temp);
-    std::string name("LevelObj ");
+    std::string name("Projectile ");
     int id = nextId();
     name+=std::to_string(id);
     ProjectileNode *s = new ProjectileNode(temp,shootingDir,lvlObj,name);
@@ -394,12 +395,24 @@ ProjectileNode* Scene::addProjectile(QVector3D shootingDir){
     s->rotate(mainBoat->getRotation());
     s->setId(id);
     identifier[id] = s;
-
     rootNode->add(s);
     levelObjAdresses.append(s);
-//    connect(s, SIGNAL(deleteNode(SceneGraph*)),this,SLOT(deleteNodeAdress(SceneGraph*)));
     return s;
 }
+
+ParticleExplosionNode* Scene::addParticleExplosionNode(QVector3D pos){
+    ParticleGenerator *lvlObj = new ParticleGenerator();
+    std::string name("Particle ");
+    int id = nextId();
+    name+=std::to_string(id);
+    ParticleExplosionNode *s = new ParticleExplosionNode(pos,lvlObj,name);
+    s->setId(id);
+    identifier[id] = s;
+    rootNode->add(s);
+    levelObjAdresses.append(s);
+    return s;
+}
+
 void Scene::DS_geometryPass(Camera *camera){
     modelViewMatrixStack.push(modelViewMatrixStack.top());
     modelViewMatrixStack.top() *= camera->getCameraMatrix();
@@ -635,6 +648,7 @@ void Scene::testCollisions(){
             bool boatInvolved=mainBoat==levelObjAdresses.at(i)||mainBoat==levelObjAdresses.at(j);
             if(CollisionDetecion::isCollision(bb1,bb2)==1
                     && !boatInvolved){
+//                addParticleExplosionNode();
                 qDebug()<<"fette kollision";
                 levelObjAdresses.at(i)->reactToCollision();
                 levelObjAdresses.at(j)->reactToCollision();
@@ -651,18 +665,14 @@ void Scene::testCollisions(){
             adress->parent()->removeChildren(adress->row(),1);
             levelObjAdresses.removeAt(i);
             qDebug()<<"delete an object";
+            points+=100;
+            qDebug()<<"Aktuelle Punktzahl: "<<points;
 
 
         }
     }
-    //    rootNode->testCollisions();
 }
 
-//void Scene::doMovements(){
-//    for(int i=0;i<levelObjAdresses.length();i++){
-//        levelObjAdresses.at(i)->move();
-//    }
-//}
 QVector3D Scene::convertToMotherSheepTranslation(){
     return  mainBoat->getRotation().rotatedVector(mainBoat->getVelocity());
 }

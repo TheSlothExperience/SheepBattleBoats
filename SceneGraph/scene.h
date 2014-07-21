@@ -4,8 +4,9 @@
 #include "scenegraph.h"
 #include "lightnode.h"
 #include "camera.h"
-#include<levelobjectnode.h>
-#include<projectilenode.h>
+#include "levelobjectnode.h"
+#include "projectilenode.h"
+#include "particleexplosionnode.h"
 
 #include <stack>
 #include <map>
@@ -38,10 +39,11 @@ private:
 
 
 	int currentId = 0;
-	int nextId() {return currentId++;};
+    int nextId() {return currentId++;}
 
     LevelObjectNode* mainBoat;
     QList<SceneGraph*> levelObjAdresses;
+    int points=0;
 
 public:
 	Scene(QObject *parent = 0);
@@ -79,6 +81,7 @@ public:
 
 	LevelObjectNode *addLevelObj();
     ProjectileNode *addProjectile(QVector3D shootingDir);
+    ParticleExplosionNode* addParticleExplosionNode(QVector3D pos);
 
 	void lightsPass(QOpenGLShaderProgram *shader);
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
@@ -99,6 +102,7 @@ public:
 	void draw(Camera *camera);
     void DS_geometryPass(Camera *camera);
 
+    //GameLogic
     void initLevel();
     void testCollisions();
     void doMovements();
@@ -109,8 +113,8 @@ public:
     QVector3D convertToMotherSheepTranslation();
     void behaviourExecutions();
 
-//public slots:
-//    void deleteNodeAdress(SceneGraph* nodeAdress);
+    //ParticleExplosion
+
 };
 
 #endif //SCENE_H

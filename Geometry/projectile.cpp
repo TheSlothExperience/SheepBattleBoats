@@ -13,7 +13,7 @@ Projectile::Projectile(QVector3D pos)
 
     float const R = 1./(float)(rings-1);
     float const S = 1./(float)(sectors-1);
-    float radius = 0.5;
+    float radius = 0.1;
 
     GLfloat *vertices = new GLfloat[rings * sectors * 3];
     GLfloat *normals = new GLfloat[rings * sectors * 3];
@@ -104,9 +104,6 @@ void Projectile::draw(){
     glDisableVertexAttribArray(1);
 }
 
-void Projectile::exeObjBehaviour(){
-//    qDebug()<<"fly";
-}
 
 BoundingBox* Projectile::getBB(){
 return this->bb;

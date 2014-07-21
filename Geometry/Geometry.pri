@@ -12,7 +12,8 @@ HEADERS  += Geometry/primitive.h \
 			Geometry/object3d.h \
             Geometry/levelobject.h \
             Geometry/mothersheep.h \
-            Geometry/projectile.h
+            Geometry/projectile.h \
+    Geometry/particlegenerator.h
 
 SOURCES  += Geometry/cube.cpp \
 		 	Geometry/cone.cpp \
@@ -24,4 +25,5 @@ SOURCES  += Geometry/cube.cpp \
             Geometry/object3d.cpp \
             Geometry/levelobject.cpp \
             Geometry/mothersheep.cpp \
-            Geometry/projectile.cpp
+            Geometry/projectile.cpp \
+    Geometry/particlegenerator.cpp
