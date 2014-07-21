@@ -38,7 +38,9 @@ SceneGraph::SceneGraph(Primitive *p, SceneGraph *parent) {
 	color[3] = 1.0;
 }
 
-SceneGraph::SceneGraph(Primitive *p, std::string name) {
+SceneGraph::SceneGraph(Primitive *p, std::string name, QQuaternion rotationOffset)
+	: rotationOffset(rotationOffset)
+{
 	this->primitive = p;
 	this->leaf = true;
 	this->name = name;
@@ -165,6 +167,7 @@ void SceneGraph::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, 
 	//Convert the quat to a matrix, may be a performance leak.
 	QMatrix4x4 tempRot;
 	tempRot.rotate(this->rotation.normalized());
+	tempRot.rotate(rotationOffset);
 	MVStack.top() *= tempRot;
 
 	//If the node is a leaf, draw its contents

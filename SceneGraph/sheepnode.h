@@ -16,7 +16,7 @@ private :
 	const QVector3D MAX_VELOCITY=QVector3D(0.0,0.0,0.3);
 public:
 
-	SheepNode(Primitive *p, std::string name);
+	SheepNode(Primitive *p, std::string name, QQuaternion rotationOffset = QQuaternion());
 	~SheepNode();
 	void testCollisions(SheepNode);
 

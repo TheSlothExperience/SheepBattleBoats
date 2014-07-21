@@ -362,13 +362,14 @@ void Scene::draw(Camera *camera) {
 
 SheepNode* Scene::addMainSheep(){
     beginResetModel();
+    QQuaternion around = QQuaternion(cos(1.57), sin(1.57) * QVector3D(0.0, 1.0, 0.0));
     Object3D*object3d = new Object3D();
     object3d->loadMesh(":/models/sheep.obj",false);
     object3d->draw();
     std::string name("Master Sheep ");
     int id = nextId();
 
-    SheepNode *s = new SheepNode(object3d,name);
+    SheepNode *s = new SheepNode(object3d,name, around.normalized());
     s->setId(id);
     identifier[id] = s;
 

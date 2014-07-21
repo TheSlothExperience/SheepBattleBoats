@@ -1,7 +1,7 @@
 #include <sheepnode.h>
 
-SheepNode::SheepNode(Primitive *p, std::string name)
-	:SceneGraph(p, name)
+SheepNode::SheepNode(Primitive *p, std::string name, QQuaternion rotationOffset)
+	:SceneGraph(p, name, rotationOffset)
 {
 	this->name=name;
 	v=QVector3D(0.0,0.0,0.0);

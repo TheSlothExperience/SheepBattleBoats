@@ -10,7 +10,8 @@
 #define NORMAL_LOCATION      1
 
 
-Object3D::Object3D(){
+Object3D::Object3D()
+{
 
     vao = 0;
     memset(buffers, 0, sizeof(buffers));
