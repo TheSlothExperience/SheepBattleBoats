@@ -28,34 +28,34 @@ uniform mat4 inverseCameraMatrix;
 
 float sobelize(sampler2D tex){
 
-    vec4 sumX = vec4(0.0);
-    vec4 sumY = vec4(0.0);
+	vec4 sumX = vec4(0.0);
+	vec4 sumY = vec4(0.0);
 
-    float G = 0.0;
+	float G = 0.0;
 
-    float offsetX = 1.0 / textureSize(tex, 0).x;
-    float offsetY = 1.0 / textureSize(tex, 0).y;
+	float offsetX = 1.0 / textureSize(tex, 0).x;
+	float offsetY = 1.0 / textureSize(tex, 0).y;
 
-    // sobelx : -1,0,1; -2,0,2 ; -1,0,1
-    sumX += texture(tex, vec2(UV.x + offsetX, UV.y + offsetX)) * -1;
-    sumX += texture(tex, vec2(UV.x + offsetX, UV.y)) * -2;
-    sumX += texture(tex, vec2(UV.x + offsetX, UV.y - offsetX)) * -1;
+	// sobelx : -1,0,1; -2,0,2 ; -1,0,1
+	sumX += texture(tex, vec2(UV.x + offsetX, UV.y + offsetX)) * -1;
+	sumX += texture(tex, vec2(UV.x + offsetX, UV.y)) * -2;
+	sumX += texture(tex, vec2(UV.x + offsetX, UV.y - offsetX)) * -1;
 
-    sumX += texture(tex, vec2(UV.x - offsetX, UV.y + offsetX)) * 1;
-    sumX += texture(tex, vec2(UV.x - offsetX, UV.y)) * 2;
-    sumX += texture(tex, vec2(UV.x - offsetX, UV.y - offsetX)) * 1;
+	sumX += texture(tex, vec2(UV.x - offsetX, UV.y + offsetX)) * 1;
+	sumX += texture(tex, vec2(UV.x - offsetX, UV.y)) * 2;
+	sumX += texture(tex, vec2(UV.x - offsetX, UV.y - offsetX)) * 1;
 
-        //sobely: -1,-2,-1; 0,0,0; 1,2,1
-        sumY += texture(tex, vec2(UV.x + offsetY, UV.y + offsetY)) * 1;
-        sumY += texture(tex, vec2(UV.x + offsetY, UV.y - offsetY)) * -1;
+	//sobely: -1,-2,-1; 0,0,0; 1,2,1
+	sumY += texture(tex, vec2(UV.x + offsetY, UV.y + offsetY)) * 1;
+	sumY += texture(tex, vec2(UV.x + offsetY, UV.y - offsetY)) * -1;
 
-        sumY += texture(tex, vec2(UV.x + 0, UV.y + offsetY)) * 2;
-        sumY += texture(tex, vec2(UV.x + 0, UV.y - offsetY)) * -2;
+	sumY += texture(tex, vec2(UV.x + 0, UV.y + offsetY)) * 2;
+	sumY += texture(tex, vec2(UV.x + 0, UV.y - offsetY)) * -2;
 
-        sumY += texture(tex, vec2(UV.x - offsetY, UV.y + offsetY)) * 1;
-        sumY += texture(tex, vec2(UV.x - offsetY, UV.y - offsetY)) * -1;
+	sumY += texture(tex, vec2(UV.x - offsetY, UV.y + offsetY)) * 1;
+	sumY += texture(tex, vec2(UV.x - offsetY, UV.y - offsetY)) * -1;
 
-    return G = sqrt(sumX*sumX + sumY*sumY);
+	return G = sqrt(sumX*sumX + sumY*sumY);
 }
 
 //Stuff for variance shadow maps -------------------------
@@ -91,13 +91,16 @@ float stepmix(float edge0, float edge1, float E, float x){
 
 void main(){
 
-	vec4 color=vec4(texture(colorTexture,UV));
-	vec4 V_=vec4(texture(posTexture,UV));
+	//Unpack the attributes
+	vec4 color = vec4(texture(colorTexture,UV));
+	vec4 V_ = vec4(texture(posTexture,UV));
 	vec3 V = V_.xyz;
 	float a = V_.a;
 	if(a < 0.1) discard;
 
-	vec3 N=vec3(texture(normalTexture,UV));
+	vec4 N_ = vec4(texture(normalTexture, UV));
+	vec3 N = N_.xyz;
+	float k_spec = N_.a;
 
 	float coarseDetail = 2.0;
 	float minDistance = 0.5;
@@ -173,7 +176,7 @@ void main(){
 			specular = step(0.5,specular);
 		}
 		//HERE: insert materials for diffuse and specular, if finished
-		outputColor += specular * vec4(1.0,1.0,1.0,1.0);
+		outputColor += specular * k_spec * vec4(1.0,1.0,1.0,1.0);
 	}
 
 	float edge = fwidth(diffuse);
