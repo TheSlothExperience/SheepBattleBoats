@@ -24,6 +24,7 @@ struct Shaders {
 	static QOpenGLShaderProgram *waterGeometryProgram;
     static QOpenGLShaderProgram *intensityProgram;
     static QOpenGLShaderProgram *skyBoxProgram;
+    static QOpenGLShaderProgram *storeDualParaboloidProgram;
 
 	static void bind(QOpenGLShaderProgram *sp);
 	static void release(QOpenGLShaderProgram *sp);

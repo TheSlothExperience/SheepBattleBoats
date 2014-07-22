@@ -41,5 +41,7 @@
         <file>shaders/skyBox.frag</file>
         <file>shaders/Reduce.cl</file>
         <file>shaders/intensity.frag</file>
+        <file>shaders/storeDualParaboloid.frag</file>
+        <file>shaders/storeDualParaboloid.vert</file>
     </qresource>
 </RCC>

@@ -25,6 +25,7 @@ GLWidgetContext::GLWidgetContext(QWidget *parent)
 	shaders.waterGeometryProgram = new QOpenGLShaderProgram();
     shaders.intensityProgram = new QOpenGLShaderProgram();
     shaders.skyBoxProgram = new QOpenGLShaderProgram();
+    shaders.storeDualParaboloidProgram = new QOpenGLShaderProgram();
 }
 
 GLWidgetContext::~GLWidgetContext()
@@ -54,6 +55,7 @@ void GLWidgetContext::initializeGL()
     loadShaders(":/shaders/viewpoint.vert", ":/shaders/viewpoint.frag", shaders.quadviewProgram);
 
     loadShaders(":/shaders/storeDepth.vert", ":/shaders/storeDepth.frag", shaders.storeDepthProgram);
+    loadShaders(":/shaders/storeDualParaboloid.vert", ":/shaders/storeDualParaboloid.frag", shaders.storeDualParaboloidProgram);
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurV.frag", shaders.gaussianBlurVProgram);
     loadShaders(":/shaders/identity.vert", ":/shaders/gaussianBlurH.frag", shaders.gaussianBlurHProgram);
     loadShaders(":/shaders/phong.vert", ":/shaders/phong.frag", shaders.phongProgram);
@@ -79,6 +81,7 @@ QOpenGLShaderProgram *Shaders::phongProgram = NULL;
 QOpenGLShaderProgram *Shaders::waterGeometryProgram = NULL;
 QOpenGLShaderProgram *Shaders::intensityProgram = NULL;
 QOpenGLShaderProgram *Shaders::skyBoxProgram = NULL;
+QOpenGLShaderProgram *Shaders::storeDualParaboloidProgram = NULL;
 
 void Shaders::bind(QOpenGLShaderProgram *sp) {
 	if(sp == last) {

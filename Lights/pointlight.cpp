@@ -96,7 +96,7 @@ void PointLight::changeColor(float r, float g, float b, float a) {
 
 
 void PointLight::lightPass(std::stack<QMatrix4x4> &MVStack, SceneGraph *root) {
-	QOpenGLShaderProgram *shader = Shaders::storeDepthProgram;
+	QOpenGLShaderProgram *shader = Shaders::storeDualParaboloidProgram;
 	Shaders::bind(shader);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO());
