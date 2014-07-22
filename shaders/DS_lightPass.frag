@@ -55,7 +55,7 @@ float sobelize(sampler2D tex){
 	sumY += texture(tex, vec2(UV.x - offsetY, UV.y + offsetY)) * 1;
 	sumY += texture(tex, vec2(UV.x - offsetY, UV.y - offsetY)) * -1;
 
-	return G = sqrt(sumX*sumX + sumY*sumY);
+	return G = sqrt(dot(sumX, sumX) + dot(sumY, sumY));
 }
 
 //Stuff for variance shadow maps -------------------------
@@ -191,14 +191,14 @@ void main(){
 	else if(diffuse < C) diffuse = C;
 	else diffuse = D;
 
-        float depthEdge = sobelize(depthTexture);
-        float normalEdge = sobelize(normalTexture);
+	float depthEdge = sobelize(depthTexture);
+	float normalEdge = sobelize(normalTexture);
 
-        if(normalEdge>0.4  || depthEdge>0.05 ){
-                //color = color * vec4(vec3(0.3), 1.0);
-                color = vec4(0.0,1.0,1.0,1.0);
+	if(normalEdge > 1.35 || depthEdge > 0.5){
+		//color = color * vec4(vec3(0.3), 1.0);
+		color = vec4(0.0,0.0,0.0,1.0);
 	}
 
 	gl_FragDepth = vec4(texture2D(depthTexture, UV)).r;
-        outputColor += diffuse*color;
+	outputColor += diffuse*color;
 }
