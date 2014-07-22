@@ -9,7 +9,7 @@ ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::str
 	:SceneGraph(p,name)
 {
 	this->emitterPos=pos;
-	nParticles=30;
+	nParticles=50;
 	for(int i=0;i<nParticles;i++){
 		Particle temp=Particle();
 		particles.push_back(temp);

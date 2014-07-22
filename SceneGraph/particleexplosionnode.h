@@ -37,7 +37,7 @@ private:
     int minSpeed=1;
     int maxSpeed=10;
     float emmiterLifetime=0.0;
-    float emmiterMaxLifetime=20.0;
+    float emmiterMaxLifetime=2.0;
     QVector3D force= QVector3D(0, -9.81f, 0);
 
 	GLuint sprite;

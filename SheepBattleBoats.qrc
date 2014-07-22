@@ -20,6 +20,7 @@
         <file>img/skybox/back.png</file>
         <file>img/group.png</file>
         <file>img/sprites/explosion1.png</file>
+        <file>img/sprites/smoke.png</file>
 
         <file>shaders/phong.frag</file>
         <file>shaders/phong.vert</file>

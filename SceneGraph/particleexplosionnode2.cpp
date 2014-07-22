@@ -11,7 +11,7 @@ ParticleExplosionNode2::ParticleExplosionNode2(QVector3D pos,Primitive *p,std::s
     :SceneGraph(p,name)
 {
     this->emitterPos=pos;
-    nParticles=30;
+    nParticles=20;
     for(int i=0;i<nParticles;i++){
         Particle temp=Particle();
         particles.push_back(temp);
@@ -20,7 +20,7 @@ ParticleExplosionNode2::ParticleExplosionNode2(QVector3D pos,Primitive *p,std::s
     emitParticles();
     buildVertexBuffer();
 
-    std::string fileName = ":/img/sprites/explosion1.png";
+    std::string fileName = ":/img/sprites/smoke.png";
     QImage tex;
     QString fileQT = QString(fileName.c_str());
 
