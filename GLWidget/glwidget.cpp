@@ -390,7 +390,7 @@ void GLWidget::passShadowMaps(QOpenGLShaderProgram *shaderProgram, const int tex
 void GLWidget::shadowMapsPass() {
 	if(scene != NULL) {
         //Discombobulate!
-	    scene->lightsPass(shaders.storeDepthProgram);
+	    scene->lightsPass();
 	    scene->blurShadowMaps(shaders.gaussianBlurHProgram, shaders.gaussianBlurVProgram);
 	    if(satShadowsp) {
 		    scene->computeSAT(NULL);

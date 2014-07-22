@@ -435,36 +435,10 @@ void Scene::passLights(QMatrix4x4 cameraMatrix, QOpenGLShaderProgram *sp) {
 	delete[] colorsArray;
 }
 
-void Scene::lightsPass(QOpenGLShaderProgram *shader) {
-	Shaders::bind(shader);
+void Scene::lightsPass() {
 	for(auto l : lights) {
-		glBindFramebuffer(GL_FRAMEBUFFER, l->shadowFBO());
-
-		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT1};
-		glDrawBuffers(1, DrawBuffers);
-
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0,0, l->shadowWidth(), l->shadowHeight());
-
-		modelViewMatrixStack.push(modelViewMatrixStack.top());
-		modelViewMatrixStack.top() *= l->lightView();
-
-		this->rootNode->drawGeometry(modelViewMatrixStack
-		                   , l->lightView()
-		                   , l->perspectiveMatrix()
-		                   , shader);
-
-		modelViewMatrixStack.pop();
-
-		//Recreate the mipmaps
-		glBindTexture(GL_TEXTURE_2D, l->shadowMoments());
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		//Release and relax, brah
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		l->lightPass(modelViewMatrixStack, rootNode);
 	}
-	Shaders::release(shader);
 }
 
 void Scene::computeSAT(QOpenGLShaderProgram *) {

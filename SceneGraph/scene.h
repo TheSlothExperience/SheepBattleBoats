@@ -81,7 +81,7 @@ public:
 	LevelObjectNode *addLevelObj();
     ProjectileNode *addProjectile(QVector3D shootingDir);
 
-	void lightsPass(QOpenGLShaderProgram *shader);
+	void lightsPass();
 	void blurShadowMaps(QOpenGLShaderProgram *hs, QOpenGLShaderProgram *vs);
 	void computeSAT(QOpenGLShaderProgram *sat);
 

@@ -57,7 +57,7 @@ public:
 		persp.ortho(-5, 5, -5, 5, -100, 100);
 		return persp;
 	}
-	virtual void lightPass();
+	virtual void lightPass(std::stack<QMatrix4x4> &MVStack, SceneGraph *root);
 	virtual GLuint shadowFBO() {return fbo;}
 	virtual GLuint shadowMoments() {return moments;}
 	virtual GLuint shadowMomentsTemp() {return momentsTemp;}
