@@ -24,7 +24,6 @@ ParticleExplosionNode2::ParticleExplosionNode2(QVector3D pos,Primitive *p,std::s
     QImage tex;
     QString fileQT = QString(fileName.c_str());
 
-    std::cout << "Loaded sprite with width " << tex.width() << std::endl;
     tex.load(fileQT);
     tex = QGLWidget::convertToGLFormat(tex);
 

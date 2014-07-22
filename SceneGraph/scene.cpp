@@ -47,7 +47,7 @@ Scene::Scene(GLuint mvLoc, GLuint normalLoc, GLuint idLoc, GLuint colorLoc, QObj
 	lightPosition = QVector4D(0.5, 0.0, 2.0, 1.0);
 
 	addLight();
-	lights.at(0)->translate(1.0, 3.0, 1.50);
+	lights.at(0)->translate(5.0, 20.0, 1.50);
 	//addTorus(rootNode, 8);
 	//addSea(rootNode);
     levelObjAdresses= QList<SceneGraph*>();
@@ -61,6 +61,11 @@ void Scene::initLevel(){
     addTargetNode()->translate(0.0,2.0, -20.0);
     addTargetNode()->translate(0.0,2.0, -30.0);
     addTargetNode()->translate(0.0,2.0, -40.0);
+
+    addTargetNode()->translate(3.0,2.0, -40.0);
+    addTargetNode()->translate(-2.0,2.0, -30.0);
+    addTargetNode()->translate(1.5, 2.0, -10.0);
+    addTargetNode()->translate(3.0,2.0, -15.0);
 
     addSea(rootNode);
 }

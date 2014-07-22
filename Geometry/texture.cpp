@@ -17,8 +17,6 @@ bool Texture::load() {
 		QImage tex;
 		QString fileQT = QString(fileName.c_str());
 		tex.load(fileQT);
-		std::cout << "Loading facture texture " << fileName << " with: "
-		          << "(" << tex.width() << ", " << tex.height() << ")" << std::endl;
 		tex = QGLWidget::convertToGLFormat(tex);
 
 		glGenTextures(1, &textureObj);
