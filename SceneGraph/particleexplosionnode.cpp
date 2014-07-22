@@ -31,12 +31,14 @@ ParticleExplosionNode::ParticleExplosionNode(QVector3D pos,Primitive *p,std::str
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glGenBuffers(1, &alphaBufferObject);
+	glGenBuffers(1, &texCoordsBufferObject);
+	glGenBuffers(1, &vertexBufferObject);
 }
 
 
 ParticleExplosionNode::~ParticleExplosionNode(){}
-
-
 
 void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cameraMatrix, QMatrix4x4 projectionMatrix, QOpenGLShaderProgram *shader) {
 	//If the node is a leaf, draw its contents
@@ -51,6 +53,8 @@ void ParticleExplosionNode::draw(std::stack<QMatrix4x4> &MVStack, QMatrix4x4 cam
 		QMatrix4x4 tempRot;
 		tempRot.rotate(this->rotation.normalized());
 		MVStack.top() *= tempRot;
+
+		lastCameraRotation = Camera::M4toQuat(cameraMatrix);
 
 		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, MVStack.top().constData());
 		glUniformMatrix4fv(Shaders::particleProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, projectionMatrix.constData());
@@ -98,7 +102,6 @@ void ParticleExplosionNode::updateParticles(float deltaTime){
 		{
 			emitParticle(particle);
 		}
-
 		float lifeRatio = particle.time/ particle.lifeTime;
 		particle.velocity+= ( force * 0.01);
 		particle.pos += ( particle.velocity * 0.1);
@@ -155,32 +158,35 @@ void ParticleExplosionNode::buildVertexBuffer(){
 	QVector3D y = QVector3D( 0, 0.2, 0 );
 	QVector3D z = QVector3D( 0, 0 ,1.0 );
 
-	QQuaternion cameraRotation;
 
 	GLfloat *vertices = new GLfloat[particles.size()*4*3];
 	GLfloat *texCoords = new GLfloat[particles.size()*4*2];
 	GLfloat *alpha= new GLfloat[particles.size()* 4*1];
 
+	QQuaternion camera = lastCameraRotation.conjugate();
 	for ( unsigned int i = 0; i < particles.size(); ++i )
 	{
 		Particle& particle = particles[i];
 
-		vertices[i*12 + 0] =(particle.pos+  (-x - y)).x();
-		vertices[i*12 + 1] =(particle.pos+ (-x-y)).y();
-		vertices[i*12 + 2] =(particle.pos+ (-x - y )).z();// Bottom-left
+		QVector3D temp = particle.pos + camera.rotatedVector(-x - y);
+		vertices[i*12 + 0] = temp.x();
+		vertices[i*12 + 1] = temp.y();
+		vertices[i*12 + 2] = temp.z();// Bottom-left
 
-		vertices[i*12 + 3] =(particle.pos+  ( x - y )) .x();
-		vertices[i*12 + 4] =(particle.pos+  ( x - y )).y();
-		vertices[i*12 + 5] =(particle.pos+  ( x - y )).z();   // Bottom-right
+		temp = particle.pos + camera.rotatedVector(x - y);
+		vertices[i*12 + 3] = temp.x();
+		vertices[i*12 + 4] = temp.y();
+		vertices[i*12 + 5] = temp.z();   // Bottom-right
 
+		temp = particle.pos + camera.rotatedVector(x + y);
+		vertices[i*12 + 6] = temp.x();
+		vertices[i*12 + 7] = temp.y();
+		vertices[i*12 + 8] = temp.z();   // Top-right
 
-		vertices[i*12 + 6] =(particle.pos+ ( x + y )).x();
-		vertices[i*12 + 7] =(particle.pos+ ( x + y )).y();
-		vertices[i*12 + 8] =(particle.pos+  ( x + y )).z();   // Top-right
-
-		vertices[i*12 + 9] =(particle.pos+  ( -x + y )).x();
-		vertices[i*12 + 10] =(particle.pos+ ( -x + y )).y();
-		vertices[i*12 + 11] =(particle.pos+  ( -x + y )).z();   // Top-left
+		temp = particle.pos + camera.rotatedVector(-x + y);
+		vertices[i*12 + 9] = temp.x();
+		vertices[i*12 + 10] = temp.y();
+		vertices[i*12 + 11] = temp.z();   // Top-left
 
 		texCoords[i *8 + 0]=0.0;
 		texCoords[i *8 + 1]=1.0;
@@ -200,19 +206,16 @@ void ParticleExplosionNode::buildVertexBuffer(){
 	}
 
 
-	glGenBuffers(1, &vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*particles.size()* 4*3, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*particles.size()* 4*3, vertices, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &texCoordsBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, texCoordsBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*particles.size()* 4*2, texCoords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*particles.size()* 4*2, texCoords, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &alphaBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, alphaBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*particles.size()* 4*1, alpha, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*particles.size()* 4*1, alpha, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 

@@ -25,6 +25,8 @@ private:
     void emitParticles();
     void randomizeParticles();
 
+	QQuaternion lastCameraRotation;
+
     int minWidth= 0.0;
     int maxWidth= 1.0;
     int minHeight= 0.0;

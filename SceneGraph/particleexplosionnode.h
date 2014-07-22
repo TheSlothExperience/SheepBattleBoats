@@ -24,6 +24,8 @@ private:
 	void emitParticles();
 	void randomizeParticles();
 
+	QQuaternion lastCameraRotation;
+
 	int minWidth= 0.0;
     int maxWidth= 1.0;
     int minHeight= 0.0;
@@ -35,7 +37,7 @@ private:
     int minSpeed=1;
     int maxSpeed=10;
     float emmiterLifetime=0.0;
-    float emmiterMaxLifetime=2.0;
+    float emmiterMaxLifetime=20.0;
     QVector3D force= QVector3D(0, -9.81f, 0);
 
 	GLuint sprite;
