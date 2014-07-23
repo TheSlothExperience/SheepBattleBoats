@@ -52,10 +52,10 @@ struct Neighbors
 
     void addNeighbor(uint n)
     {
-        if (n1 == -1) {
+        if (n1 == (uint) -1) {
             n1 = n;
         }
-        else if (n2 == -1) {
+        else if (n2 == (uint) -1) {
             n2 = n;
         }
         else {

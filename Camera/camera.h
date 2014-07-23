@@ -16,16 +16,6 @@ protected:
 	QMatrix4x4 cameraMatrix;
 	QMatrix4x4 projectionMatrix;
 
-	QQuaternion M4toQuat(QMatrix4x4 mat) {
-		double trace = mat(0,0) + mat(1,1) + mat(2,2) + 1;
-		double s = 0.5 / sqrt(trace);
-		double w = 0.25 / s;
-		double x = (mat(2, 1) - mat(1, 2)) * s;
-		double y = (mat(0, 2) - mat(2, 0)) * s;
-		double z = (mat(1, 0) - mat(0, 1)) * s;
-		return QQuaternion(w, x, y, z);
-	}
-
 public:
 	virtual QMatrix4x4 getCameraMatrix() {
 		cameraMatrix.setToIdentity();
@@ -57,7 +47,17 @@ public:
 	}
 	virtual void resize(double width, double height) = 0;
 	virtual void zoom(double z) = 0;
+    virtual void setpointOfInterest(QVector3D){}
 
+	static QQuaternion M4toQuat(QMatrix4x4 mat) {
+		double trace = mat(0,0) + mat(1,1) + mat(2,2) + 1;
+		double s = 0.5 / sqrt(trace);
+		double w = 0.25 / s;
+		double x = (mat(2, 1) - mat(1, 2)) * s;
+		double y = (mat(0, 2) - mat(2, 0)) * s;
+		double z = (mat(1, 0) - mat(0, 1)) * s;
+		return QQuaternion(w, x, y, z);
+	}
 };
 
 #endif

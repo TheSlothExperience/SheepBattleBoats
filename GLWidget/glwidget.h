@@ -42,10 +42,13 @@ public:
     void setCameraActive(bool active = true) {this->cameraActive = active;}
 
 	void translateCamera(double x, double y, double z);
-    void translateBoardCamera(QVector3D trans);
+    void translateBoardCamera(QVector3D trans,QVector3D boatPos);
 	void rotateCamera(float angle);
 
 	void setSATShadows(bool set) {satShadowsp = set;}
+     void set8bit(bool set) {bitify = set;}
+     void setScope(bool set) {scopify = set;}
+     void setCrossHatch(bool set){crossify = set;}
 
 private:
     int tesselationLevel;
@@ -102,6 +105,11 @@ private:
     void DSGeometryPass();
     void DSLightPass();
     void RenderFPS();
+
+    bool bitify;
+    bool scopify;
+    bool crossify;
+
 
 protected:
     void paintGL();

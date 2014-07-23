@@ -19,6 +19,9 @@
         <file>img/skybox/front.png</file>
         <file>img/skybox/back.png</file>
         <file>img/group.png</file>
+        <file>img/sprites/explosion1.png</file>
+        <file>img/sprites/smoke.png</file>
+
         <file>shaders/phong.frag</file>
         <file>shaders/phong.vert</file>
         <file>shaders/canvas.frag</file>
@@ -40,8 +43,14 @@
         <file>shaders/skyBox.vert</file>
         <file>shaders/skyBox.frag</file>
         <file>shaders/Reduce.cl</file>
+        <file>shaders/particles.frag</file>
+        <file>shaders/particles.vert</file>
         <file>shaders/intensity.frag</file>
         <file>shaders/storeDualParaboloid.frag</file>
         <file>shaders/storeDualParaboloid.vert</file>
+
+		<file>models/sheep.mtl</file>
+        <file>models/sheep.obj</file>
+        <file>models/sheep.jpg</file>
     </qresource>
 </RCC>

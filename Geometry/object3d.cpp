@@ -2,7 +2,8 @@
 
 #include "object3d.h"
 #include <vector>
-
+#include <iostream>
+#include <QFile>
 #include <assert.h>
 
 #define POSITION_LOCATION    0
@@ -10,7 +11,8 @@
 #define NORMAL_LOCATION      1
 
 
-Object3D::Object3D(){
+Object3D::Object3D()
+{
 
     vao = 0;
     memset(buffers, 0, sizeof(buffers));
@@ -46,14 +48,22 @@ bool Object3D::loadMesh(const std::string& filename, bool withAdjacencies){
     glGenVertexArrays(1,&vao);
     glBindVertexArray(vao);
 
+
     glGenBuffers((sizeof(buffers)/sizeof(buffers[0])),buffers);
 
     bool loaded = false;
+    QFile file(filename.c_str());
 
-    pScene = importer.ReadFile(filename.c_str(),aiProcess_Triangulate |aiProcess_GenSmoothNormals
-                                              | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+	    std::cout << "Error opening QT file" << std::endl;
+	    return false;
+    }
+    std::string objString = std::string(file.readAll().data());
+    int strLength = file.size();
+
+    pScene = importer.ReadFileFromMemory((const void *) objString.c_str(), strLength, aiProcess_Triangulate |aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+
     if(pScene){
-
         loaded = initFromScene(pScene,filename);
     }else{
         printf("Error parsing '%s': '%s'\n", filename.c_str(), importer.GetErrorString());
@@ -127,23 +137,22 @@ bool Object3D::initFromScene(const aiScene *pScene, const std::string &filename)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[INDEX_BUFFER]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices[0])*indices.size(),&indices[0],GL_STATIC_DRAW);
 
+    float maxFloat=std::numeric_limits<float>::max();
+    float minFloat=std::numeric_limits<float>::min();
+    QVector3D min=QVector3D(maxFloat,maxFloat,maxFloat);
+    QVector3D max=QVector3D(minFloat,minFloat,minFloat);
+    for(auto v : positions) {
+	    if(v[0]>max[0]) max[0]=v[0];
+	    if(v[0]<min[0]) min[0]=v[0];
+	    if(v[1]>max[1]) max[1]=v[1];
+	    if(v[1]<min[1]) min[1]=v[1];
+	    if(v[2]>max[2]) max[2]=v[2];
+	    if(v[2]<min[2]) min[2]=v[2];
+    }
+    bb =  new BoundingBox(QVector3D(0,0,0),min,max);
+
     //after init go further to materials
     return true;
-}
-
-static uint getOppositeindex(const aiFace& face, const Edge& e){
-
-    for (uint i = 0 ; i < 3 ; i++) {
-        uint Index = face.mIndices[i];
-
-        if (Index != e.a && Index != e.b) {
-            return Index;
-        }
-    }
-
-    assert(0);
-
-    return 0;
 }
 
 bool Object3D::initMesh(const aiMesh *paiMesh,
@@ -181,52 +190,27 @@ bool Object3D::initMesh(const aiMesh *paiMesh,
 bool Object3D::initMaterials(const aiScene *pScene, const std::string &filename){
 
     // Extract the directory part from the file name
-    std::string::size_type slashIndex = filename.find_last_of("/");
-    std::string dir;
-
-    if (slashIndex == std::string::npos) {
-        dir = ".";
-    }
-    else if (slashIndex == 0) {
-        dir = "/";
-    }
-    else {
-        dir = filename.substr(0, slashIndex);
-    }
+    std::string::size_type dotIndex = filename.find_last_of(".");
 
     bool ret = true;
-
     // Initialize the materials
     for (uint i = 0 ; i < pScene->mNumMaterials ; i++) {
-        const aiMaterial* pMaterial = pScene->mMaterials[i];
 
-        textures[i] = NULL;
+	    textures[i] = NULL;
 
-        if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-            aiString Path;
+	    std::string FullPath = filename.substr(0, dotIndex) + ".jpg";
 
-            if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-                std::string p(Path.data);
+	    textures[i] = new Texture(GL_TEXTURE_2D, FullPath.c_str());
 
-                if (p.substr(0, 2) == ".\\") {
-                    p = p.substr(2, p.size() - 2);
-                }
-
-                std::string FullPath = dir + "/" + p;
-
-                textures[i] = new Texture(GL_TEXTURE_2D, FullPath.c_str());
-
-                if (!textures[i]->load()) {
-                    printf("Error loading texture '%s'\n", FullPath.c_str());
-                    delete textures[i];
-                    textures[i] = NULL;
-                    ret = false;
-                }
-                else {
-                    printf("%d - loaded texture '%s'\n", i, FullPath.c_str());
-                }
-            }
-        }
+	    if (!textures[i]->load()) {
+		    printf("Error loading texture '%s'\n", FullPath.c_str());
+		    delete textures[i];
+		    textures[i] = NULL;
+		    ret = false;
+	    }
+	    else {
+		    printf("%d - loaded texture '%s'\n", i, FullPath.c_str());
+	    }
     }
 
     return ret;
@@ -236,7 +220,7 @@ bool Object3D::initMaterials(const aiScene *pScene, const std::string &filename)
 
 
 void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> indices){
-   int c = 0;
+
     // Step 1 - find the two triangles that share edge
     for (uint i=0; i<paiMesh->mNumFaces;i++){
         const aiFace& face = paiMesh->mFaces[i];
@@ -280,7 +264,7 @@ void Object3D::findAdjacencies(const aiMesh *paiMesh, std::vector<unsigned int> 
             Neighbors n = indexMap[e];
             uint otherTri = n.getOther(i);
             std::cout<< "index" << otherTri << std::endl;
-            assert(otherTri != -1);
+            assert(otherTri != (uint) -1);
 
             const Face& otherFace = uniqueFaces[otherTri];
             uint oppositeIndex = otherFace.getOppositeIndex(e);

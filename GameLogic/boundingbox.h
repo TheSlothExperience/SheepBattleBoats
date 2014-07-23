@@ -21,6 +21,7 @@ public:
 //    QVector3D v7;
 //    QVector3D v8;
     QString getString();
+    void setNewPosition(QVector3D);
 };
 
 #endif // BOUNDINGBOX_H

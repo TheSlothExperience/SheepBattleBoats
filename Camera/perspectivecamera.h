@@ -12,10 +12,12 @@ public:
 	void zoom(double z);
 	QMatrix4x4 getProjectionMatrix();
 	void reset();
+    void setPointOfInterest(QVector3D poi);
     
 	double width;
 	double height;
 	double fov;
+    QVector3D up;
 };
 
 #endif

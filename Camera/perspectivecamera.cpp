@@ -4,20 +4,21 @@
 
 PerspectiveCamera::PerspectiveCamera(double x, double y, double z, double width, double height) {
 	this->initialPosition = QVector3D(x, y, z);
-	QVector3D up;
+
 	if(x != 0 || z != 0) {
 		up = QVector3D::crossProduct(QVector3D(-z, 0, x), initialPosition);
 	} else {
 		//Looking from the top
 		up = QVector3D(0.0, 0.0, -1.0);
 	}
-	cameraMatrix.lookAt(initialPosition, QVector3D(0, 0, 0), up);
+    poi = QVector3D(0,0,0);
+    cameraMatrix.lookAt(initialPosition, poi, up);
 	initialOrientation = M4toQuat(cameraMatrix);
 	this->width = width;
 	this->height = height;
 	this->fov = 45;
 	this->projectionMatrix.perspective(fov, width / height, 0.1, 100);
-	poi = QVector3D(0,0,0);
+
 }
 
 PerspectiveCamera::PerspectiveCamera(QVector3D position, double width, double height) {
@@ -45,4 +46,9 @@ void PerspectiveCamera::reset() {
 void PerspectiveCamera::zoom(double z) {
 //	this->fov -= z * 3;
     position+=QVector3D(0.0,-z/5.0,-z);
+}
+
+void PerspectiveCamera::setPointOfInterest(QVector3D poi){
+  this->poi=poi;
+    cameraMatrix.lookAt(initialPosition,poi,this->up);
 }

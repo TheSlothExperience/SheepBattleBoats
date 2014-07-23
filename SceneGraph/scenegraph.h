@@ -26,11 +26,13 @@ protected:
 
 	std::vector<SceneGraph* > children;
 	GLfloat color[4];
+    bool markedDead=false;
+	QQuaternion rotationOffset;
 
 public:
-	SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
-	SceneGraph(Primitive *p, SceneGraph *parent = 0);
-	SceneGraph(Primitive *p, std::string name);
+    SceneGraph(bool isleaf = false, SceneGraph *parent = 0);
+    SceneGraph(Primitive *p, SceneGraph *parent = 0);
+	SceneGraph(Primitive *p, std::string name, QQuaternion rotationOffset = QQuaternion());
 	virtual ~SceneGraph();
 
 	SceneGraph* parent();
@@ -69,8 +71,13 @@ public:
 
     virtual void exeObjBehaviour();
     virtual BoundingBox *getBB();
+    virtual void reactToCollision(){}
+    void setDeadmark(bool dead){this->markedDead=dead;}
+    bool isMarkedDead(){return this->markedDead;}
 
     Primitive* getPrimitive(){return this->primitive;}
+
+	QVector3D getPosition() {return getBB()->position;}
 };
 
 #endif //SCENE_H

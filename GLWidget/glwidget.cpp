@@ -206,6 +206,10 @@ void GLWidget::paintSceneToCanvas() {
     glUniform1i(shaders.canvasProgram->uniformLocation("blurredIntensity"),1);
     glBindTexture(GL_TEXTURE_2D, gbuffer.getTempTexture(2));
 
+    glUniform1i(shaders.canvasProgram->uniformLocation("bitify"),bitify);
+    glUniform1i(shaders.canvasProgram->uniformLocation("scopify"),scopify);
+    glUniform1i(shaders.canvasProgram->uniformLocation("crossify"),crossify);
+
     //Draw our nifty, pretty quad
     glBindBuffer(GL_ARRAY_BUFFER, canvasQuad);
     glEnableVertexAttribArray(0);
@@ -289,8 +293,6 @@ void GLWidget::blurIntensity(){
 
 void GLWidget::drawSkyBox() {
 	GBuffer::activeGBuffer()->drawToFinal();
-	glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glDepthMask(GL_FALSE);
 
 	Shaders::bind(Shaders::skyBoxProgram);
@@ -301,7 +303,6 @@ void GLWidget::drawSkyBox() {
 
 	glUniformMatrix4fv(Shaders::skyBoxProgram->uniformLocation("perspectiveMatrix"), 1, GL_FALSE, camera->getProjectionMatrix().data());
 	glUniformMatrix4fv(Shaders::skyBoxProgram->uniformLocation("modelViewMatrix"), 1, GL_FALSE, camera->getCameraMatrix().data());
-
 
 	glBindBuffer(GL_ARRAY_BUFFER, skyBox);
 	glEnableVertexAttribArray(0);
@@ -399,6 +400,7 @@ void GLWidget::shadowMapsPass() {
         std::cout << "no scene yet" << std::endl;
     }
 }
+
 
 void GLWidget::resizeGL(int width, int height)
 {
@@ -499,18 +501,21 @@ QQuaternion M4toQuat(QMatrix4x4 mat) {
 
 void GLWidget::translateCamera(double x, double y, double z) {
 	QVector4D trans(x, y, z, 1.0);
-    trans = trans * camera->getCameraMatrix();
+//    trans = trans * camera->getCameraMatrix();
 	this->camera->translate(trans.x(), trans.y(), trans.z());
 }
 
-void GLWidget::translateBoardCamera(QVector3D trans){
+void GLWidget::translateBoardCamera(QVector3D trans,QVector3D boatPos){
 // trans = trans * camera->getCameraMatrix();
     this->camera->translate(trans.x(), trans.y(), trans.z());
+    camera->setpointOfInterest(boatPos);
+
 }
 
 void GLWidget::rotateCamera(float angle) {
 	QQuaternion rot = QQuaternion(cos(angle/2.0), sin(angle/2.0) * QVector3D(0.0, 1.0, 0.0));
 	camera->rotate(rot);
+
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -521,7 +526,9 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 		QVector4D trans(xtrans, ytrans, 0, 1);
 		QVector4D worldTrans = trans * camera->getCameraMatrix();
 		if(cameraActive) {
+            this->camera->setpointOfInterest(scene->getMainBoat()->getPosition());
 			this->camera->translate(-worldTrans.x(), -worldTrans.y(), -worldTrans.z());
+
 			updateGL();
 		} else {
 			emit translate(worldTrans.x(), worldTrans.y(), worldTrans.z());
@@ -573,6 +580,7 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 {
 	double zoom = event->delta()/300.0;
 	this->camera->zoom(zoom);
+    camera->setpointOfInterest(scene->getMainBoat()->getPosition());
 	updateGL();
 }
 

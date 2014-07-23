@@ -1,14 +1,13 @@
 #define GL_GLEXT_PROTOTYPES
-#include "levelobject.h"
 #include <iostream>
 #include <math.h>
 #include "QVector3D"
 #include<boundingbox.h>
 
+#include "target.h"
 
-LevelObject::LevelObject()
+Target::Target()
 {
-
     const double PI = 3.141592653589793238463;
     int tesselation = pow(2, 6) + 1; //at least 3
 
@@ -50,23 +49,6 @@ LevelObject::LevelObject()
     }
     bb=  new BoundingBox(QVector3D(0,0,0),min,max);
 
-
-    //for(int r = 0; r < rings; r++) {
-    //    for(int s = 0; s < sectors; s++) {
-    //        float const y = sin( -M_PI_2 + M_PI * r * R );
-    //        float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-    //        float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-    //        int i = (r*sectors + s)*3;
-    //        vertices[i] = x * radius;
-    //        if(vertices[i]>max[0]) max[0]=vertices[i];
-    //        if(vertices[i]<min[0]) min[0]=vertices[i];
-    //        vertices[i + 1] = y * radius;
-    //        if(vertices[i+ 1]>max[1]) max[1]=vertices[i+1];
-    //        if(vertices[i+ 1]<min[1]) min[1]=vertices[i+1];
-    //        vertices[i + 2] = z * radius;
-    //        if(vertices[i + 2]>max[2]) max[2]=vertices[i+2];
-    //        if(vertices[i + 2]<min[2]) min[2]=vertices[i+2];
-
     for(int i = 0, idx = 0; i <tesselation; i++) {
         int ioff = 1;
         if(i == tesselation - 1) ioff = -i;
@@ -101,13 +83,13 @@ LevelObject::LevelObject()
     delete[] indices;
 }
 
-LevelObject::~LevelObject() {
+Target::~Target() {
     glDeleteBuffers(1, &vertexBufferObject);
     glDeleteBuffers(1, &normalBufferObject);
     glDeleteBuffers(1, &indexBufferObject);
 }
 
-void LevelObject::draw() {
+void Target::draw() {
     // //Bind the arrays to the vao
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glEnableVertexAttribArray(0);
@@ -128,10 +110,10 @@ void LevelObject::draw() {
 }
 
 
-bool LevelObject::intersect(){
+bool Target::intersect(){
 
 }
 
-BoundingBox* LevelObject::getBB(){
+BoundingBox* Target::getBB(){
     return bb;
 }

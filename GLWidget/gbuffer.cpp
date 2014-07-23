@@ -1,5 +1,6 @@
 #define GL_GLEXT_PROTOTYPES
 #include "gbuffer.h"
+#include <iostream>
 
 GBuffer* GBuffer::m_activeGBuffer = NULL;
 
@@ -79,11 +80,6 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numTextures + numTemps, GL_TEXTURE_2D, m_finalTexture, 0);
 
-
-
-//       GLenum DrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-//       glDrawBuffers(4, DrawBuffers);
-
        GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
        if (Status != GL_FRAMEBUFFER_COMPLETE) {
@@ -100,11 +96,21 @@ bool GBuffer::Init(unsigned int windowWidth, unsigned int windowHeight){
 
 void GBuffer::startFrame(){
 	m_activeGBuffer = this;
-    glBindBuffer(GL_FRAMEBUFFER,m_fbo);
-    GLenum DrawBuffers[]={GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1,GL_COLOR_ATTACHMENT2,GL_COLOR_ATTACHMENT3,GL_COLOR_ATTACHMENT4,GL_COLOR_ATTACHMENT5,GL_COLOR_ATTACHMENT6,GL_COLOR_ATTACHMENT7};
-    glDrawBuffers(8,DrawBuffers);
+	glBindFramebuffer(GL_FRAMEBUFFER,m_fbo);
+
+	GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0,
+	                      GL_COLOR_ATTACHMENT1,
+	                      GL_COLOR_ATTACHMENT2,
+	                      GL_COLOR_ATTACHMENT3,
+	                      GL_COLOR_ATTACHMENT4,
+	                      GL_COLOR_ATTACHMENT5,
+	                      GL_COLOR_ATTACHMENT6,
+	                      GL_COLOR_ATTACHMENT7};
+
+	glDrawBuffers(6,drawBuffers);
+	glClearDepth(1.0);
 	glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void GBuffer::bindGeometryPass(){
@@ -114,23 +120,17 @@ void GBuffer::bindGeometryPass(){
     GLenum drawBuffers[]={GL_COLOR_ATTACHMENT0,
                           GL_COLOR_ATTACHMENT1,
                           GL_COLOR_ATTACHMENT2,
-                         GL_COLOR_ATTACHMENT3};
+                          GL_COLOR_ATTACHMENT3};
 
     glDrawBuffers(4,drawBuffers);
-	glClearColor(8.0f, 8.0f, 8.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void GBuffer::bindStencilPass(){
 	m_activeGBuffer = this;
-
-    //Abschalten des Zeichnen der Buffer
-//    glDrawBuffers(GL_NONE);
 }
 
 void GBuffer::bindLightPass( QOpenGLShaderProgram *lightPassProgram){
 	m_activeGBuffer = this;
-//    glDrawBuffer(GL_COLOR_ATTACHMENT4);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 	glViewport(0,0, windowWidth, windowHeight);
@@ -176,10 +176,6 @@ void GBuffer::bindFinalPass(QOpenGLShaderProgram *canvasProgram){
     glActiveTexture(GL_TEXTURE0);
         glUniform1i(canvasProgram->uniformLocation("scene"),0);
     glBindTexture(GL_TEXTURE_2D,m_finalTexture);
-
-//    glActiveTexture(GL_TEXTURE1);
-//        glUniform1i(canvasProgram->uniformLocation("blurIntensity"),1);
-//    glBindTexture(GL_TEXTURE_2D,m_tempTextures[2]);
 }
 
 void GBuffer::tempTexture(int i){
@@ -194,11 +190,3 @@ GLuint GBuffer::getTempTexture(int i){
 
     return m_tempTextures[i];
 }
-
-//void GBuffer::BindForReading(){
-//    glBindFramebuffer(GL_READ_FRAMEBUFFER,m_fbo);
-//}
-
-//void GBuffer::setReadBuffer(GBUFFER_TEXTURE_TYPE texType){
-//    glReadBuffer(GL_COLOR_ATTACHMENT0+texType);
-//}
